@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background-color: #F8FAFC;
+    color: #0F172A;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+/* Prevent auto-zoom on focus in iOS Safari for smartphones (iPhone) */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Smooth momentum scrolling for iOS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Print styling for E-Ticket & Official Document (Preserves Colors, Flawless Centering, Zero Pixelation) */
+@media print {
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  @page {
+    margin: 8mm 8mm;
+    size: A4 portrait;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Hide app header, sidebars, portal banners, search inputs, footers, offscreen generators, and all interactive buttons */
+  header,
+  aside,
+  nav,
+  footer,
+  button,
+  .print-hide,
+  .print\:hidden,
+  .portal-print-hide,
+  #master-pdf-ticket,
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  /* Neutralize any sidebar offset margins from desktop layouts */
+  .md\:ml-72,
+  .lg\:ml-80,
+  .md\:ml-64,
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Force printable ticket to fit seamlessly on 1 single page without breaks or overflow */
+  .printable-ticket {
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: 1.5px solid #081827 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    max-width: 480px !important;
+    width: 100% !important;
+  }
+
+  /* Compact padding in print mode to prevent 2nd sheet spillover */
+  .printable-ticket .p-5,
+  .printable-ticket .sm\:p-6,
+  .printable-ticket .p-6 {
+    padding: 14px 18px !important;
+  }
+
+  .printable-ticket .space-y-4 {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Sharp vector rendering for images, barcodes, canvas QR codes */
+  img, canvas, svg {
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Ken Burns Cinematic Motion Effect */
+@keyframes kenburns-slow {
+  0% {
+    transform: scale(1.0) translate(0%, 0%);
+  }
+  50% {
+    transform: scale(1.10) translate(-1.5%, -1%);
+  }
+  100% {
+    transform: scale(1.04) translate(1%, 0.5%);
+  }
+}
+
+.animate-kenburns {
+  animation: kenburns-slow 18s ease-in-out infinite alternate;
+  will-change: transform;
+  transform-origin: center center;
+}

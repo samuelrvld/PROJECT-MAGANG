@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 52" fill="none">
+  <!-- Official Circular Medallion -->
+  <g transform="translate(2, 2)">
+    <circle cx="24" cy="24" r="23" fill="#14293E" stroke="#DAB36E" stroke-width="1.5" />
+    <!-- Candi Blambangan in Radiant Gold -->
+    <g fill="#DAB36E">
+      <!-- Pinnacle -->
+      <path d="M24 7L22.5 11H25.5L24 7Z" />
+      <!-- Stepped Crown Tiers -->
+      <rect x="21.5" y="12" width="5" height="2.2" rx="0.5" />
+      <rect x="20" y="15" width="8" height="2.5" rx="0.5" />
+      <rect x="18.5" y="18.5" width="11" height="2.8" rx="0.5" />
+      <!-- Main Cornice -->
+      <path d="M16.5 22.5H31.5L32.5 24.5H15.5L16.5 22.5Z" />
+      <!-- Temple Body & Gateway Arch -->
+      <path d="M17 25.5H31L32 34H28.5V30.5C28.5 29 27.5 28 24 28C20.5 28 19.5 29 19.5 30.5V34H16L17 25.5Z" />
+      <!-- Base Plinths -->
+      <rect x="15" y="35.2" width="18" height="2.2" rx="0.5" />
+      <rect x="13" y="38.2" width="22" height="2.5" rx="0.5" />
+      <!-- Ancient Inscription Motif / Pedestal -->
+      <circle cx="17" cy="42.8" r="0.9" />
+      <rect x="19.5" y="42.2" width="9" height="1.4" rx="0.5" />
+      <circle cx="31" cy="42.8" r="0.9" />
+    </g>
+  </g>
+  <!-- Text: MUSEUM BLAMBANGAN in Pure Crisp White -->
+  <text x="58" y="25" fill="#FFFFFF" font-family="'Georgia', 'Playfair Display', serif" font-weight="bold" font-size="18" letter-spacing="1.2">MUSEUM</text>
+  <text x="58" y="42" fill="#FFFFFF" font-family="'Georgia', 'Playfair Display', serif" font-weight="bold" font-size="13" letter-spacing="2.8">BLAMBANGAN</text>
+</svg>
