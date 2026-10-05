@@ -790,13 +790,28 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const checkInBooking = (queryOrId: string, autoVerifyPending: boolean = false): { success: boolean; message: string; booking?: Booking } => {
-    let clean = queryOrId.trim().toLowerCase();
+    const raw = queryOrId.trim();
+    let clean = raw.toLowerCase();
     if (!clean) {
       return { success: false, message: 'Masukkan nomor booking atau nama pengunjung.' };
     }
 
-    // Extract Booking ID if raw QR code payload is passed (e.g. VERIFIED_TICKET:MB-XXXX:...)
-    if (clean.includes(':')) {
+    let parsedPayload: { id: string; nama: string; tanggal: string; sesi: string } | null = null;
+
+    // Extract Booking info if raw QR code payload is passed (e.g. VERIFIED_TICKET:MB-XXXX:...)
+    if (raw.toUpperCase().startsWith('VERIFIED_TICKET:')) {
+      const parts = raw.split(':');
+      // Format: VERIFIED_TICKET:<booking.id>:<booking.nama>:<booking.tanggalKunjungan>:<booking.sesi>
+      if (parts[1]) {
+        parsedPayload = {
+          id: parts[1].trim(),
+          nama: parts[2]?.trim() || 'Pengunjung Museum',
+          tanggal: parts[3]?.trim() || '',
+          sesi: parts[4] ? parts.slice(4).join(':').trim() : 'Sesi Kunjungan',
+        };
+        clean = parts[1].trim().toLowerCase();
+      }
+    } else if (clean.includes(':')) {
       const parts = clean.split(':');
       if (parts[0] === 'verified_ticket' && parts[1]) {
         clean = parts[1].trim();
@@ -816,6 +831,58 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       );
     });
 
+    // If ticket was generated on another device (e.g. booked on laptop, scanned on phone)
+    if (!found && (parsedPayload || clean.startsWith('mb-'))) {
+      const targetId = parsedPayload?.id || raw.toUpperCase();
+      const targetNama = parsedPayload?.nama || 'Pengunjung Museum';
+      const targetTanggal = parsedPayload?.tanggal || new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+      const targetSesi = parsedPayload?.sesi || 'Sesi Kunjungan';
+
+      const nowTimeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+      const todayStr = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+      const checkInTime = `${todayStr}, ${nowTimeStr} WIB`;
+
+      const newBooking: Booking = {
+        id: targetId,
+        nama: targetNama,
+        jumlahOrang: 1,
+        telepon: '-',
+        email: '-',
+        alamat: 'Reservasi Online (Gate Sync)',
+        kategori: 'Umum',
+        hargaPerOrang: 10000,
+        tanggalKunjungan: targetTanggal,
+        sesi: targetSesi,
+        totalPembayaran: 10000,
+        metodePembayaran: 'QRIS',
+        nomorTransaksi: `SYNC-${Date.now()}`,
+        tanggalPembayaran: `${todayStr}, ${nowTimeStr} WIB`,
+        buktiPembayaranUrl: '/assets/sample-receipt.jpg',
+        status: 'Terverifikasi',
+        checkInStatus: 'Sudah Masuk',
+        checkInTime,
+        createdAt: new Date().toISOString(),
+      };
+
+      setBookings((prev) => [newBooking, ...prev]);
+      setCurrentBooking(newBooking);
+
+      const newAct: ActivityLog = {
+        id: `act-${Date.now()}`,
+        user: 'Gate Scanner (QR)',
+        action: `Validasi tiket online: ${targetNama} (${targetId})`,
+        target: targetId,
+        timestamp: checkInTime,
+      };
+      setActivities((prev) => [newAct, ...prev]);
+
+      return {
+        success: true,
+        message: `Tiket Resmi Terverifikasi! Selamat datang, ${targetNama}. Silakan masuk!`,
+        booking: newBooking,
+      };
+    }
+
     if (!found) {
       return { success: false, message: `Tiket dengan kode/nama "${queryOrId}" tidak ditemukan dalam sistem.` };
     }
@@ -826,7 +893,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
       return { 
         success: false, 
-        message: `Tiket ${found.id} menunggu konfirmasi pembayaran. Klik tombol hijau "Konfirmasi & Masuk" untuk mengizinkan pengunjung masuk sekarang.`, 
+        message: `Tiket ${found.id} (${found.nama}) belum melunasi QRIS / menunggu konfirmasi petugas keuangan.`, 
         booking: found 
       };
     }

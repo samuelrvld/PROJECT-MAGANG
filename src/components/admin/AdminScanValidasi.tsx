@@ -15,9 +15,23 @@ import {
   Smartphone,
   Image as ImageIcon,
   QrCode,
-  AlertTriangle
+  AlertTriangle,
+  Volume2,
+  CheckCircle2,
+  XCircle,
+  RotateCcw
 } from 'lucide-react';
 import { AdminWalkInModal } from './AdminWalkInModal';
+import { playSupermarketBeep, playErrorBuzzer } from '../../utils/audioEffects';
+
+interface ScanFeedbackState {
+  type: 'success' | 'error';
+  title: string;
+  nama?: string;
+  id?: string;
+  detail?: string;
+  message: string;
+}
 
 export const AdminScanValidasi: React.FC = () => {
   const { 
@@ -35,10 +49,12 @@ export const AdminScanValidasi: React.FC = () => {
   const [cameraModalOpen, setCameraModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [proofModal, setProofModal] = useState<Booking | null>(null);
+  const [scanFeedback, setScanFeedback] = useState<ScanFeedbackState | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isScanningPaused = useRef(false);
 
   // ───── KALKULASI DAFTAR TAMU ─────
   // Tamu yang BELUM datang (belum check-in) — dibagi 2: sudah bayar & belum bayar
@@ -69,36 +85,72 @@ export const AdminScanValidasi: React.FC = () => {
     );
   }, [activeTab, allPending, sudahMasuk, searchQuery]);
 
-  // ───── SUARA ─────
-  const playChime = (ok: boolean) => {
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = ok ? 'sine' : 'sawtooth';
-      osc.frequency.setValueAtTime(ok ? 587.33 : 200, ctx.currentTime);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.3);
-    } catch (_) {}
+  // ───── PROSES HASIL SCAN (AUDIO + VALIDASI) ─────
+  const handleProcessScannedCode = (rawCode: string) => {
+    if (!rawCode || isScanningPaused.current) return;
+    isScanningPaused.current = true;
+
+    const res = checkInBooking(rawCode);
+
+    if (res.success) {
+      // 🔊 Backsound Beep Supermarket (Honeywell/Zebra POS Scanner)
+      playSupermarketBeep();
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
+
+      setScanFeedback({
+        type: 'success',
+        title: 'TIKET RESMI VALID',
+        nama: res.booking?.nama || 'Pengunjung',
+        id: res.booking?.id || rawCode,
+        detail: `${res.booking?.jumlahOrang || 1} Orang • ${res.booking?.kategori || 'Umum'}`,
+        message: res.message || 'Silakan masuk ke museum.',
+      });
+
+      setSuccessMessage(`✅ ${res.booking?.nama || 'Pengunjung'} (${res.booking?.id || rawCode}) berhasil dicatat hadir. Silakan masuk!`);
+
+      // Auto close camera after short confirmation delay
+      setTimeout(() => {
+        setCameraModalOpen(false);
+        setScanFeedback(null);
+        isScanningPaused.current = false;
+      }, 2300);
+    } else {
+      // 🔊 Backsound Buzzer Gagal / Peringatan
+      playErrorBuzzer();
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([300, 100, 300]);
+      }
+
+      setScanFeedback({
+        type: 'error',
+        title: 'VALIDASI GAGAL',
+        nama: res.booking?.nama,
+        id: res.booking?.id || rawCode,
+        detail: res.booking ? `Status: ${res.booking.status} • Check-In: ${res.booking.checkInStatus}` : undefined,
+        message: res.message || 'Tiket tidak valid atau tidak ditemukan.',
+      });
+
+      // Reset pause after 3.2 seconds so user can scan another ticket
+      setTimeout(() => {
+        setScanFeedback(null);
+        isScanningPaused.current = false;
+      }, 3200);
+    }
   };
 
-  // ───── FUNGSI UTAMA: TAMU SUDAH DATANG (hanya boleh untuk Terverifikasi) ─────
+  // ───── FUNGSI UTAMA: TAMU SUDAH DATANG (Manual click) ─────
   const handleTamuDatang = (b: Booking) => {
-    if (b.status !== 'Terverifikasi') return; // Extra guard
-    playChime(true);
+    if (b.status !== 'Terverifikasi') return;
+    playSupermarketBeep();
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([100]);
     checkInBooking(b.id);
     setSuccessMessage(`✅ ${b.nama} (${b.jumlahOrang} Orang) berhasil dicatat hadir. Silakan masuk!`);
     setTimeout(() => setSuccessMessage(null), 4000);
   };
 
-  // ───── KONFIRMASI QRIS SUDAH MASUK (hanya admin keuangan, redirect ke detail) ─────
+  // ───── KONFIRMASI QRIS SUDAH MASUK (hanya admin keuangan) ─────
   const handleLihatBuktiQRIS = (b: Booking) => {
     setSelectedBookingId(b.id);
     setProofModal(b);
@@ -107,7 +159,7 @@ export const AdminScanValidasi: React.FC = () => {
   const handleKonfirmasiDariProofModal = (b: Booking) => {
     verifyBooking(b.id);
     setProofModal(null);
-    playChime(true);
+    playSupermarketBeep();
     setSuccessMessage(`✅ Pembayaran QRIS ${b.nama} dikonfirmasi. Tamu dapat diizinkan masuk.`);
     setTimeout(() => setSuccessMessage(null), 5000);
   };
@@ -119,65 +171,104 @@ export const AdminScanValidasi: React.FC = () => {
     setTimeout(() => setSuccessMessage(null), 3000);
   };
 
-  // ───── QR SCAN via Kamera (opsional) ─────
+  // ───── QR SCAN via Kamera (Dukungan iOS Safari & Native BarcodeDetector) ─────
   useEffect(() => {
     let stream: MediaStream | null = null;
     let interval: ReturnType<typeof setInterval> | null = null;
 
     if (cameraModalOpen) {
+      isScanningPaused.current = false;
+      setScanFeedback(null);
+
+      // Check native BarcodeDetector API (iOS 17+ Safari & Android Chrome)
+      let detector: any = null;
+      if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+        try {
+          detector = new (window as any).BarcodeDetector({ formats: ['qr_code'] });
+        } catch (_) {
+          detector = null;
+        }
+      }
+
       if (navigator.mediaDevices?.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } })
+        navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        })
           .then(s => {
             stream = s;
             if (videoRef.current) {
-              videoRef.current.srcObject = s;
-              videoRef.current.play().catch(() => {});
+              const video = videoRef.current;
+              video.setAttribute('playsinline', 'true');
+              video.setAttribute('autoplay', 'true');
+              video.setAttribute('muted', 'true');
+              video.muted = true;
+              video.srcObject = s;
+              video.play().catch(() => {});
             }
+
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            interval = setInterval(() => {
-              if (videoRef.current && videoRef.current.readyState >= 2 && ctx) {
-                const v = videoRef.current;
-                canvas.width = v.videoWidth || 640;
-                canvas.height = v.videoHeight || 480;
-                ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            interval = setInterval(async () => {
+              if (isScanningPaused.current || !videoRef.current || videoRef.current.readyState < 2) {
+                return;
+              }
+
+              const v = videoRef.current;
+
+              // Priority 1: Native BarcodeDetector (Hardware Accelerated on iPhone)
+              if (detector) {
                 try {
+                  const codes = await detector.detect(v);
+                  if (codes && codes.length > 0 && codes[0]?.rawValue) {
+                    handleProcessScannedCode(codes[0].rawValue);
+                    return;
+                  }
+                } catch (_) {
+                  // fallback to canvas jsQR below
+                }
+              }
+
+              // Priority 2: jsQR with downscaled canvas for speed (<15ms per frame)
+              if (ctx && v.videoWidth > 0 && v.videoHeight > 0) {
+                try {
+                  const maxDim = 540;
+                  const scale = Math.min(1, maxDim / Math.max(v.videoWidth, v.videoHeight));
+                  canvas.width = Math.round(v.videoWidth * scale);
+                  canvas.height = Math.round(v.videoHeight * scale);
+                  ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+
                   const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                  const code = jsQR(imgData.data, imgData.width, imgData.height);
+                  const code = jsQR(imgData.data, imgData.width, imgData.height, {
+                    inversionAttempts: 'attemptBoth',
+                  });
+
                   if (code?.data) {
-                    const found = bookings.find(b =>
-                      b.id.toLowerCase() === code.data.trim().toLowerCase() ||
-                      code.data.toLowerCase().includes(b.id.toLowerCase())
-                    );
-                    if (found) {
-                      if (found.status === 'Terverifikasi') {
-                        handleTamuDatang(found);
-                        setCameraModalOpen(false);
-                      } else {
-                        playChime(false);
-                        alert(`⛔ ${found.nama} — Pembayaran QRIS belum dikonfirmasi. Tamu tidak dapat masuk.`);
-                      }
-                    } else {
-                      playChime(false);
-                      alert('Tiket QR tidak ditemukan di sistem.');
-                    }
+                    handleProcessScannedCode(code.data);
                   }
                 } catch (_) {}
               }
-            }, 300);
+            }, 200);
           })
           .catch(() => {
-            alert('Kamera tidak dapat dibuka. Gunakan pencarian nama tamu.');
+            alert('Kamera tidak dapat diakses atau diblokir oleh browser. Gunakan tombol foto/galeri atau pencarian nama tamu.');
             setCameraModalOpen(false);
           });
       }
     }
+
     return () => {
       if (interval) clearInterval(interval);
       if (stream) stream.getTracks().forEach(t => t.stop());
     };
   }, [cameraModalOpen]);
 
+  // ───── SCAN DARI FOTO / GALERI ─────
   const handlePhotoScan = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -191,25 +282,14 @@ export const AdminScanValidasi: React.FC = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
         ctx.drawImage(img, 0, 0, img.width, img.height);
-        const code = jsQR(ctx.getImageData(0, 0, img.width, img.height).data, img.width, img.height);
+        const code = jsQR(ctx.getImageData(0, 0, img.width, img.height).data, img.width, img.height, {
+          inversionAttempts: 'attemptBoth',
+        });
         if (code?.data) {
-          const found = bookings.find(b =>
-            b.id.toLowerCase() === code.data.trim().toLowerCase() ||
-            code.data.toLowerCase().includes(b.id.toLowerCase())
-          );
-          if (found) {
-            if (found.status === 'Terverifikasi') {
-              handleTamuDatang(found);
-              setCameraModalOpen(false);
-            } else {
-              playChime(false);
-              alert(`⛔ ${found.nama} — Pembayaran QRIS belum dikonfirmasi. Tamu tidak dapat masuk.`);
-            }
-          } else {
-            alert('Tiket tidak ditemukan.');
-          }
+          handleProcessScannedCode(code.data);
         } else {
-          alert('QR Code tidak terbaca dari foto.');
+          playErrorBuzzer();
+          alert('QR Code tidak terbaca dari foto. Pastikan pencahayaan cukup dan gambar tidak buram.');
         }
       };
       img.src = reader.result as string;
@@ -542,43 +622,173 @@ export const AdminScanValidasi: React.FC = () => {
       {/* ─── MODAL SCAN QR KAMERA ─── */}
       {cameraModalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4 animate-in fade-in duration-150"
-          onClick={() => setCameraModalOpen(false)}
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => {
+            if (!scanFeedback) setCameraModalOpen(false);
+          }}
         >
           <div
-            className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-2xl space-y-4 text-center"
+            className="w-full max-w-sm bg-white rounded-3xl p-5 shadow-2xl space-y-3 text-center"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Scan QR Tiket Tamu</h3>
-              <button type="button" onClick={() => setCameraModalOpen(false)} className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer">
+              <div className="text-left">
+                <h3 className="font-extrabold text-slate-900 text-sm">Scan QR Tiket Tamu</h3>
+                <p className="text-[11px] text-slate-500">Arahkan kamera ke QR tiket di HP/layar tamu</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCameraModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 cursor-pointer"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
+            {/* Video Viewfinder with Feedback Overlay */}
             <div className="relative rounded-2xl overflow-hidden bg-black aspect-square border-2 border-emerald-500 shadow-inner">
-              <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-full object-cover"
+              />
+
+              {/* Viewfinder Target Guidelines */}
               <div className="absolute inset-8 border-2 border-white/70 rounded-2xl pointer-events-none flex items-center justify-center">
-                <div className="w-full h-0.5 bg-emerald-400 animate-pulse" />
+                <div className="w-full h-0.5 bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
+              </div>
+
+              {/* Corner Accents */}
+              <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-emerald-400 pointer-events-none rounded-tl-lg" />
+              <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-emerald-400 pointer-events-none rounded-tr-lg" />
+              <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-emerald-400 pointer-events-none rounded-bl-lg" />
+              <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-emerald-400 pointer-events-none rounded-br-lg" />
+
+              {/* Status Overlay: Valid / Error */}
+              {scanFeedback && (
+                <div
+                  className={`absolute inset-0 z-20 flex flex-col items-center justify-center p-5 text-white animate-in zoom-in-95 duration-150 ${
+                    scanFeedback.type === 'success'
+                      ? 'bg-emerald-600/95 backdrop-blur-xs'
+                      : 'bg-rose-700/95 backdrop-blur-xs'
+                  }`}
+                >
+                  {scanFeedback.type === 'success' ? (
+                    <div className="w-16 h-16 rounded-full bg-white text-emerald-600 flex items-center justify-center shadow-lg mb-2 animate-bounce">
+                      <CheckCircle2 className="w-10 h-10 stroke-[2.5]" />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-white text-rose-600 flex items-center justify-center shadow-lg mb-2">
+                      <XCircle className="w-10 h-10 stroke-[2.5]" />
+                    </div>
+                  )}
+
+                  <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-black/20">
+                    {scanFeedback.title}
+                  </span>
+
+                  {scanFeedback.nama && (
+                    <h4 className="font-black text-lg mt-1 text-white leading-tight">
+                      {scanFeedback.nama}
+                    </h4>
+                  )}
+
+                  {scanFeedback.detail && (
+                    <p className="text-xs text-white/90 font-semibold mt-0.5">
+                      {scanFeedback.detail}
+                    </p>
+                  )}
+
+                  <p className="text-xs text-white/80 font-medium mt-2 text-center line-clamp-3 px-2">
+                    {scanFeedback.message}
+                  </p>
+
+                  {scanFeedback.type === 'error' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setScanFeedback(null);
+                        isScanningPaused.current = false;
+                      }}
+                      className="mt-3 px-4 py-1.5 bg-white text-rose-700 font-extrabold text-xs rounded-xl shadow hover:bg-rose-50 flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Scan Ulang Sekarang</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Sound Tester & Controls */}
+            <div className="flex items-center justify-between text-xs text-slate-600 bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+              <div className="flex items-center gap-1.5 font-bold">
+                <Volume2 className="w-4 h-4 text-emerald-600" />
+                <span className="text-[11px]">Tes Audio:</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => playSupermarketBeep()}
+                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold rounded-lg text-[11px] transition-all cursor-pointer shadow-2xs"
+                  title="Bunyi barcode scanner kasir supermarket"
+                >
+                  🛒 Beep Kasir
+                </button>
+                <button
+                  type="button"
+                  onClick={() => playErrorBuzzer()}
+                  className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-extrabold rounded-lg text-[11px] transition-all cursor-pointer shadow-2xs"
+                  title="Bunyi buzzer penolakan"
+                >
+                  ⛔ Buzzer Gagal
+                </button>
               </div>
             </div>
 
+            {/* Upload fallback */}
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={() => cameraInputRef.current?.click()}
-                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer">
-                <Smartphone className="w-4 h-4 text-[#092C48]" /><span>Foto HP</span>
+              <button
+                type="button"
+                onClick={() => cameraInputRef.current?.click()}
+                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Smartphone className="w-4 h-4 text-[#092C48]" />
+                <span>Foto HP</span>
               </button>
-              <button type="button" onClick={() => fileInputRef.current?.click()}
-                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer">
-                <ImageIcon className="w-4 h-4 text-emerald-600" /><span>Galeri</span>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <ImageIcon className="w-4 h-4 text-emerald-600" />
+                <span>Galeri</span>
               </button>
             </div>
 
-            <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoScan} />
-            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoScan} />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handlePhotoScan}
+            />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePhotoScan}
+            />
 
-            <button type="button" onClick={() => setCameraModalOpen(false)}
-              className="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer">
+            <button
+              type="button"
+              onClick={() => setCameraModalOpen(false)}
+              className="w-full py-1.5 text-xs font-bold text-slate-400 hover:text-slate-700 cursor-pointer"
+            >
               Tutup & Gunakan Cari Nama Saja
             </button>
           </div>
