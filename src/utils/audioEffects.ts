@@ -1,14 +1,42 @@
-// Sound Effects Utility for POS / Scanner Operations
+// Sound Effects Utility for POS / Scanner Operations (Cross-Device & iOS Safari Audio Unlock)
 
-// 1. Realistic Supermarket / Retail Barcode Scanner Beep (Zebra / Datalogic / Honeywell style)
+let sharedAudioCtx: AudioContext | null = null;
+
+// Get or resume shared AudioContext safely across iOS Safari & Android Chrome
+export const getAudioContext = (): AudioContext | null => {
+  try {
+    if (!sharedAudioCtx) {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        sharedAudioCtx = new AudioCtx();
+      }
+    }
+    if (sharedAudioCtx && sharedAudioCtx.state === 'suspended') {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+    return sharedAudioCtx;
+  } catch (err) {
+    console.warn('AudioContext init error:', err);
+    return null;
+  }
+};
+
+// Global user-gesture listener to preemptively unlock iOS Web Audio on first tap/click anywhere
+if (typeof window !== 'undefined') {
+  const unlockAudio = () => {
+    getAudioContext();
+    window.removeEventListener('click', unlockAudio);
+    window.removeEventListener('touchstart', unlockAudio);
+  };
+  window.addEventListener('click', unlockAudio, { passive: true, once: true });
+  window.addEventListener('touchstart', unlockAudio, { passive: true, once: true });
+}
+
+// 1. Realistic Supermarket / Retail Barcode Scanner Beep (Honeywell / Zebra style)
 export const playSupermarketBeep = () => {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
+    const ctx = getAudioContext();
+    if (!ctx) return;
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -36,12 +64,8 @@ export const playSupermarketBeep = () => {
 // 2. High-quality Rejection / Error sound (Professional dual-tone negative buzzer)
 export const playErrorBuzzer = () => {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
+    const ctx = getAudioContext();
+    if (!ctx) return;
 
     const now = ctx.currentTime;
 

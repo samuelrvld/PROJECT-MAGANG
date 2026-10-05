@@ -525,7 +525,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
         </header>
 
         {/* Content Body */}
-        <main className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4">
+        <main className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4 pb-24 md:pb-6">
           {rbacDeniedMsg && (
             <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm font-semibold flex items-center justify-between shadow-xs animate-in slide-in-from-top-2 duration-150">
               <div className="flex items-center gap-2.5">
@@ -543,6 +543,90 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
           )}
           {children}
         </main>
+
+        {/* ================= MOBILE BOTTOM NAVIGATION BAR (Phones Only) ================= */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#092238]/95 backdrop-blur-md border-t border-[#1C3E60] px-3 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-[0_-4px_25px_rgba(0,0,0,0.3)] print:hidden">
+          {/* 1. Dashboard */}
+          <button
+            type="button"
+            onClick={() => handleMenuClick({ id: 'admin-dashboard', label: 'Dashboard' })}
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+              activeView === 'admin-dashboard'
+                ? 'text-[#E5C287] font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4 mb-0.5" />
+            <span className="text-[10px]">Beranda</span>
+          </button>
+
+          {/* 2. Pesanan */}
+          <button
+            type="button"
+            onClick={() => handleMenuClick({ id: 'admin-orders', label: 'Pesanan' })}
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer relative ${
+              activeView === 'admin-orders' || activeView === 'admin-order-detail' || activeView === 'admin-ticket-view'
+                ? 'text-[#E5C287] font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <div className="relative">
+              <ClipboardList className="w-4 h-4 mb-0.5" />
+              {pendingCount > 0 && (
+                <span className="absolute -top-1 -right-2 w-3.5 h-3.5 bg-[#D4A359] text-[#092C48] rounded-full text-[8.5px] font-black flex items-center justify-center shadow-xs">
+                  {pendingCount}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px]">Pesanan</span>
+          </button>
+
+          {/* 3. CENTER HIGHLIGHT: Scan QR Gate Masuk */}
+          <button
+            type="button"
+            onClick={() => handleMenuClick({ id: 'admin-scan', label: 'Validasi QR' })}
+            className="flex flex-col items-center -mt-5 cursor-pointer group"
+          >
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90 border-2 ${
+              activeView === 'admin-scan'
+                ? 'bg-gradient-to-br from-emerald-500 to-teal-700 text-white border-white shadow-emerald-500/40 ring-2 ring-emerald-400'
+                : 'bg-gradient-to-br from-[#D4A359] to-[#996F2A] text-[#092238] border-[#FBEAC9] shadow-black/40'
+            }`}>
+              <QrCode className="w-6 h-6 stroke-[2.2]" />
+            </div>
+            <span className={`text-[10px] font-black mt-0.5 ${
+              activeView === 'admin-scan' ? 'text-emerald-400' : 'text-[#E5C287]'
+            }`}>
+              Scan QR
+            </span>
+          </button>
+
+          {/* 4. Petugas (Tim TRPL) */}
+          <button
+            type="button"
+            onClick={() => handleMenuClick({ id: 'admin-users', label: 'Petugas' })}
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+              activeView === 'admin-users'
+                ? 'text-[#E5C287] font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <UserCheck className="w-4 h-4 mb-0.5" />
+            <span className="text-[10px]">Petugas</span>
+          </button>
+
+          {/* 5. Menu Drawer */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+              mobileMenuOpen ? 'text-[#E5C287] font-bold' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Menu className="w-4 h-4 mb-0.5" />
+            <span className="text-[10px]">Menu</span>
+          </button>
+        </nav>
       </div>
     </div>
   );
