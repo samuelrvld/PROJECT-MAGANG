@@ -26,6 +26,7 @@ const AdminScanValidasi = lazy(() => import('./components/admin/AdminScanValidas
 const AdminKoleksiMusewangi = lazy(() => import('./components/admin/AdminKoleksiMusewangi').then(m => ({ default: m.AdminKoleksiMusewangi })));
 const AdminManajemenPetugas = lazy(() => import('./components/admin/AdminManajemenPetugas').then(m => ({ default: m.AdminManajemenPetugas })));
 const UserMusewangiDashboard = lazy(() => import('./components/user/UserMusewangiDashboard').then(m => ({ default: m.UserMusewangiDashboard })));
+const ScreenPitchingVideo = lazy(() => import('./components/common/ScreenPitchingVideo').then(m => ({ default: m.ScreenPitchingVideo })));
 
 const FallbackLoader: React.FC = () => (
   <div className="min-h-screen bg-[#081827] flex items-center justify-center text-white">
@@ -91,6 +92,15 @@ const MainViewRouter: React.FC = () => {
     return (
       <Suspense fallback={<FallbackLoader />}>
         <UserMusewangiDashboard />
+      </Suspense>
+    );
+  }
+
+  // Pitching Video Theater & Presentation
+  if (activeView === 'user-pitching') {
+    return (
+      <Suspense fallback={<FallbackLoader />}>
+        <ScreenPitchingVideo />
       </Suspense>
     );
   }

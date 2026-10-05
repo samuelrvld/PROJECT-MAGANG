@@ -24,6 +24,7 @@ export type AppView =
   | 'user-mobile-preview'
   | 'user-web-portal'
   | 'user-musewangi'
+  | 'user-pitching'
   | 'admin-login'
   | 'admin-dashboard'
   | 'admin-orders'
@@ -139,6 +140,7 @@ const viewFromHash = (): AppView => {
   if (hash === 'mobile') return 'user-mobile-preview';
   if (hash === 'portal' || hash === 'tiket-saya') return 'user-web-portal';
   if (hash === 'musewangi' || hash === 'koleksi' || hash === 'koleksi-sejarah') return 'user-musewangi';
+  if (hash === 'pitching' || hash === 'video' || hash === 'pitch' || hash === 'video-pitching') return 'user-pitching';
   return 'user-landing';
 };
 
@@ -154,6 +156,7 @@ const hashFromView = (view: AppView): string => {
     case 'user-mobile-preview': return '#/mobile';
     case 'user-web-portal': return '#/tiket-saya';
     case 'user-musewangi': return '#/musewangi';
+    case 'user-pitching': return '#/pitching';
     case 'admin-login': return '#/admin/login';
     case 'admin-dashboard': return '#/admin';
     case 'admin-orders': return '#/admin/pesanan';

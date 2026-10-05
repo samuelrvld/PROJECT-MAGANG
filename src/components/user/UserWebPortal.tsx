@@ -30,7 +30,8 @@ import {
   Trash2,
   Compass,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Play
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
@@ -394,6 +395,26 @@ export const UserWebPortal: React.FC = () => {
                     </div>
                     <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
                   </button>
+
+                  {/* Video Pitching Proyek */}
+                  <button
+                    type="button"
+                    onClick={() => { setActiveView('user-pitching'); setMobileSidebarOpen(false); }}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-[#D4A359]/25 to-transparent border border-[#D4A359]/40 text-[#E5C287] hover:text-white transition-all text-left cursor-pointer group shadow-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-[#D4A359] text-[#061524] flex items-center justify-center shrink-0 shadow-md">
+                        <Play className="w-4 h-4 ml-0.5 fill-current" />
+                      </div>
+                      <div>
+                        <span className="block font-black leading-tight text-white">Video Pitching</span>
+                        <span className="text-[10px] text-[#E5C287] block leading-none mt-0.5">Presentasi Proyek TRPL</span>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#D4A359] text-[#061524]">
+                      PLAY
+                    </span>
+                  </button>
                 </div>
               </nav>
             </div>
@@ -632,6 +653,26 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
+              </button>
+
+              {/* Video Pitching Proyek */}
+              <button
+                type="button"
+                onClick={() => { setActiveView('user-pitching'); setViewingTicketId(null); }}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gradient-to-r from-[#D4A359]/20 to-transparent border border-[#D4A359]/30 text-[#E5C287] hover:text-white hover:bg-[#D4A359]/30 transition-all cursor-pointer group mt-2"
+              >
+                <div className="flex items-center gap-3 text-left">
+                  <div className="w-8 h-8 rounded-xl bg-[#D4A359] text-[#061524] flex items-center justify-center shrink-0 shadow-md">
+                    <Play className="w-4 h-4 ml-0.5 fill-current" />
+                  </div>
+                  <div>
+                    <span className="block font-black leading-tight text-white">Video Pitching</span>
+                    <span className="text-[10px] text-[#E5C287] block leading-tight mt-0.5">Presentasi Proyek TRPL</span>
+                  </div>
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-[#D4A359] text-[#061524]">
+                  PLAY
+                </span>
               </button>
             </nav>
           </div>
