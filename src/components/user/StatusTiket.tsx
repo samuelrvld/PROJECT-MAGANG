@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useBooking } from '../../context/BookingContext';
 import { 
   Check, 
@@ -8,7 +8,9 @@ import {
   ChevronLeft,
   Hourglass,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
@@ -17,7 +19,41 @@ export const StatusTiket: React.FC = () => {
   const { setActiveView, currentBooking, myBookings, verifyBooking } = useBooking();
   const booking = currentBooking || myBookings[0] || null;
 
-  const isVerified = booking ? booking.status === 'Terverifikasi' : false;
+  const [isChecking, setIsChecking] = useState(false);
+  const [checkMessage, setCheckMessage] = useState<{ type: 'info' | 'success' | 'warning'; text: string } | null>(null);
+
+  const isVerified = booking ? (booking.status === 'Terverifikasi') : false;
+
+  const handleCheckStatus = () => {
+    if (!booking) {
+      setActiveView('user-form');
+      return;
+    }
+
+    setIsChecking(true);
+    setCheckMessage(null);
+
+    setTimeout(() => {
+      setIsChecking(false);
+      if (booking.status === 'Terverifikasi') {
+        setCheckMessage({
+          type: 'success',
+          text: 'Bukti pembayaran telah diverifikasi resmi oleh Petugas Loket! Silakan klik tombol hijau di bawah untuk melihat tiket kunjungan.'
+        });
+      } else if (booking.status === 'Ditolak') {
+        setCheckMessage({
+          type: 'warning',
+          text: `Pembayaran ditolak: ${booking.alasanPenolakan || 'Bukti transfer tidak sesuai'}. Silakan hubungi petugas loket.`
+        });
+      } else {
+        setCheckMessage({
+          type: 'info',
+          text: 'Status Terkini: Menunggu Verifikasi. Petugas loket sedang memeriksa bukti transfer Anda dalam antrean sistem.'
+        });
+      }
+      setTimeout(() => setCheckMessage(null), 6000);
+    }, 500);
+  };
 
   return (
     <div className="min-h-screen bg-[#14293E] sm:bg-[#EEF2F1] flex justify-center items-start sm:py-6 sm:px-4">
@@ -271,6 +307,25 @@ export const StatusTiket: React.FC = () => {
 
         {/* ================= FOOTER ACTION ================= */}
         <footer className="p-4 pb-6 sm:pb-4 border-t border-slate-100 bg-white">
+          {checkMessage && (
+            <div
+              className={`mb-3 p-3 rounded-xl text-xs flex items-start gap-2 animate-in fade-in ${
+                checkMessage.type === 'success'
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  : checkMessage.type === 'warning'
+                  ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                  : 'bg-sky-50 text-sky-800 border border-sky-200'
+              }`}
+            >
+              {checkMessage.type === 'success' ? (
+                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+              )}
+              <span className="leading-snug">{checkMessage.text}</span>
+            </div>
+          )}
+
           {isVerified ? (
             <button
               onClick={() => setActiveView('user-ticket')}
@@ -282,17 +337,37 @@ export const StatusTiket: React.FC = () => {
           ) : (
             <div className="space-y-1.5">
               <button
-                onClick={() => {
-                  if (booking) verifyBooking(booking.id);
-                  else setActiveView('user-form');
-                }}
-                className="w-full py-3 bg-[#092C48] hover:bg-[#071f33] text-white font-bold text-xs rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                type="button"
+                onClick={handleCheckStatus}
+                disabled={isChecking}
+                className="w-full py-3 bg-[#092C48] hover:bg-[#071f33] text-white font-bold text-xs rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 active:scale-95 cursor-pointer disabled:opacity-75"
               >
-                <span>{booking ? 'Cek Status / Verifikasi Tiket' : 'Pesan Tiket Sekarang'}</span>
+                <RefreshCw className={`w-3.5 h-3.5 text-[#D4A359] ${isChecking ? 'animate-spin' : ''}`} />
+                <span>{isChecking ? 'Memeriksa ke Loket...' : (booking ? 'Perbarui & Cek Status Tiket' : 'Pesan Tiket Sekarang')}</span>
               </button>
               <p className="text-[10px] text-slate-400 text-center">
-                Status diperbarui otomatis oleh sistem loket museum
+                Status otomatis disinkronkan saat Admin Loket menyetujui pembayaran
               </p>
+
+              {/* Mode Uji Coba Cepat (Khusus Simulasi Saat Presentasi) */}
+              {booking && (
+                <div className="pt-1 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      verifyBooking(booking.id);
+                      setCheckMessage({
+                        type: 'success',
+                        text: 'Simulasi Berhasil: Tiket disetujui petugas loket! Silakan lihat tiket kunjungan.'
+                      });
+                    }}
+                    className="text-[9.5px] text-slate-400 hover:text-[#092C48] hover:underline transition-colors cursor-pointer"
+                    title="Gunakan opsi ini saat presentasi jika ingin mendemokan langsung tanpa membuka tab admin"
+                  >
+                    [Simulasi Demo: Setujui via Petugas Loket]
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </footer>

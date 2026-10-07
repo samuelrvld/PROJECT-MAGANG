@@ -193,7 +193,14 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const [activeView, setActiveViewState] = useState<AppView>(viewFromHash);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
-  const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
+  const [currentBooking, setCurrentBooking] = useState<Booking | null>(() => {
+    try {
+      const saved = localStorage.getItem('mb_current_booking');
+      return saved ? JSON.parse(saved) : null;
+    } catch (_) {
+      return null;
+    }
+  });
   const [formData, setFormData] = useState<BookingFormData>(DEFAULT_FORM_DATA);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
     return localStorage.getItem('blambangan_admin_auth') === 'true';
@@ -354,16 +361,29 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updateAdmin = (id: string, updated: Partial<AdminUser>): boolean => {
-    setAdmins(prev => prev.map(a => a.id === id ? { ...a, ...updated } : a));
+    setAdmins(prev => {
+      const next = prev.map(a => a.id === id ? { ...a, ...updated } : a);
+      try {
+        localStorage.setItem('mb_admin_users', JSON.stringify(next));
+      } catch (_) {}
+      return next;
+    });
+
     if (currentAdminUser && currentAdminUser.id === id) {
-      setCurrentAdminUser(prev => prev ? { ...prev, ...updated } : null);
+      setCurrentAdminUser(prev => {
+        const next = prev ? { ...prev, ...updated } : null;
+        try {
+          if (next) localStorage.setItem('mb_current_admin', JSON.stringify(next));
+        } catch (_) {}
+        return next;
+      });
     }
 
     const targetAdmin = admins.find(a => a.id === id);
     const newAct: ActivityLog = {
       id: `act-${Date.now()}`,
       user: currentAdminUser?.nama || 'Superadmin',
-      action: `Memperbarui akun admin: ${targetAdmin?.nama || id}`,
+      action: `Memperbarui akun petugas: ${targetAdmin?.nama || id} (${updated.status ? `Status diubah ke ${updated.status}` : 'Data diperbarui'})`,
       target: targetAdmin?.email || id,
       timestamp: 'Baru saja'
     };
@@ -499,6 +519,57 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     localStorage.setItem('mb_activities', JSON.stringify(activities));
   }, [activities]);
+
+  useEffect(() => {
+    try {
+      if (currentBooking) {
+        localStorage.setItem('mb_current_booking', JSON.stringify(currentBooking));
+      } else {
+        localStorage.removeItem('mb_current_booking');
+      }
+    } catch (_) {}
+  }, [currentBooking]);
+
+  // Sinkronisasi status currentBooking secara otomatis jika bookings diperbarui
+  useEffect(() => {
+    if (currentBooking) {
+      const liveBooking = bookings.find((b) => b.id === currentBooking.id);
+      if (
+        liveBooking &&
+        (liveBooking.status !== currentBooking.status ||
+          liveBooking.checkInStatus !== currentBooking.checkInStatus ||
+          liveBooking.checkInTime !== currentBooking.checkInTime)
+      ) {
+        setCurrentBooking(liveBooking);
+      }
+    }
+  }, [bookings, currentBooking]);
+
+  // Sinkronisasi otomatis antar-tab / antar-jendela browser (Cross-Tab Realtime Sync)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!e.newValue) return;
+      try {
+        if (e.key === 'mb_bookings') {
+          const parsed = JSON.parse(e.newValue);
+          setBookings(parsed);
+        } else if (e.key === 'mb_admin_users') {
+          setAdmins(JSON.parse(e.newValue));
+        } else if (e.key === 'mb_notifications') {
+          setNotifications(JSON.parse(e.newValue));
+        } else if (e.key === 'mb_activities') {
+          setActivities(JSON.parse(e.newValue));
+        } else if (e.key === 'mb_my_booking_ids') {
+          setMyBookingIds(JSON.parse(e.newValue));
+        } else if (e.key === 'mb_current_booking') {
+          setCurrentBooking(JSON.parse(e.newValue));
+        }
+      } catch (_) {}
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const getPricePerPerson = (kategori: CategoryType): number => {
     switch (kategori) {
