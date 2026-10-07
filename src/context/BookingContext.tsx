@@ -13,6 +13,7 @@ import {
   resetStoredScheduleConfig 
 } from '../utils/sessionUtils';
 import { broadcastSyncEvent, subscribeSyncEvents } from '../utils/cloudSync';
+import { supabase } from '../lib/supabase';
 
 export type AppView =
   | 'user-landing'
@@ -163,6 +164,66 @@ const hashFromView = (view: AppView): string => {
     default: return '#/';
   }
 };
+
+const mapSupabaseToBooking = (d: any): Booking => ({
+  id: d.id,
+  nama: d.nama,
+  jumlahOrang: Number(d.jumlah_orang) || 1,
+  telepon: d.telepon || '-',
+  email: d.email || '-',
+  alamat: d.alamat || '-',
+  kategori: d.kategori || 'Umum',
+  hargaPerOrang: Number(d.harga_per_orang) || 7500,
+  tanggalKunjungan: d.tanggal_kunjungan || '',
+  sesi: d.sesi || '',
+  totalPembayaran: Number(d.total_pembayaran) || 7500,
+  metodePembayaran: d.metode_pembayaran || 'QRIS',
+  nomorTransaksi: d.nomor_transaksi || d.id,
+  tanggalPembayaran: d.tanggal_pembayaran || '',
+  buktiPembayaranUrl: d.bukti_pembayaran_url || '/assets/sample-receipt.jpg',
+  status: d.status || 'Menunggu Verifikasi',
+  alasanPenolakan: d.alasan_penolakan || undefined,
+  checkInStatus: d.check_in_status || 'Belum Hadir',
+  checkInTime: d.check_in_time || undefined,
+  createdAt: d.created_at || new Date().toISOString(),
+});
+
+const mapBookingToSupabase = (b: Booking) => ({
+  id: b.id,
+  nama: b.nama,
+  jumlah_orang: b.jumlahOrang,
+  telepon: b.telepon,
+  email: b.email,
+  alamat: b.alamat,
+  kategori: b.kategori,
+  harga_per_orang: b.hargaPerOrang,
+  tanggal_kunjungan: b.tanggalKunjungan,
+  sesi: b.sesi,
+  total_pembayaran: b.totalPembayaran,
+  metode_pembayaran: b.metodePembayaran,
+  nomor_transaksi: b.nomorTransaksi,
+  tanggal_pembayaran: b.tanggalPembayaran,
+  bukti_pembayaran_url: b.buktiPembayaranUrl,
+  status: b.status,
+  alasan_penolakan: b.alasanPenolakan || null,
+  check_in_status: b.checkInStatus,
+  check_in_time: b.checkInTime || null,
+});
+
+const mapSupabaseToAdmin = (d: any): AdminUser => ({
+  id: d.id,
+  nama: d.nama,
+  nim: d.nim || d.nip || '',
+  nip: d.nip || d.nim || '',
+  prodi: d.prodi || 'D4 Teknologi Rekayasa Perangkat Lunak',
+  username: d.username,
+  email: d.email,
+  pass: d.pass,
+  role: d.role,
+  status: d.status || 'Aktif',
+  terakhirLogin: d.terakhir_login || 'Belum pernah login',
+  createdAt: d.created_at || '2026-09-01',
+});
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
@@ -339,6 +400,24 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
     setAdmins(prev => [newAdmin, ...prev]);
 
+    // Simpan ke Supabase PostgreSQL
+    try {
+      supabase.from('admin_users').insert({
+        id: newAdmin.id,
+        nama: newAdmin.nama,
+        nim: newAdmin.nim || newAdmin.nip || '',
+        nip: newAdmin.nip || newAdmin.nim || '',
+        prodi: newAdmin.prodi || 'D4 Teknologi Rekayasa Perangkat Lunak',
+        username: newAdmin.username,
+        email: newAdmin.email,
+        pass: newAdmin.pass,
+        role: newAdmin.role,
+        status: newAdmin.status,
+        terakhir_login: newAdmin.terakhirLogin,
+        created_at: newAdmin.createdAt,
+      }).then();
+    } catch (_) {}
+
     const newAct: ActivityLog = {
       id: `act-${Date.now()}`,
       user: currentAdminUser?.nama || 'Superadmin',
@@ -369,6 +448,22 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return next;
       });
     }
+
+    // Update ke Supabase PostgreSQL
+    try {
+      const updatePayload: Record<string, any> = {};
+      if (updated.nama !== undefined) updatePayload.nama = updated.nama;
+      if (updated.role !== undefined) updatePayload.role = updated.role;
+      if (updated.status !== undefined) updatePayload.status = updated.status;
+      if (updated.pass !== undefined) updatePayload.pass = updated.pass;
+      if (updated.terakhirLogin !== undefined) updatePayload.terakhir_login = updated.terakhirLogin;
+      if (updated.email !== undefined) updatePayload.email = updated.email;
+      if (updated.username !== undefined) updatePayload.username = updated.username;
+      if (updated.nim !== undefined) updatePayload.nim = updated.nim;
+      if (updated.nip !== undefined) updatePayload.nip = updated.nip;
+
+      supabase.from('admin_users').update(updatePayload).eq('id', id).then();
+    } catch (_) {}
 
     const targetAdmin = admins.find(a => a.id === id);
     const newAct: ActivityLog = {
@@ -407,8 +502,14 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setCurrentAdminUser(null);
       setIsAdminLoggedIn(false);
       localStorage.removeItem('blambangan_admin_auth');
+      localStorage.removeItem('mb_current_admin');
       setActiveView('admin-login');
     }
+
+    // Hapus dari Supabase PostgreSQL
+    try {
+      supabase.from('admin_users').delete().eq('id', id).then();
+    } catch (_) {}
 
     const newAct: ActivityLog = {
       id: `act-${Date.now()}`,
@@ -698,6 +799,127 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => unsubscribe();
   }, []);
 
+  // ── SINKRONISASI DATABASE SUPABASE (POSTGRESQL CLOUD & REALTIME) ──
+  useEffect(() => {
+    let isMounted = true;
+
+    const initSupabase = async () => {
+      // 1. Ambil data bookings dari Supabase
+      try {
+        const { data: bData, error: bError } = await supabase
+          .from('bookings')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!bError && bData && isMounted) {
+          if (bData.length > 0) {
+            const mapped = bData.map(mapSupabaseToBooking);
+            setBookings(mapped);
+            try {
+              localStorage.setItem('mb_bookings', JSON.stringify(mapped));
+            } catch (_) {}
+          } else {
+            // Seed sample bookings ke Supabase jika tabel masih kosong
+            const initialPayload = INITIAL_BOOKINGS.map(mapBookingToSupabase);
+            await supabase.from('bookings').insert(initialPayload);
+          }
+        }
+      } catch (e) {
+        console.warn('[Supabase] Fetch bookings:', e);
+      }
+
+      // 2. Ambil data admin_users dari Supabase
+      try {
+        const { data: aData, error: aError } = await supabase
+          .from('admin_users')
+          .select('*');
+
+        if (!aError && aData && aData.length > 0 && isMounted) {
+          const mapped = aData.map(mapSupabaseToAdmin);
+          setAdmins(mapped);
+          try {
+            localStorage.setItem('mb_admin_users', JSON.stringify(mapped));
+          } catch (_) {}
+        }
+      } catch (e) {
+        console.warn('[Supabase] Fetch admins:', e);
+      }
+    };
+
+    initSupabase();
+
+    // 3. Supabase Realtime Listener (Dua Arah: INSERT, UPDATE, DELETE)
+    const channel = supabase
+      .channel('supabase-database-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'bookings' },
+        (payload: any) => {
+          if (!isMounted) return;
+
+          if (payload.eventType === 'INSERT' && payload.new) {
+            const newB = mapSupabaseToBooking(payload.new);
+            setBookings((prev) => {
+              if (prev.some((b) => b.id === newB.id)) return prev;
+              const updated = [newB, ...prev];
+              try {
+                localStorage.setItem('mb_bookings', JSON.stringify(updated));
+              } catch (_) {}
+              return updated;
+            });
+
+            // Notifikasi otomatis admin jika ada booking baru
+            const newNotif: AdminNotification = {
+              id: `notif-${Date.now()}`,
+              title: `Booking baru masuk dari HP (${newB.nama})`,
+              bookingId: newB.id,
+              nama: newB.nama,
+              time: 'Baru saja',
+              read: false,
+              type: 'booking_baru',
+            };
+            setNotifications((prev) => [newNotif, ...prev]);
+          } else if (payload.eventType === 'UPDATE' && payload.new) {
+            const updatedB = mapSupabaseToBooking(payload.new);
+            setBookings((prev) => {
+              const updated = prev.map((b) => (b.id === updatedB.id ? updatedB : b));
+              try {
+                localStorage.setItem('mb_bookings', JSON.stringify(updated));
+              } catch (_) {}
+              return updated;
+            });
+            setCurrentBooking((prev) => (prev && prev.id === updatedB.id ? updatedB : prev));
+          } else if (payload.eventType === 'DELETE' && payload.old) {
+            const deletedId = payload.old.id;
+            setBookings((prev) => prev.filter((b) => b.id !== deletedId));
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'admin_users' },
+        (payload: any) => {
+          if (!isMounted) return;
+          if (payload.eventType === 'UPDATE' && payload.new) {
+            const updatedAdm = mapSupabaseToAdmin(payload.new);
+            setAdmins((prev) => {
+              const updated = prev.map((a) => (a.id === updatedAdm.id ? updatedAdm : a));
+              try {
+                localStorage.setItem('mb_admin_users', JSON.stringify(updated));
+              } catch (_) {}
+              return updated;
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const getPricePerPerson = (kategori: CategoryType): number => {
     switch (kategori) {
       case 'Pelajar/Mahasiswa':
@@ -791,6 +1013,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Broadcast ke perangkat lain (HP -> Laptop)
     broadcastSyncEvent({ type: 'NEW_BOOKING', booking: newBooking });
 
+    // Simpan ke Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').insert(mapBookingToSupabase(newBooking)).then();
+    } catch (_) {}
+
     return newBooking;
   };
 
@@ -855,6 +1082,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Broadcast ke perangkat lain
     broadcastSyncEvent({ type: 'NEW_BOOKING', booking: newBooking });
 
+    // Simpan ke Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').insert(mapBookingToSupabase(newBooking)).then();
+    } catch (_) {}
+
     return newBooking;
   };
 
@@ -889,6 +1121,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     // Broadcast ke HP pengunjung agar tiket langsung terbit
     broadcastSyncEvent({ type: 'VERIFY_BOOKING', bookingId: id });
+
+    // Update status ke Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').update({ status: 'Terverifikasi' }).eq('id', id).then();
+    } catch (_) {}
   };
 
   const rejectBooking = (id: string, reason: string) => {
@@ -922,6 +1159,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     // Broadcast ke HP pengunjung
     broadcastSyncEvent({ type: 'REJECT_BOOKING', bookingId: id, reason });
+
+    // Update status ke Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').update({ status: 'Ditolak', alasan_penolakan: reason }).eq('id', id).then();
+    } catch (_) {}
   };
 
   const deleteBooking = (id: string) => {
@@ -942,6 +1184,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (selectedBookingId === id) {
       setSelectedBookingId(null);
     }
+
+    // Hapus dari Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').delete().eq('id', id).then();
+    } catch (_) {}
 
     // Add activity log
     const newAct: ActivityLog = {
@@ -997,6 +1244,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     // Broadcast ke perangkat lain (HP & Laptop)
     broadcastSyncEvent({ type: 'CHECKIN_BOOKING', bookingId: found.id, checkInTime });
+
+    // Update status ke Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').update({ status: 'Terverifikasi', check_in_status: 'Sudah Masuk', check_in_time: checkInTime }).eq('id', found.id).then();
+    } catch (_) {}
 
     return {
       success: true,
@@ -1158,6 +1410,11 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Broadcast check-in ke perangkat lain (HP & Laptop)
     broadcastSyncEvent({ type: 'CHECKIN_BOOKING', bookingId: updatedBooking.id, checkInTime });
 
+    // Update check-in ke Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').update({ check_in_status: 'Sudah Masuk', check_in_time: checkInTime }).eq('id', updatedBooking.id).then();
+    } catch (_) {}
+
     return { 
       success: true, 
       message: `Check-in Berhasil! Silakan masuk (${found.jumlahOrang} Orang - ${found.kategori}).`, 
@@ -1172,6 +1429,12 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (currentBooking && currentBooking.id === id) {
       setCurrentBooking({ ...currentBooking, checkInStatus: 'Belum Hadir', checkInTime: undefined });
     }
+
+    // Update status kembali ke Supabase PostgreSQL Cloud
+    try {
+      supabase.from('bookings').update({ check_in_status: 'Belum Hadir', check_in_time: null }).eq('id', id).then();
+    } catch (_) {}
+
     const newAct: ActivityLog = {
       id: `act-${Date.now()}`,
       user: 'Petugas Pintu Masuk',
