@@ -24,7 +24,6 @@ const AdminPengaturan = lazy(() => import('./components/admin/AdminPengaturan').
 const AdminDataPengunjung = lazy(() => import('./components/admin/AdminDataPengunjung').then(m => ({ default: m.AdminDataPengunjung })));
 const AdminScanValidasi = lazy(() => import('./components/admin/AdminScanValidasi').then(m => ({ default: m.AdminScanValidasi })));
 const AdminManajemenPetugas = lazy(() => import('./components/admin/AdminManajemenPetugas').then(m => ({ default: m.AdminManajemenPetugas })));
-const VideoPitching = lazy(() => import('./components/common/VideoPitching').then(m => ({ default: m.VideoPitching })));
 
 const FallbackLoader: React.FC = () => (
   <div className="min-h-screen bg-[#081827] flex items-center justify-center text-white">
@@ -79,15 +78,6 @@ const MainViewRouter: React.FC = () => {
               return <AdminDashboard />;
           }
         })()}
-      </Suspense>
-    );
-  }
-
-  // Pemutar Video Pitching
-  if (activeView === 'user-pitching') {
-    return (
-      <Suspense fallback={<FallbackLoader />}>
-        <VideoPitching />
       </Suspense>
     );
   }
