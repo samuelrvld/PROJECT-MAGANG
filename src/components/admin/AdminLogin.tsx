@@ -15,7 +15,7 @@ import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
 
 export const AdminLogin: React.FC = () => {
-  const { setActiveView, loginAdmin } = useBooking();
+  const { setActiveView, loginAdmin, admins } = useBooking();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -238,30 +238,43 @@ export const AdminLogin: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-1.5">
-                  {[
-                    { nama: 'Fitria Ayu P.', nim: '362358302016', role: 'Superadmin' },
-                    { nama: 'Syifa Kharisma N.', nim: '362358302019', role: 'Verifikator' },
-                    { nama: 'Rofi Nazar A.', nim: '362358302025', role: 'Loket' },
-                    { nama: 'Samuel Rivaldo S.', nim: '362358302156', role: 'Keuangan' },
-                  ].map((m) => (
-                    <button
-                      key={m.nim}
-                      type="button"
-                      onClick={() => {
-                        setEmail(m.nim);
-                        setPassword('admin123');
-                        setError(null);
-                      }}
-                      className="p-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-[#D4A359]/10 hover:border-[#D4A359]/50 text-left transition-all cursor-pointer group"
-                    >
-                      <span className="block text-[11px] font-bold text-slate-800 group-hover:text-[#092C48] truncate">
-                        {m.nama}
-                      </span>
-                      <span className="block text-[9.5px] font-mono text-slate-400 group-hover:text-[#D4A359] truncate">
-                        {m.nim} • {m.role}
-                      </span>
-                    </button>
-                  ))}
+                  {(admins && admins.length > 0 ? admins.slice(0, 4) : [
+                    { nama: 'Fitria Ayu P.', nim: '362358302016', role: 'Superadmin', pass: 'admin123' },
+                    { nama: 'Syifa Kharisma N.', nim: '362358302019', role: 'Verifikator', pass: 'admin123' },
+                    { nama: 'Rofi Nazar A.', nim: '362358302025', role: 'Loket', pass: 'admin123' },
+                    { nama: 'Samuel Rivaldo S.', nim: '362358302156', role: 'Keuangan', pass: 'admin123' },
+                  ]).map((m) => {
+                    const identifier = m.nim || ('nip' in m ? m.nip : '') || ('username' in m ? m.username : '') || ('email' in m ? m.email : '');
+                    const displayName = m.nama.length > 17
+                      ? m.nama.split(' ').slice(0, 3).map((w, idx) => idx === 2 ? w[0] + '.' : w).join(' ')
+                      : m.nama;
+                    const isNonaktif = 'status' in m && m.status === 'Nonaktif';
+
+                    return (
+                      <button
+                        key={m.nim || ('id' in m ? m.id : identifier)}
+                        type="button"
+                        onClick={() => {
+                          setEmail(identifier);
+                          setPassword(m.pass || 'admin123');
+                          setError(null);
+                        }}
+                        className={`p-1.5 rounded-lg border text-left transition-all cursor-pointer group ${
+                          isNonaktif 
+                            ? 'border-slate-200 bg-slate-100/70 opacity-60 hover:opacity-100' 
+                            : 'border-slate-200 bg-slate-50 hover:bg-[#D4A359]/10 hover:border-[#D4A359]/50'
+                        }`}
+                      >
+                        <span className="block text-[11px] font-bold text-slate-800 group-hover:text-[#092C48] truncate">
+                          {displayName}
+                        </span>
+                        <span className="block text-[9.5px] font-mono text-slate-500 group-hover:text-[#D4A359] truncate font-medium">
+                          {identifier} • <span className={m.role === 'Superadmin' ? 'text-amber-700 font-bold' : ''}>{m.role}</span>
+                          {isNonaktif ? ' (Nonaktif)' : ''}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </form>

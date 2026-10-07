@@ -31,7 +31,7 @@ interface AdminLayoutProps {
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subtitle }) => {
-  const { activeView, setActiveView, bookings, notifications, logoutAdmin, currentAdminUser } = useBooking();
+  const { activeView, setActiveView, bookings, notifications, logoutAdmin, currentAdminUser, isCloudSyncConnected } = useBooking();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const pendingCount = bookings.filter((b) => b.status === 'Menunggu Verifikasi').length;
@@ -483,7 +483,22 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
             )}
           </div>
 
-          <div className="hidden sm:flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-3">
+            {/* Real-time Cloud Sync Status (HP <-> Laptop) */}
+            <div 
+              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors ${
+                isCloudSyncConnected 
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                  : 'bg-amber-50 text-amber-700 border-amber-200'
+              }`}
+              title="Koneksi Real-time Cloud Sync aktif (HP dan Laptop otomatis sinkron)"
+            >
+              <span className={`w-2 h-2 rounded-full ${isCloudSyncConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              <span className="text-[11px] font-bold">
+                {isCloudSyncConnected ? 'Cloud Sync: Terhubung' : 'Sync: Siap'}
+              </span>
+            </div>
+
             {/* Date Display */}
             <div className="flex items-center gap-2 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />

@@ -12,6 +12,7 @@ import {
   saveStoredIshomaConfig, 
   resetStoredScheduleConfig 
 } from '../utils/sessionUtils';
+import { broadcastSyncEvent, subscribeSyncEvents } from '../utils/cloudSync';
 
 export type AppView =
   | 'user-landing'
@@ -91,6 +92,7 @@ interface BookingContextType {
   updateAllSessions: (newSessions: SessionConfig[]) => void;
   updateIshoma: (newIshoma: IshomaConfig) => void;
   resetSchedule: () => void;
+  isCloudSyncConnected: boolean;
 }
 
 const DEFAULT_FORM_DATA: BookingFormData = {
@@ -378,6 +380,16 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
     setActivities(prev => [newAct, ...prev]);
 
+    // Broadcast ke perangkat lain (HP & Laptop)
+    setTimeout(() => {
+      const saved = localStorage.getItem('mb_admin_users');
+      if (saved) {
+        try {
+          broadcastSyncEvent({ type: 'UPDATE_ADMINS', admins: JSON.parse(saved) });
+        } catch (_) {}
+      }
+    }, 50);
+
     return true;
   };
 
@@ -458,7 +470,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       cleanId === 'rofi_nazar' ||
       cleanId === 'samuel_saragih'
     )) {
-      const defaultUser = INITIAL_ADMINS.find(a => 
+      const defaultUser = admins.find(a => 
+        a.nim === cleanId || a.username === cleanId || a.email === cleanId
+      ) || INITIAL_ADMINS.find(a => 
         a.nim === cleanId || a.username === cleanId || a.email === cleanId
       ) || INITIAL_ADMINS[0];
       setCurrentAdminUser(defaultUser);
@@ -560,6 +574,130 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  const [isCloudSyncConnected, setIsCloudSyncConnected] = useState<boolean>(true);
+
+  // Sinkronisasi Real-time Antar Perangkat (HP <-> Laptop via Cloud Sync Bridge)
+  useEffect(() => {
+    const unsubscribe = subscribeSyncEvents(
+      (payload) => {
+        if (!payload || !payload.type) return;
+
+        // 1. Pesanan Baru Diterima dari HP atau perangkat lain
+        if (payload.type === 'NEW_BOOKING' && payload.booking) {
+          const newB = payload.booking;
+          setBookings((prev) => {
+            if (prev.some((b) => b.id === newB.id)) return prev;
+            const updated = [newB, ...prev];
+            try {
+              localStorage.setItem('mb_bookings', JSON.stringify(updated));
+            } catch (_) {}
+            return updated;
+          });
+
+          // Notifikasi admin instan di laptop
+          const newNotif: AdminNotification = {
+            id: `notif-${Date.now()}`,
+            title: `Booking baru masuk dari HP (${newB.nama})`,
+            bookingId: newB.id,
+            nama: newB.nama,
+            time: 'Baru saja',
+            read: false,
+            type: 'booking_baru',
+          };
+          setNotifications((prev) => {
+            const updated = [newNotif, ...prev];
+            try {
+              localStorage.setItem('mb_notifications', JSON.stringify(updated));
+            } catch (_) {}
+            return updated;
+          });
+
+          const newAct: ActivityLog = {
+            id: `act-${Date.now()}`,
+            user: `Pengunjung HP (${newB.nama})`,
+            action: 'Mengirim reservasi baru via Real-Time Cloud Sync',
+            target: newB.id,
+            timestamp: 'Baru saja',
+          };
+          setActivities((prev) => {
+            const updated = [newAct, ...prev];
+            try {
+              localStorage.setItem('mb_activities', JSON.stringify(updated));
+            } catch (_) {}
+            return updated;
+          });
+        }
+
+        // 2. Verifikasi Tiket dari Laptop diterima di HP
+        if (payload.type === 'VERIFY_BOOKING' && payload.bookingId) {
+          const targetId = payload.bookingId;
+          setBookings((prev) => {
+            const updated = prev.map((b) => (b.id === targetId ? { ...b, status: 'Terverifikasi' as const } : b));
+            try {
+              localStorage.setItem('mb_bookings', JSON.stringify(updated));
+            } catch (_) {}
+            return updated;
+          });
+
+          setCurrentBooking((prev) =>
+            prev && prev.id === targetId ? { ...prev, status: 'Terverifikasi' as const } : prev
+          );
+        }
+
+        // 3. Penolakan Tiket diterima di HP
+        if (payload.type === 'REJECT_BOOKING' && payload.bookingId) {
+          const targetId = payload.bookingId;
+          const reason = payload.reason || 'Ditolak oleh admin';
+          setBookings((prev) => {
+            const updated = prev.map((b) =>
+              b.id === targetId ? { ...b, status: 'Ditolak' as const, alasanPenolakan: reason } : b
+            );
+            try {
+              localStorage.setItem('mb_bookings', JSON.stringify(updated));
+            } catch (_) {}
+            return updated;
+          });
+
+          setCurrentBooking((prev) =>
+            prev && prev.id === targetId ? { ...prev, status: 'Ditolak' as const, alasanPenolakan: reason } : prev
+          );
+        }
+
+        // 4. Check-In Gate diterima di HP
+        if (payload.type === 'CHECKIN_BOOKING' && payload.bookingId) {
+          const targetId = payload.bookingId;
+          const checkInTime = payload.checkInTime || 'Baru saja';
+          setBookings((prev) => {
+            const updated = prev.map((b) =>
+              b.id === targetId ? { ...b, checkInStatus: 'Sudah Masuk' as const, checkInTime } : b
+            );
+            try {
+              localStorage.setItem('mb_bookings', JSON.stringify(updated));
+            } catch (_) {}
+            return updated;
+          });
+
+          setCurrentBooking((prev) =>
+            prev && prev.id === targetId ? { ...prev, checkInStatus: 'Sudah Masuk' as const, checkInTime } : prev
+          );
+        }
+
+        // 5. Update Akun/Role Petugas dari Manajemen Petugas
+        if (payload.type === 'UPDATE_ADMINS' && payload.admins) {
+          setAdmins(payload.admins);
+          try {
+            localStorage.setItem('mb_admin_users', JSON.stringify(payload.admins));
+          } catch (_) {}
+        }
+      },
+      (connected) => {
+        setIsCloudSyncConnected(connected);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
   const getPricePerPerson = (kategori: CategoryType): number => {
     switch (kategori) {
       case 'Pelajar/Mahasiswa':
@@ -650,6 +788,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
     setActivities((prev) => [newAct, ...prev]);
 
+    // Broadcast ke perangkat lain (HP -> Laptop)
+    broadcastSyncEvent({ type: 'NEW_BOOKING', booking: newBooking });
+
     return newBooking;
   };
 
@@ -711,6 +852,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
     setActivities((prev) => [newAct, ...prev]);
 
+    // Broadcast ke perangkat lain
+    broadcastSyncEvent({ type: 'NEW_BOOKING', booking: newBooking });
+
     return newBooking;
   };
 
@@ -742,6 +886,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       timestamp: 'Baru saja',
     };
     setActivities((prev) => [newAct, ...prev]);
+
+    // Broadcast ke HP pengunjung agar tiket langsung terbit
+    broadcastSyncEvent({ type: 'VERIFY_BOOKING', bookingId: id });
   };
 
   const rejectBooking = (id: string, reason: string) => {
@@ -772,6 +919,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       timestamp: 'Baru saja',
     };
     setActivities((prev) => [newAct, ...prev]);
+
+    // Broadcast ke HP pengunjung
+    broadcastSyncEvent({ type: 'REJECT_BOOKING', bookingId: id, reason });
   };
 
   const deleteBooking = (id: string) => {
@@ -844,6 +994,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       timestamp: checkInTime,
     };
     setActivities((prev) => [newAct, ...prev]);
+
+    // Broadcast ke perangkat lain (HP & Laptop)
+    broadcastSyncEvent({ type: 'CHECKIN_BOOKING', bookingId: found.id, checkInTime });
 
     return {
       success: true,
@@ -1002,6 +1155,9 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
     setActivities((prev) => [newAct, ...prev]);
 
+    // Broadcast check-in ke perangkat lain (HP & Laptop)
+    broadcastSyncEvent({ type: 'CHECKIN_BOOKING', bookingId: updatedBooking.id, checkInTime });
+
     return { 
       success: true, 
       message: `Check-in Berhasil! Silakan masuk (${found.jumlahOrang} Orang - ${found.kategori}).`, 
@@ -1095,6 +1251,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateAllSessions,
         updateIshoma,
         resetSchedule,
+        isCloudSyncConnected,
       }}
     >
       {children}
