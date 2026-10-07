@@ -69,7 +69,7 @@ export const AdminDashboard: React.FC = () => {
       subtitle="Selamat datang di panel admin Museum Blambangan"
     >
       <div className="space-y-6">
-        {/* 4 Stat Cards matching Figma Image 2 Screen 1 */}
+        {/* Kartu Statistik Ringkasan */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Total Booking */}
           <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
@@ -140,7 +140,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Charts Row matching Figma Image 2 Screen 1 */}
+        {/* Grafik Kunjungan dan Statistik */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Chart 1: Kunjungan 7 Hari Terakhir (Line Chart) */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-100 shadow-xs">
@@ -224,7 +224,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Chart 2: Kategori Pengunjung (Donut Chart) matching Figma Image 2 Screen 1 */}
+          {/* Grafik Donat Kategori Pengunjung */}
           <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs flex flex-col justify-between">
             <h2 className="text-sm font-bold text-slate-900 mb-2">
               Kategori Pengunjung
@@ -313,7 +313,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Booking Terbaru Table matching Figma Image 2 Screen 1 */}
+        {/* Tabel Booking Terbaru */}
         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-bold text-slate-900">

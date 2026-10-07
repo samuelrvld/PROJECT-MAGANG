@@ -24,13 +24,13 @@ const CHAPTERS = [
   { time: 5, title: '02 • Latar Belakang & Masalah', desc: 'Tantangan antrean fisik & risiko kebocoran retribusi manual' },
   { time: 11, title: '03 • Solusi: Ekosistem Digital', desc: 'Pemesanan 24/7, kuota sesi, QRIS resmi, & gate validator' },
   { time: 17, title: '04 • Pengalaman Wisatawan', desc: 'Pemesanan 3 langkah, tarif resmi, & E-Tiket PDF 300 DPI' },
-  { time: 23, title: '05 • Gate Petugas & Scanner', desc: 'Kamera BarcodeDetector, bunyi kasir supermarket, & anti-duplikat' },
+  { time: 23, title: '05 • Gate Petugas & Scanner', desc: 'Kamera BarcodeDetector, audio beep indikator, & anti-duplikat' },
   { time: 29, title: '06 • Keuangan & Cagar Budaya', desc: 'Laporan PAD transparan & katalog digital koleksi Musewangi' },
   { time: 35, title: '07 • Tim Mahasiswa TRPL', desc: 'Fitria Nur Aini, Syifa\'ul Qolbi, Ahmad Rofi Ridho, Samuel Christian H.' },
   { time: 42, title: '08 • Penutup & Implementasi', desc: 'Melestarikan sejarah dengan teknologi masa kini (Poliwangi 2026)' },
 ];
 
-export const ScreenPitchingVideo: React.FC = () => {
+export const VideoPitching: React.FC = () => {
   const { setActiveView } = useBooking();
   const videoRef = useRef<HTMLVideoElement>(null);
   

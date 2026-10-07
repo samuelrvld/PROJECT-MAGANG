@@ -97,7 +97,7 @@ export const AdminLogin: React.FC = () => {
 
         <div className="bg-white rounded-3xl shadow-2xl border border-white/20 overflow-hidden text-slate-800">
           
-          {/* Card Header dengan Aksen Gajah Oling Mewah */}
+          {/* Header Kartu Login Admin */}
           <div className="bg-[#092C48] text-white p-6 pb-7 text-center relative overflow-hidden border-b-2 border-[#D4A359]/30">
             {/* Watermark Gajah Oling Sisi Kanan Header */}
             <div className="absolute -top-4 -right-4 w-32 h-40 opacity-25 pointer-events-none select-none scale-x-[-1]">

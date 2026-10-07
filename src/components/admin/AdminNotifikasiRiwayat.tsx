@@ -22,7 +22,7 @@ export const AdminNotifikasiRiwayat: React.FC = () => {
       subtitle="Pantau pemberitahuan sistem dan log aktivitas verifikasi."
     >
       <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs max-w-4xl mx-auto space-y-6">
-        {/* Tabs matching Figma Image 2 Screen 8 */}
+        {/* Tab Notifikasi dan Riwayat */}
         <div className="flex items-center gap-4 border-b border-slate-200 pb-3 text-xs font-bold">
           <button
             onClick={() => setActiveTab('notifikasi')}

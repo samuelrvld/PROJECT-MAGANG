@@ -342,7 +342,7 @@ export const UserMusewangiDashboard: React.FC = () => {
           </div>
         </header>
 
-        {/* ── EMBEDDED AUTHENTIC LIVE MUSEWANGI (No redesign, 100% faithful) ── */}
+        {/* Iframe Halaman Musewangi */}
         <iframe
           src={musewangiUrl}
           className="w-full flex-1 border-0 h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)] bg-[#F8F5ED]"

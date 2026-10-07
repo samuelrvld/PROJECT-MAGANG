@@ -328,7 +328,7 @@ export const AdminPesananKunjungan: React.FC = () => {
           </div>
         )}
 
-        {/* Status Tabs matching Figma Image 2 Screen 2 */}
+        {/* Tab Filter Status */}
         <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3 text-xs font-semibold">
           <button
             onClick={() => setActiveTab('all')}
@@ -375,7 +375,7 @@ export const AdminPesananKunjungan: React.FC = () => {
           </button>
         </div>
 
-        {/* Full Table matching Figma Image 2 Screen 2 */}
+        {/* Tabel Data Pesanan */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
@@ -480,7 +480,7 @@ export const AdminPesananKunjungan: React.FC = () => {
           </table>
         </div>
 
-        {/* Pagination matching Figma Image 2 Screen 2 */}
+        {/* Navigasi Halaman / Paginasi */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs text-slate-500">
           <div>
             Menampilkan 1 - {filteredBookings.length} dari {allCount} pesanan

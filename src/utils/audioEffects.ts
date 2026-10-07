@@ -1,8 +1,8 @@
-// Sound Effects Utility for POS / Scanner Operations (Cross-Device & iOS Safari Audio Unlock)
+// Utility efek suara scanner tiket menggunakan Web Audio API
 
 let sharedAudioCtx: AudioContext | null = null;
 
-// Get or resume shared AudioContext safely across iOS Safari & Android Chrome
+// Mengambil atau melanjutkan AudioContext
 export const getAudioContext = (): AudioContext | null => {
   try {
     if (!sharedAudioCtx) {
@@ -21,7 +21,7 @@ export const getAudioContext = (): AudioContext | null => {
   }
 };
 
-// Global user-gesture listener to preemptively unlock iOS Web Audio on first tap/click anywhere
+// Listener interaksi user untuk inisialisasi audio di browser/mobile
 if (typeof window !== 'undefined') {
   const unlockAudio = () => {
     getAudioContext();
@@ -32,7 +32,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('touchstart', unlockAudio, { passive: true, once: true });
 }
 
-// 1. Realistic Supermarket / Retail Barcode Scanner Beep (Honeywell / Zebra style)
+// 1. Suara beep saat tiket berhasil divalidasi
 export const playSupermarketBeep = () => {
   try {
     const ctx = getAudioContext();
@@ -41,11 +41,10 @@ export const playSupermarketBeep = () => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    // High frequency crystal clear retail barcode scanner beep (~2637Hz - E7 note)
+    // Frekuensi beep ~2637Hz (nada E7)
     osc.type = 'sine';
     osc.frequency.setValueAtTime(2637.02, ctx.currentTime);
 
-    // Ultra-fast sharp envelope: instant rise, stable sustain, crisp cutoff
     gain.gain.setValueAtTime(0, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.003);
     gain.gain.setValueAtTime(0.4, ctx.currentTime + 0.065);
@@ -61,7 +60,7 @@ export const playSupermarketBeep = () => {
   }
 };
 
-// 2. High-quality Rejection / Error sound (Professional dual-tone negative buzzer)
+// 2. Suara buzzer peringatan saat tiket ditolak atau tidak valid
 export const playErrorBuzzer = () => {
   try {
     const ctx = getAudioContext();

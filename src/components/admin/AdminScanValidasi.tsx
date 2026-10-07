@@ -56,8 +56,8 @@ export const AdminScanValidasi: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isScanningPaused = useRef(false);
 
-  // ───── KALKULASI DAFTAR TAMU ─────
-  // Tamu yang BELUM datang (belum check-in) — dibagi 2: sudah bayar & belum bayar
+  // Kalkulasi daftar tamu pengunjung
+  // Tamu yang belum check-in dibagi berdasarkan status pembayaran
   const sudahBayarBelumHadir = useMemo(() =>
     bookings.filter(b => b.status === 'Terverifikasi' && b.checkInStatus !== 'Sudah Masuk'),
     [bookings]
@@ -85,7 +85,7 @@ export const AdminScanValidasi: React.FC = () => {
     );
   }, [activeTab, allPending, sudahMasuk, searchQuery]);
 
-  // ───── PROSES HASIL SCAN (AUDIO + VALIDASI) ─────
+  // Proses hasil scan dan feedback suara
   const handleProcessScannedCode = (rawCode: string) => {
     if (!rawCode || isScanningPaused.current) return;
     isScanningPaused.current = true;
@@ -93,7 +93,7 @@ export const AdminScanValidasi: React.FC = () => {
     const res = checkInBooking(rawCode);
 
     if (res.success) {
-      // 🔊 Backsound Beep Supermarket (Honeywell/Zebra POS Scanner)
+      // Suara beep indikator berhasil
       playSupermarketBeep();
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate([100, 50, 100]);
@@ -110,14 +110,14 @@ export const AdminScanValidasi: React.FC = () => {
 
       setSuccessMessage(`✅ ${res.booking?.nama || 'Pengunjung'} (${res.booking?.id || rawCode}) berhasil dicatat hadir. Silakan masuk!`);
 
-      // Auto close camera after short confirmation delay
+      // Tutup modal kamera setelah jeda konfirmasi
       setTimeout(() => {
         setCameraModalOpen(false);
         setScanFeedback(null);
         isScanningPaused.current = false;
       }, 2300);
     } else {
-      // 🔊 Backsound Buzzer Gagal / Peringatan
+      // Suara buzzer jika tiket salah atau tidak ditemukan
       playErrorBuzzer();
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate([300, 100, 300]);
@@ -132,7 +132,7 @@ export const AdminScanValidasi: React.FC = () => {
         message: res.message || 'Tiket tidak valid atau tidak ditemukan.',
       });
 
-      // Reset pause after 3.2 seconds so user can scan another ticket
+      // Reset jeda agar petugas bisa scan tiket berikutnya
       setTimeout(() => {
         setScanFeedback(null);
         isScanningPaused.current = false;
@@ -140,7 +140,7 @@ export const AdminScanValidasi: React.FC = () => {
     }
   };
 
-  // ───── FUNGSI UTAMA: TAMU SUDAH DATANG (Manual click) ─────
+  // Konfirmasi kehadiran manual oleh petugas loket
   const handleTamuDatang = (b: Booking) => {
     if (b.status !== 'Terverifikasi') return;
     playSupermarketBeep();
@@ -150,7 +150,7 @@ export const AdminScanValidasi: React.FC = () => {
     setTimeout(() => setSuccessMessage(null), 4000);
   };
 
-  // ───── KONFIRMASI QRIS SUDAH MASUK (hanya admin keuangan) ─────
+  // Konfirmasi pembayaran tiket
   const handleLihatBuktiQRIS = (b: Booking) => {
     setSelectedBookingId(b.id);
     setProofModal(b);
@@ -164,14 +164,14 @@ export const AdminScanValidasi: React.FC = () => {
     setTimeout(() => setSuccessMessage(null), 5000);
   };
 
-  // ───── BATALKAN KEHADIRAN jika salah klik ─────
+  // Batalkan kehadiran jika salah klik
   const handleBatalHadir = (bookingId: string, nama: string) => {
     undoCheckIn(bookingId);
     setSuccessMessage(`Status kedatangan ${nama} telah dibatalkan.`);
     setTimeout(() => setSuccessMessage(null), 3000);
   };
 
-  // ───── QR SCAN via Kamera (Dukungan iOS Safari & Native BarcodeDetector) ─────
+  // Scan QR menggunakan kamera perangkat
   useEffect(() => {
     let stream: MediaStream | null = null;
     let interval: ReturnType<typeof setInterval> | null = null;
@@ -268,7 +268,7 @@ export const AdminScanValidasi: React.FC = () => {
     };
   }, [cameraModalOpen]);
 
-  // ───── SCAN DARI FOTO / GALERI ─────
+  // Pemindaian QR dari berkas foto / galeri
   const handlePhotoScan = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -298,7 +298,6 @@ export const AdminScanValidasi: React.FC = () => {
     e.target.value = '';
   };
 
-  // ───── RENDER ─────
   return (
     <AdminLayout
       title="Validasi & Pindai QR Tiket"

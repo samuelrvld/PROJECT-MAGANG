@@ -4,7 +4,7 @@ import { ChevronLeft, Ticket } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { ModernTicketPass } from '../common/ModernTicketPass';
 
-export const Screen8TiketKunjungan: React.FC = () => {
+export const TiketKunjungan: React.FC = () => {
   const { setActiveView, currentBooking, myBookings, selectedBookingId } = useBooking();
   const booking = 
     (selectedBookingId ? myBookings.find(b => b.id === selectedBookingId) : null) || 

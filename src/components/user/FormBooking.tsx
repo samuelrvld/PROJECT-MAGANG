@@ -28,7 +28,7 @@ import {
   extractSessionId
 } from '../../utils/sessionUtils';
 
-export const Screen2FormData: React.FC = () => {
+export const FormBooking: React.FC = () => {
   const { setActiveView, formData, setFormData, bookings, sessionsConfig, ishomaConfig } = useBooking();
 
   const categories: { type: CategoryType; label: string; price: string; icon: React.ReactNode }[] = [
@@ -198,7 +198,7 @@ export const Screen2FormData: React.FC = () => {
       {/* Responsive Frame: Compact & 100% full width on mobile, spacious card on desktop */}
       <div className="w-full max-w-full sm:max-w-xl md:max-w-2xl min-h-screen sm:min-h-[820px] bg-white text-slate-800 flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl border-0 sm:border sm:border-slate-200 overflow-hidden">
         
-        {/* Header matching Figma Screen 2: [<] [Logo] [1/5] */}
+        {/* Header Formulir (Langkah 1/5) */}
         <header className="bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30 relative shrink-0">
           <div className="flex items-center gap-1.5 z-10 w-24 justify-start">
             <button
@@ -343,7 +343,7 @@ export const Screen2FormData: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* Manual Number Input - Matching exact same font size & height as other inputs */}
+                  {/* Input manual jumlah pengunjung */}
                   <div className="relative flex-1">
                     <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
@@ -373,7 +373,7 @@ export const Screen2FormData: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Quick - / + Stepper Buttons matching h-11 */}
+                  {/* Tombol tambah / kurang jumlah */}
                   <div className="h-11 flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shrink-0 shadow-2xs">
                     <button
                       type="button"
@@ -837,7 +837,7 @@ export const Screen2FormData: React.FC = () => {
             </div>
           </main>
 
-          {/* DOCKED BOTTOM ACTION BAR (WARNA BATTOM RESMI & MEWAH BLAMBANGAN) */}
+          {/* Navigasi dan tombol konfirmasi bawah */}
           <footer className="bg-white border-t border-slate-200/90 px-4 sm:px-6 py-3.5 pb-6 sm:pb-3.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] shrink-0 z-20">
             <div className="flex items-center justify-between gap-3">
               

@@ -327,12 +327,12 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
         id="visual-ticket"
         className="w-full bg-white rounded-[28px] shadow-xl border border-slate-200/90 overflow-hidden relative text-slate-800 select-none printable-ticket print:shadow-none print:border print:border-slate-300 print:m-0"
       >
-        {/* ================= TICKET TOP HEADER ================= */}
+        {/* Header E-Tiket */}
         <div 
           className="relative bg-gradient-to-br from-[#081827] via-[#0E2C4A] to-[#07192A] text-white p-5 sm:p-6 overflow-hidden border-b-2 border-[#D4A359]/40"
           style={{ backgroundColor: '#081827', color: '#FFFFFF' }}
         >
-          {/* Authentic Gold Gandrung Dancer Silhouette in Top-Right - Enlarged */}
+          {/* Ornamen Siluet Penari Gandrung */}
           <div className="absolute -right-6 -top-4 w-52 h-56 sm:w-60 sm:h-64 opacity-35 pointer-events-none">
             <img
               src="/assets/penari-gandrung-gold.png"
@@ -342,7 +342,7 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
             />
           </div>
 
-          {/* Bold Seblang Dancer Motif on Bottom-Left - Thicker & Clearly Visible */}
+          {/* Ornamen Siluet Penari Seblang */}
           <div className="absolute -left-3 -bottom-2 w-36 h-44 sm:w-40 sm:h-48 opacity-40 pointer-events-none scale-x-[-1]">
             <img
               src="/assets/penari-seblang-bold-gold.png"
@@ -446,7 +446,7 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
               </span>
             </div>
 
-            {/* 1D Barcode Strip for Authentic Boarding Pass Look */}
+            {/* Barcode Garis Boarding Pass */}
             <div className="mt-3 pt-3 border-t border-slate-200 w-full flex flex-col items-center">
               <div className="flex items-center gap-[2px] h-6 px-4">
                 {[4, 2, 6, 2, 1, 3, 5, 2, 4, 1, 3, 6, 2, 3, 1, 5, 2, 4, 3, 1, 6, 2, 4, 2, 5, 1, 3, 6, 2, 4].map((h, i) => (
@@ -705,9 +705,9 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
           </div>
         </div>
 
-        {/* Document Title & Booking Number Strip with Cultural Motifs */}
+        {/* Header E-Tiket PDF */}
         <div style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px', padding: '12px 18px', backgroundColor: '#081827', borderRadius: '12px', color: '#FFFFFF' }}>
-          {/* Authentic Gold Gandrung Dancer in PDF header */}
+          {/* Ornamen Gandrung PDF */}
           <div style={{ position: 'absolute', right: '-12px', top: '-12px', width: '130px', height: '130px', opacity: 0.3, pointerEvents: 'none' }}>
             <img
               src="/assets/penari-gandrung-gold.png"
@@ -716,7 +716,7 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
               crossOrigin="anonymous"
             />
           </div>
-          {/* Bold Seblang Dancer in PDF header */}
+          {/* Ornamen Seblang PDF */}
           <div style={{ position: 'absolute', left: '-8px', bottom: '-8px', width: '95px', height: '115px', opacity: 0.38, pointerEvents: 'none', transform: 'scaleX(-1)' }}>
             <img
               src="/assets/penari-seblang-bold-gold.png"

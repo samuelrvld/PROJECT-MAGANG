@@ -24,7 +24,7 @@ import { MuseumLogo } from '../common/MuseumLogo';
 import { MuseumFeatureModals, type MuseumModalType } from '../common/MuseumFeatureModals';
 import { SocialMediaIconRow } from '../common/SocialMediaLinks';
 
-export const Screen1Landing: React.FC = () => {
+export const LandingPage: React.FC = () => {
   const { setActiveView, setUserViewMode } = useBooking();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<MuseumModalType>(null);
@@ -70,7 +70,7 @@ export const Screen1Landing: React.FC = () => {
       {/* 100% Edge-to-Edge on mobile, Centered Card on desktop */}
       <div className="w-full max-w-full sm:max-w-[420px] md:max-w-md min-h-screen sm:min-h-[800px] bg-gradient-to-b from-[#081827] via-[#102B48] to-[#081523] text-white flex flex-col justify-between relative overflow-hidden sm:rounded-[36px] sm:shadow-2xl border-0 sm:border sm:border-[#224A72]/40 select-none">
         
-        {/* Background Rotating Slideshow: Displays all 4 authentic museum photos with smooth crossfade & Ken Burns effect */}
+        {/* Slider foto museum */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           {heroSlides.map((slide, idx) => (
             <img
@@ -267,7 +267,7 @@ export const Screen1Landing: React.FC = () => {
                 </nav>
               </div>
 
-              {/* Operational Hours & Footer inside drawer matching media_1791115428347.png */}
+              {/* Jam operasional & footer drawer */}
               <div className="pt-3 border-t border-white/10 space-y-2 relative z-10 shrink-0">
                 {/* Jam Buka Loket Box */}
                 <div className="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 space-y-1.5 text-left">
@@ -308,9 +308,9 @@ export const Screen1Landing: React.FC = () => {
           </div>
         )}
 
-        {/* Hero Middle Content matching Figma Screen 1 */}
+        {/* Bagian Hero Beranda */}
         <main className="relative z-10 px-5 pt-16 sm:pt-28 pb-6 flex flex-col items-start text-left flex-1 justify-center sm:justify-start">
-          {/* Authentic Banyuwangi Batik Gajah Oling Accent on Mobile Hero (As per Figma media_1791077641373.png) */}
+          {/* Ornamen Gajah Oling */}
           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-44 h-64 opacity-30 pointer-events-none select-none">
             <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-[0_2px_12px_rgba(212,163,89,0.3)]" />
           </div>
@@ -369,7 +369,7 @@ export const Screen1Landing: React.FC = () => {
           {/* Subtle Top Gold Highlight Line */}
           <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-[#DAB36E]/40 to-transparent" />
 
-          {/* Authentic Banyuwangi Batik Gajah Oling Footer Watermark Pattern */}
+          {/* Ornamen Motif Gajah Oling Footer */}
           <div className="absolute inset-0 pointer-events-none opacity-20 flex items-center justify-between px-2">
             <img
               src="/assets/gajah-oling-footer-symmetric.png"

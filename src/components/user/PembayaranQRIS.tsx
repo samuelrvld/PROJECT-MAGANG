@@ -124,7 +124,7 @@ const PAYMENT_CHANNELS = [
   },
 ];
 
-export const Screen4PembayaranQRIS: React.FC = () => {
+export const PembayaranQRIS: React.FC = () => {
   const { setActiveView, formData, createBooking } = useBooking();
   const [modalOpen, setModalOpen] = useState(false);
   const [uploadedReceipt, setUploadedReceipt] = useState<string | null>(null);
@@ -220,7 +220,7 @@ export const Screen4PembayaranQRIS: React.FC = () => {
       tanggal: formData.tanggalKunjungan,
       sesi: formData.sesi,
       total,
-      canvasSourceId: 'screen4-qris-canvas-source'
+      canvasSourceId: 'qris-canvas-source'
     });
     if (success) {
       setIsQrDownloaded(true);
@@ -330,7 +330,7 @@ export const Screen4PembayaranQRIS: React.FC = () => {
                 title="Klik untuk memperbesar QR Code"
               >
                 <QRCodeCanvas
-                  id="screen4-qris-display-canvas"
+                  id="qris-display-canvas"
                   value={OFFICIAL_QRIS_PAYLOAD}
                   size={210}
                   level="H"
@@ -385,7 +385,7 @@ export const Screen4PembayaranQRIS: React.FC = () => {
               {/* Hidden High-Res Canvas Source for Download with Official Decoded Payload */}
               <div className="hidden">
                 <QRCodeCanvas
-                  id="screen4-qris-canvas-source"
+                  id="qris-canvas-source"
                   value={OFFICIAL_QRIS_PAYLOAD}
                   size={360}
                   level="H"
@@ -567,7 +567,7 @@ export const Screen4PembayaranQRIS: React.FC = () => {
           </div>
         </main>
 
-        {/* Footer Action: Saya Sudah Membayar matching Figma Screen 4 */}
+        {/* Tombol Konfirmasi Pembayaran */}
         <footer className="p-4 pb-6 sm:pb-4 border-t border-slate-100 bg-white">
           <button
             type="button"

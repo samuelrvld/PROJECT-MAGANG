@@ -1,18 +1,18 @@
 import React, { Suspense, lazy } from 'react';
 import { BookingProvider, useBooking } from './context/BookingContext';
 
-// User Flow Screens (Critical for immediate visitor experience)
-import { Screen1Landing } from './components/user/Screen1Landing';
-import { Screen2FormData } from './components/user/Screen2FormData';
-import { Screen3Ringkasan } from './components/user/Screen3Ringkasan';
-import { Screen4PembayaranQRIS } from './components/user/Screen4PembayaranQRIS';
-import { Screen6BookingBerhasil } from './components/user/Screen6BookingBerhasil';
-import { Screen7StatusVerifikasi } from './components/user/Screen7StatusVerifikasi';
-import { Screen8TiketKunjungan } from './components/user/Screen8TiketKunjungan';
+// Halaman Pengunjung
+import { LandingPage } from './components/user/LandingPage';
+import { FormBooking } from './components/user/FormBooking';
+import { RingkasanBooking } from './components/user/RingkasanBooking';
+import { PembayaranQRIS } from './components/user/PembayaranQRIS';
+import { BookingBerhasil } from './components/user/BookingBerhasil';
+import { StatusTiket } from './components/user/StatusTiket';
+import { TiketKunjungan } from './components/user/TiketKunjungan';
 import { UserWebPortal } from './components/user/UserWebPortal';
 
-// Admin & Simulator Flow Screens (Loaded on-demand only when accessed, keeping visitor bundle ultra-light)
-const Screen9MobileSimulator = lazy(() => import('./components/user/Screen9MobileSimulator').then(m => ({ default: m.Screen9MobileSimulator })));
+// Halaman Admin & Fitur Tambahan (Lazy loading)
+const SimulatorMobile = lazy(() => import('./components/user/SimulatorMobile').then(m => ({ default: m.SimulatorMobile })));
 const AdminLogin = lazy(() => import('./components/admin/AdminLogin').then(m => ({ default: m.AdminLogin })));
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const AdminPesananKunjungan = lazy(() => import('./components/admin/AdminPesananKunjungan').then(m => ({ default: m.AdminPesananKunjungan })));
@@ -26,7 +26,7 @@ const AdminScanValidasi = lazy(() => import('./components/admin/AdminScanValidas
 const AdminKoleksiMusewangi = lazy(() => import('./components/admin/AdminKoleksiMusewangi').then(m => ({ default: m.AdminKoleksiMusewangi })));
 const AdminManajemenPetugas = lazy(() => import('./components/admin/AdminManajemenPetugas').then(m => ({ default: m.AdminManajemenPetugas })));
 const UserMusewangiDashboard = lazy(() => import('./components/user/UserMusewangiDashboard').then(m => ({ default: m.UserMusewangiDashboard })));
-const ScreenPitchingVideo = lazy(() => import('./components/common/ScreenPitchingVideo').then(m => ({ default: m.ScreenPitchingVideo })));
+const VideoPitching = lazy(() => import('./components/common/VideoPitching').then(m => ({ default: m.VideoPitching })));
 
 const FallbackLoader: React.FC = () => (
   <div className="min-h-screen bg-[#081827] flex items-center justify-center text-white">
@@ -96,52 +96,52 @@ const MainViewRouter: React.FC = () => {
     );
   }
 
-  // Pitching Video Theater & Presentation
+  // Pemutar Video Pitching
   if (activeView === 'user-pitching') {
     return (
       <Suspense fallback={<FallbackLoader />}>
-        <ScreenPitchingVideo />
+        <VideoPitching />
       </Suspense>
     );
   }
 
-  // If user explicitly asks for Mobile Simulator preview
+  // Simulator Tampilan Mobile
   if (activeView === 'user-mobile-preview') {
     return (
       <Suspense fallback={<FallbackLoader />}>
-        <Screen9MobileSimulator />
+        <SimulatorMobile />
       </Suspense>
     );
   }
 
-  // In Desktop Web Mode:
-  // For landing, ticket list, and ticket detail, render the full UserWebPortal (Figma Screen 10)
+  // Mode Web Desktop:
+  // Halaman beranda, daftar tiket, dan detail tiket menggunakan UserWebPortal
   if (userViewMode === 'web') {
     if (activeView === 'user-landing' || activeView === 'user-web-portal' || activeView === 'user-ticket') {
       return <UserWebPortal />;
     }
   }
 
-  // Mobile & Step Flow Screens
+  // Alur Pemesanan Tiket Pengunjung
   switch (activeView) {
     case 'user-landing':
-      return <Screen1Landing />;
+      return <LandingPage />;
     case 'user-form':
-      return <Screen2FormData />;
+      return <FormBooking />;
     case 'user-summary':
-      return <Screen3Ringkasan />;
+      return <RingkasanBooking />;
     case 'user-qris':
-      return <Screen4PembayaranQRIS />;
+      return <PembayaranQRIS />;
     case 'user-success':
-      return <Screen6BookingBerhasil />;
+      return <BookingBerhasil />;
     case 'user-status':
-      return <Screen7StatusVerifikasi />;
+      return <StatusTiket />;
     case 'user-ticket':
-      return <Screen8TiketKunjungan />;
+      return <TiketKunjungan />;
     case 'user-web-portal':
       return <UserWebPortal />;
     default:
-      return userViewMode === 'web' ? <UserWebPortal /> : <Screen1Landing />;
+      return userViewMode === 'web' ? <UserWebPortal /> : <LandingPage />;
   }
 };
 

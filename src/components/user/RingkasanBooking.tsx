@@ -16,7 +16,7 @@ import {
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
 
-export const Screen3Ringkasan: React.FC = () => {
+export const RingkasanBooking: React.FC = () => {
   const { setActiveView, formData } = useBooking();
 
   const getPricePerPerson = () => {
@@ -63,7 +63,7 @@ export const Screen3Ringkasan: React.FC = () => {
       {/* Responsive Frame: 100% full width on mobile, centered card on desktop */}
       <div className="w-full max-w-full sm:max-w-[420px] md:max-w-xl min-h-screen sm:min-h-[800px] bg-white text-slate-800 flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl border-0 sm:border sm:border-slate-200 overflow-hidden">
         
-        {/* Header matching Figma Screen 3: [<] [Logo] [2/5] */}
+        {/* Header Ringkasan Pesanan (Langkah 2/5) */}
         <header className="bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30 relative">
           <div className="flex items-center gap-1.5 z-10 w-24 justify-start">
             <button
@@ -110,7 +110,7 @@ export const Screen3Ringkasan: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 1: Detail Pengunjung matching Figma Screen 3 */}
+          {/* Kartu Detail Pengunjung */}
           <div className="border border-slate-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
             <div className="px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
               <h2 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
@@ -170,7 +170,7 @@ export const Screen3Ringkasan: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 2: Detail Kunjungan matching Figma Screen 3 */}
+          {/* Kartu Detail Kunjungan */}
           <div className="border border-slate-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
             <div className="px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
               <h2 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
@@ -215,7 +215,7 @@ export const Screen3Ringkasan: React.FC = () => {
             </div>
           </div>
 
-          {/* Price Calculation Box matching Figma Screen 3 (#FCF8EF soft cream) */}
+          {/* Rincian Perhitungan Biaya */}
           <div className="bg-[#FCF8EF] border border-[#E9DFBE] rounded-2xl p-4 space-y-2 text-xs shadow-2xs">
             <div className="flex justify-between text-slate-600 text-[11px]">
               <span>Harga per orang</span>
@@ -239,7 +239,7 @@ export const Screen3Ringkasan: React.FC = () => {
           </div>
         </main>
 
-        {/* Footer Actions: [Kembali] [Lanjut Pembayaran] matching Figma Screen 3 */}
+        {/* Tombol Aksi Bawah */}
         <footer className="p-4 pb-6 sm:pb-4 border-t border-slate-100 flex items-center justify-between gap-3 bg-white">
           <button
             type="button"

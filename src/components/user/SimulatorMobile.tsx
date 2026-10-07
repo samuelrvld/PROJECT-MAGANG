@@ -21,7 +21,7 @@ import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
 import { MuseumFeatureModals, type MuseumModalType } from '../common/MuseumFeatureModals';
 
-export const Screen9MobileSimulator: React.FC = () => {
+export const SimulatorMobile: React.FC = () => {
   const { setActiveView, bookings, setUserViewMode } = useBooking();
   const [mobileTab, setMobileTab] = useState<'beranda' | 'booking' | 'tiket' | 'profil'>('beranda');
   const [phoneMenuOpen, setPhoneMenuOpen] = useState(false);
@@ -41,7 +41,7 @@ export const Screen9MobileSimulator: React.FC = () => {
         <span className="font-semibold text-slate-400">Preview Aplikasi Mobile</span>
       </div>
 
-      {/* Phone Mockup Frame matching Figma Screen 9 */}
+      {/* Frame Mockup Smartphone */}
       <div className="w-[375px] h-[780px] bg-black rounded-[48px] p-3 shadow-2xl border-4 border-slate-700 relative flex flex-col overflow-hidden">
         
         {/* Dynamic Island / Notch */}
@@ -52,7 +52,7 @@ export const Screen9MobileSimulator: React.FC = () => {
         {/* Screen Bezel Content */}
         <div className="w-full h-full bg-[#F8FAFA] rounded-[38px] overflow-hidden flex flex-col relative text-slate-800">
           
-          {/* iOS Status Bar matching Figma Screen 9 */}
+          {/* Status Bar Smartphone */}
           <div className="h-10 px-6 pt-2 flex items-center justify-between text-xs font-semibold text-slate-900 z-30 select-none">
             <span>9:41</span>
             <div className="flex items-center gap-1.5">
@@ -73,7 +73,7 @@ export const Screen9MobileSimulator: React.FC = () => {
             </button>
           </div>
 
-          {/* Phone In-App Menu Drawer matching Figma Features */}
+          {/* Menu Drawer Aplikasi */}
           {phoneMenuOpen && (
             <div className="absolute top-[68px] inset-x-0 z-40 bg-[#0F292F] text-white p-4 shadow-xl border-b border-white/10 space-y-1 text-xs animate-in slide-in-from-top duration-150">
               <div className="text-[10px] font-bold text-[#DAB36E] uppercase tracking-wider px-2 pb-1 border-b border-white/10">
@@ -143,7 +143,7 @@ export const Screen9MobileSimulator: React.FC = () => {
             
             {mobileTab === 'beranda' && (
               <>
-                {/* Hero Card matching Figma Screen 9 */}
+                {/* Banner Utama Promo Museum */}
                 <div className="relative rounded-2xl overflow-hidden shadow-md text-white min-h-[190px] flex flex-col justify-end p-4">
                   <img
                     src="/assets/museum-real-blambangan.jpg"
@@ -174,7 +174,7 @@ export const Screen9MobileSimulator: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Quick 3 Action Icons matching Figma Screen 9 */}
+                {/* Menu Cepat Akses Informasi */}
                 <div className="grid grid-cols-3 gap-2.5 text-center py-1">
                   <button
                     type="button"
@@ -210,7 +210,7 @@ export const Screen9MobileSimulator: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Jadwal Kunjungan Section matching Figma Screen 9 */}
+                {/* Informasi Jadwal Sesi Kunjungan */}
                 <div className="bg-white rounded-2xl p-3 border border-slate-100 shadow-2xs space-y-2">
                   <div className="flex items-center justify-between">
                     <h4 className="text-[11px] font-bold text-slate-900 flex items-center gap-1.5">
@@ -257,7 +257,7 @@ export const Screen9MobileSimulator: React.FC = () => {
                       onClick={() => setActiveView('user-ticket')}
                       className="w-full py-1.5 bg-[#0F292F] text-white text-[10px] font-bold rounded-lg"
                     >
-                      Buka E-Tiket (Layar 8)
+                      Buka E-Tiket
                     </button>
                   </div>
                 ) : (
@@ -277,7 +277,7 @@ export const Screen9MobileSimulator: React.FC = () => {
             )}
           </div>
 
-          {/* Bottom Navigation Bar matching Figma Screen 9 */}
+          {/* Menu Navigasi Bawah */}
           <div className="absolute bottom-0 left-0 right-0 h-14 bg-white border-t border-slate-200 px-6 flex items-center justify-between z-30">
             <button
               onClick={() => setMobileTab('beranda')}

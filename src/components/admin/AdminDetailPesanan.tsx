@@ -98,7 +98,7 @@ export const AdminDetailPesanan: React.FC = () => {
       subtitle="Kelola dan verifikasi bukti pembayaran pengunjung."
     >
       <div className="space-y-5">
-        {/* Breadcrumb matching Figma Image 2 Screen 3 */}
+        {/* Navigasi Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
           <button 
             onClick={() => setActiveView('admin-orders')}
@@ -111,7 +111,7 @@ export const AdminDetailPesanan: React.FC = () => {
           <span className="text-slate-400">({booking.id})</span>
         </div>
 
-        {/* 2-Column Grid matching Figma Image 2 Screen 3 */}
+        {/* Tata Letak Dua Kolom */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column: Data Pengunjung & Detail Kunjungan */}
           <div className="space-y-6">
@@ -301,7 +301,7 @@ export const AdminDetailPesanan: React.FC = () => {
                 </p>
               </div>
 
-              {/* Verification & Reject Action Buttons matching Figma Image 2 Screen 3 */}
+              {/* Tombol Aksi Verifikasi dan Tolak */}
               <div className="space-y-2.5 pt-2">
                 {booking.status === 'Terverifikasi' ? (
                   <button
@@ -388,7 +388,7 @@ export const AdminDetailPesanan: React.FC = () => {
         </div>
       )}
 
-      {/* Modal 4: Verifikasi Pembayaran? matching Figma Image 2 Screen 4 */}
+      {/* Modal Verifikasi Pembayaran */}
       {modalVerifyOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-center border border-slate-100">
@@ -428,7 +428,7 @@ export const AdminDetailPesanan: React.FC = () => {
         </div>
       )}
 
-      {/* Modal 5: Tolak Pembayaran? matching Figma Image 2 Screen 5 */}
+      {/* Modal Tolak Pembayaran */}
       {modalRejectOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-center border border-slate-100">
@@ -485,7 +485,7 @@ export const AdminDetailPesanan: React.FC = () => {
         </div>
       )}
 
-      {/* Modal 6: Pembayaran Berhasil Diverifikasi! matching Figma Image 2 Screen 6 */}
+      {/* Modal Berhasil Diverifikasi */}
       {modalSuccessOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-center border border-slate-100">

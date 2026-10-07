@@ -419,12 +419,12 @@ export const UserWebPortal: React.FC = () => {
               </nav>
             </div>
 
-            {/* Authentic Banyuwangi Gandrung Sewu Formation in Sidebar */}
+            {/* Ilustrasi Gandrung Sewu di Sidebar */}
             <div className="pt-2 px-1 relative z-10 shrink-0">
               <GandrungSewuSidebarFormation />
             </div>
 
-            {/* Operational Hours & Footer inside drawer matching media_1791115428347.png */}
+            {/* Jam Operasional dan Footer Drawer */}
             <div className="pt-2 border-t border-white/10 space-y-2 relative z-10 shrink-0">
               {/* Jam Buka Loket Box */}
               <div className="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 space-y-1.5 text-left">
@@ -465,14 +465,14 @@ export const UserWebPortal: React.FC = () => {
         </div>
       )}
 
-      {/* ================= LEFT SIDEBAR (Desktop Luxury Metallic Blue & Heritage Theme) ================= */}
+      {/* Sidebar Desktop Web */}
       <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden z-40 select-none print:hidden">
-        {/* Authentic Banyuwangi Batik Gajah Oling - Top-Right Crown Accent (Subtle & Elegant) */}
+        {/* Ornamen Gajah Oling Atas */}
         <div className="absolute -top-6 -right-6 w-36 h-36 opacity-[0.09] pointer-events-none select-none transform rotate-12">
           <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
         </div>
 
-        {/* Authentic Banyuwangi Batik Gajah Oling - Bottom-Right Frame Accent (Safely behind footer area) */}
+        {/* Ornamen Gajah Oling Bawah */}
         <div className="absolute -bottom-8 -right-8 w-48 h-48 opacity-[0.07] pointer-events-none select-none transform -rotate-12">
           <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-lg" />
         </div>
@@ -677,7 +677,7 @@ export const UserWebPortal: React.FC = () => {
             </nav>
           </div>
 
-          {/* Authentic Banyuwangi Gandrung Sewu Procession in Desktop Sidebar */}
+          {/* Ilustrasi Gandrung Sewu di Sidebar */}
           <div className="pt-2 px-1 relative z-10 shrink-0">
             <GandrungSewuSidebarFormation />
           </div>
@@ -724,7 +724,7 @@ export const UserWebPortal: React.FC = () => {
 
       {/* ================= MAIN CONTENT AREA ================= */}
       <div className="md:ml-72 lg:ml-80 flex-1 flex flex-col min-h-screen relative overflow-x-hidden bg-white w-full print:m-0 print:p-0 print:min-h-0 print:overflow-visible">
-        {/* Top Header matching Figma Screen 10 (Desktop only to prevent duplicate header on mobile) */}
+        {/* Header Desktop */}
         <header className="hidden md:flex bg-white border-b border-slate-100 px-6 sm:px-8 py-3.5 items-center justify-between sticky top-0 z-30 print:hidden">
           <div className="flex items-center gap-3">
             <MuseumLogo variant="dark" className="h-8" />
@@ -755,7 +755,7 @@ export const UserWebPortal: React.FC = () => {
             <div className="space-y-8 animate-in fade-in duration-200">
               {/* Grand Panoramic Hero Banner with Metallic Blue & Gandrung Heritage */}
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-[#224A72]/40 bg-[#081827] text-white min-h-[340px] flex flex-col justify-end p-6 sm:p-10 select-none">
-                {/* Background Rotating Slideshow: Displays all 4 authentic museum photos */}
+                {/* Slider Foto Museum */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                   {heroSlides.map((slide, idx) => (
                     <img
@@ -770,7 +770,7 @@ export const UserWebPortal: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#061422] via-[#061422]/40 via-35% to-transparent pointer-events-none" />
                 </div>
 
-                {/* Authentic Banyuwangi Cultural Accents: Subtle Gold Batik Gajah Oling */}
+                {/* Ornamen Gajah Oling */}
                 <div className="hidden sm:block absolute right-0 top-0 w-48 h-48 opacity-15 pointer-events-none select-none z-10">
                   <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
                 </div>
@@ -1133,7 +1133,7 @@ export const UserWebPortal: React.FC = () => {
             </div>
           )}
 
-          {/* ================= CASE 2: TIKET SAYA WEB (Figma Screen 10) ================= */}
+          {/* ================= CASE 2: TIKET SAYA WEB ================= */}
           {(activeView === 'user-web-portal' || viewingTicketId) && (
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 ${viewingTicketId ? 'print:hidden' : ''}`}>
@@ -1146,7 +1146,7 @@ export const UserWebPortal: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:auto">
                   <div className="relative flex-1 sm:flex-initial">
                     <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
@@ -1215,7 +1215,7 @@ export const UserWebPortal: React.FC = () => {
                   />
                 </div>
               ) : filteredBookings.length === 0 ? (
-                /* Ticket Empty State matching Figma Screen 10 */
+                /* Tampilan saat belum ada tiket */
                 <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-2xs flex flex-col items-center text-center max-w-lg mx-auto my-8">
                   <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 mb-3">
                     <Ticket className="w-8 h-8 stroke-[1.5]" />
@@ -1270,7 +1270,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                /* List of Tickets matching Figma Screen 10 */
+                /* Daftar tiket pengunjung */
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {filteredBookings.map((b) => (
                     <div
@@ -1381,9 +1381,9 @@ export const UserWebPortal: React.FC = () => {
           )}
         </main>
 
-        {/* ================= OFFICIAL FOOTER: CLEAN, BALANCED & ELEGANT (UI-PRO) ================= */}
+        {/* Footer Halaman Web */}
         <footer className="mt-auto bg-[#071626] text-white border-t border-[#17304C] py-10 px-6 sm:px-10 lg:px-12 select-none font-sans antialiased relative overflow-hidden print:hidden">
-          {/* Subtle Authentic Banyuwangi Batik Gajah Oling Top Frieze */}
+          {/* Ornamen Motif Gajah Oling */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#D4A359]/35 to-transparent pointer-events-none" />
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-80 h-7 opacity-20 pointer-events-none select-none">
             <img

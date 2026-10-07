@@ -55,7 +55,7 @@ export const BatikGajahOlingCard: React.FC<BatikGajahOlingCardProps> = ({ classN
             </div>
           </div>
 
-          {/* Right Column: Authentic Batik Gajah Oling Spiral Visual */}
+          {/* Kolom Kanan: Visual Ornamen Gajah Oling */}
           <div className="relative shrink-0 w-16 h-20 flex items-center justify-center">
             {/* Golden Ambient Glow */}
             <div className="absolute inset-0 bg-radial from-[#D4A359]/30 via-transparent to-transparent blur-xs pointer-events-none" />

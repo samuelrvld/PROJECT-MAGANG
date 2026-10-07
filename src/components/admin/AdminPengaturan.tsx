@@ -262,7 +262,7 @@ export const AdminPengaturan: React.FC = () => {
       subtitle="Konfigurasi preferensi sistem, operasional, dan data museum."
     >
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-5xl mx-auto">
-        {/* Left Column: 5 Setting Cards matching Figma Image 2 Screen 10 */}
+        {/* Kolom Kiri: Menu Pengaturan */}
         <div className="md:col-span-5 space-y-3">
           {sections.map((sec) => (
             <div

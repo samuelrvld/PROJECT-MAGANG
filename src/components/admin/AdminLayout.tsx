@@ -315,20 +315,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
         </div>
       )}
 
-      {/* ================= DESKTOP ADMIN LUXURY SIDEBAR (Metallic Blue & Heritage Theme) ================= */}
+      {/* Sidebar Desktop Admin */}
       <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden z-40 select-none print:hidden">
-        {/* Authentic Banyuwangi Batik Gajah Oling - Top-Right Crown Accent (Subtle & Elegant) */}
+        {/* Ornamen Gajah Oling Atas */}
         <div className="absolute -top-6 -right-6 w-36 h-36 opacity-[0.09] pointer-events-none select-none transform rotate-12">
           <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
         </div>
 
-        {/* Authentic Banyuwangi Batik Gajah Oling - Bottom-Right Frame Accent (Safely behind footer area) */}
+        {/* Ornamen Gajah Oling Bawah */}
         <div className="absolute -bottom-8 -right-8 w-48 h-48 opacity-[0.07] pointer-events-none select-none transform -rotate-12">
           <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-lg" />
         </div>
 
         <div className="space-y-3 relative z-10">
-          {/* Logo Brand Card - Rich Ethnic Cultural Border */}
+          {/* Logo Museum */}
           <div className="pt-1 pb-3 border-b border-white/10 relative">
             <div className="flex items-center justify-between">
               <MuseumLogo variant="white" className="h-9 sm:h-10 w-auto" />
@@ -481,7 +481,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
 
       {/* Main Content Area */}
       <div className="md:ml-72 lg:ml-80 flex-1 flex flex-col min-h-screen overflow-x-hidden w-full print:ml-0 print:min-h-0 print:p-0 print:overflow-visible">
-        {/* Top Header matching Figma Image 2 */}
+        {/* Header Atas */}
         <header className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 sticky top-0 z-20 print:hidden">
           <div>
             <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">

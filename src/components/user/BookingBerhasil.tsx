@@ -15,7 +15,7 @@ import {
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
 
-export const Screen6BookingBerhasil: React.FC = () => {
+export const BookingBerhasil: React.FC = () => {
   const { setActiveView, currentBooking, myBookings } = useBooking();
   const [copied, setCopied] = useState(false);
 
@@ -39,7 +39,7 @@ export const Screen6BookingBerhasil: React.FC = () => {
           <MuseumLogo variant="dark" className="h-7 sm:h-8" />
         </header>
 
-        {/* Content Body matching Figma Screen 6 */}
+        {/* Konten Status Berhasil */}
         <main className="flex-1 px-5 py-5 overflow-y-auto flex flex-col items-center text-center space-y-3.5">
           {!booking ? (
             <div className="py-16 text-center space-y-3">
@@ -75,7 +75,7 @@ export const Screen6BookingBerhasil: React.FC = () => {
                 </p>
               </div>
 
-              {/* Booking Summary Box matching Figma Screen 6 (#FCF8EF soft cream) */}
+              {/* Kotak Ringkasan Kode Booking */}
               <div className="w-full bg-[#FCF8EF] border border-[#F5EEDB] rounded-2xl p-4 text-left space-y-2.5 relative overflow-hidden">
                 {/* Subtle Gajah Oling watermark */}
                 <div className="absolute -right-4 -bottom-4 w-24 h-24 opacity-10 pointer-events-none select-none">
@@ -168,7 +168,7 @@ export const Screen6BookingBerhasil: React.FC = () => {
           )}
         </main>
 
-        {/* Footer: [Kembali ke Beranda] matching Figma Screen 6 */}
+        {/* Tombol Kembali ke Beranda */}
         <footer className="p-4 pb-6 sm:pb-4 border-t border-slate-100 bg-white">
           <button
             type="button"

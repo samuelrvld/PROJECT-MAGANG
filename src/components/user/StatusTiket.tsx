@@ -13,7 +13,7 @@ import {
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
 
-export const Screen7StatusVerifikasi: React.FC = () => {
+export const StatusTiket: React.FC = () => {
   const { setActiveView, currentBooking, myBookings, verifyBooking } = useBooking();
   const booking = currentBooking || myBookings[0] || null;
 
@@ -24,14 +24,14 @@ export const Screen7StatusVerifikasi: React.FC = () => {
       {/* Responsive Frame: 100% full width on mobile, centered card on desktop */}
       <div className="w-full max-w-full sm:max-w-[420px] md:max-w-xl min-h-screen sm:min-h-[820px] bg-white text-slate-800 flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl border-0 sm:border sm:border-slate-200 overflow-hidden relative">
         
-        {/* ================= TOP SECTION: ROYAL BLAMBANGAN NAVY HEADER ================= */}
+        {/* Header Status Tiket */}
         <div className="bg-[#14293E] text-white pt-4 pb-6 px-4 flex flex-col items-center justify-center relative overflow-hidden border-b border-[#D4A359]/25 shadow-sm">
-          {/* Top-Left Authentic Batik Gajah Oling Accent (Neat Corner Framing) */}
+          {/* Ornamen Gajah Oling Kiri */}
           <div className="absolute -left-1 -top-1 w-20 sm:w-24 h-24 sm:h-28 opacity-30 pointer-events-none select-none">
             <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(212,163,89,0.3)]" />
           </div>
 
-          {/* Top-Right Authentic Batik Gajah Oling Accent (Mirrored Corner Framing) */}
+          {/* Ornamen Gajah Oling Kanan */}
           <div className="absolute -right-1 -top-1 w-20 sm:w-24 h-24 sm:h-28 opacity-30 pointer-events-none select-none scale-x-[-1]">
             <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(212,163,89,0.3)]" />
           </div>
