@@ -218,14 +218,18 @@ PROJECT MAGANG/
 │   │   │   ├── SocialMediaLinks.tsx         # Ikon media sosial resmi simetris
 │   │   │   ├── GajahOlingMotif.tsx          # Vektor ornamen Batik Gajah Oling
 │   │   │   ├── MuseumLogo.tsx               # Komponen logo resmi museum
+│   │   │   ├── VideoPitching.tsx            # Pemutar video pitching interaktif
 │   │   │   └── SiluetPenariGandrung.tsx     # Komponen siluet SVG penari Gandrung
 │   │   └── user/                            # Modul Publik & Wisatawan
-│   │       ├── Screen1Landing.tsx           # Layar landing mobile
-│   │       ├── Screen2FormData.tsx          # Formulir reservasi data pengunjung
-│   │       ├── Screen3Ringkasan.tsx         # Rincian ringkasan biaya tiket
-│   │       ├── Screen4PembayaranQRIS.tsx    # Standee QRIS Nasional & transfer Bank Jatim
-│   │       ├── Screen6BookingBerhasil.tsx   # Halaman konfirmasi booking berhasil
-│   │       ├── Screen7StatusVerifikasi.tsx  # Pelacakan status verifikasi pembayaran
+│   │       ├── LandingPage.tsx              # Layar beranda mobile
+│   │       ├── FormBooking.tsx              # Formulir reservasi data pengunjung
+│   │       ├── RingkasanBooking.tsx         # Rincian ringkasan biaya tiket
+│   │       ├── PembayaranQRIS.tsx           # Standee QRIS Nasional & transfer Bank Jatim
+│   │       ├── BookingBerhasil.tsx          # Halaman konfirmasi booking berhasil
+│   │       ├── StatusTiket.tsx              # Pelacakan status verifikasi pembayaran
+│   │       ├── TiketKunjungan.tsx           # Tampilan e-tiket aktif pengunjung
+│   │       ├── SimulatorMobile.tsx          # Pratinjau tampilan aplikasi mobile
+│   │       ├── UserMusewangiDashboard.tsx   # Panduan cerdas & katalog cagar budaya
 │   │       └── UserWebPortal.tsx            # Portal utama publik (desktop & mobile drawer)
 │   ├── context/
 │   │   └── BookingContext.tsx               # State global transaksi & manajemen admin
