@@ -176,15 +176,6 @@ export const MuseumFeatureModals: React.FC<MuseumFeatureModalsProps> = ({
               <div className="space-y-2 mt-2">
                 <button
                   type="button"
-                  onClick={() => { onClose(); setActiveView('user-musewangi'); }}
-                  className="w-full py-2.5 px-4 bg-[#092C48] hover:bg-[#071f33] text-white font-bold text-xs rounded-xl shadow transition-transform active:scale-95 text-center flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#DAB36E]" />
-                  <span>Buka Dashboard Musewangi (Audio Guide 3 Bahasa) →</span>
-                </button>
-
-                <button
-                  type="button"
                   onClick={() => { onClose(); setActiveView('user-form'); }}
                   className="w-full py-2.5 px-4 bg-[#DAB36E] hover:bg-[#cba45e] text-[#14293E] font-bold text-xs rounded-xl shadow transition-transform active:scale-95 text-center cursor-pointer"
                 >

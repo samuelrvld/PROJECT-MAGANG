@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Booking, AdminNotification, ActivityLog, CategoryType, WalkInBookingInput, AdminUser, MusewangiArtifact } from '../types';
-import { INITIAL_BOOKINGS, INITIAL_NOTIFICATIONS, INITIAL_ACTIVITIES, INITIAL_ADMINS, INITIAL_ARTIFACTS } from '../data/mockData';
+import type { Booking, AdminNotification, ActivityLog, CategoryType, WalkInBookingInput, AdminUser } from '../types';
+import { INITIAL_BOOKINGS, INITIAL_NOTIFICATIONS, INITIAL_ACTIVITIES, INITIAL_ADMINS } from '../data/mockData';
 import { 
   type SessionConfig, 
   type IshomaConfig, 
@@ -23,7 +23,6 @@ export type AppView =
   | 'user-ticket'
   | 'user-mobile-preview'
   | 'user-web-portal'
-  | 'user-musewangi'
   | 'user-pitching'
   | 'admin-login'
   | 'admin-dashboard'
@@ -35,7 +34,6 @@ export type AppView =
   | 'admin-settings'
   | 'admin-visitors'
   | 'admin-scan'
-  | 'admin-collections'
   | 'admin-users';
 
 export interface BookingFormData {
@@ -93,11 +91,6 @@ interface BookingContextType {
   updateAllSessions: (newSessions: SessionConfig[]) => void;
   updateIshoma: (newIshoma: IshomaConfig) => void;
   resetSchedule: () => void;
-  artifacts: MusewangiArtifact[];
-  addArtifact: (artifact: Omit<MusewangiArtifact, 'id' | 'createdAt' | 'qrPayload'>) => MusewangiArtifact;
-  updateArtifact: (id: string, updated: Partial<MusewangiArtifact>) => void;
-  deleteArtifact: (id: string) => void;
-  resetArtifacts: () => void;
 }
 
 const DEFAULT_FORM_DATA: BookingFormData = {
@@ -127,7 +120,6 @@ const viewFromHash = (): AppView => {
     if (hash === 'admin/pengaturan') return 'admin-settings';
     if (hash === 'admin/pengunjung') return 'admin-visitors';
     if (hash === 'admin/scan' || hash === 'admin/validasi' || hash === 'admin/gate') return 'admin-scan';
-    if (hash === 'admin/koleksi' || hash === 'admin/musewangi' || hash === 'admin-collections') return 'admin-collections';
     if (hash === 'admin/users' || hash === 'admin/petugas' || hash === 'admin/tim' || hash === 'admin-users') return 'admin-users';
     return 'admin-dashboard';
   }
@@ -139,7 +131,6 @@ const viewFromHash = (): AppView => {
   if (hash === 'tiket') return 'user-ticket';
   if (hash === 'mobile') return 'user-mobile-preview';
   if (hash === 'portal' || hash === 'tiket-saya') return 'user-web-portal';
-  if (hash === 'musewangi' || hash === 'koleksi' || hash === 'koleksi-sejarah') return 'user-musewangi';
   if (hash === 'pitching' || hash === 'video' || hash === 'pitch' || hash === 'video-pitching') return 'user-pitching';
   return 'user-landing';
 };
@@ -155,7 +146,6 @@ const hashFromView = (view: AppView): string => {
     case 'user-ticket': return '#/tiket';
     case 'user-mobile-preview': return '#/mobile';
     case 'user-web-portal': return '#/tiket-saya';
-    case 'user-musewangi': return '#/musewangi';
     case 'user-pitching': return '#/pitching';
     case 'admin-login': return '#/admin/login';
     case 'admin-dashboard': return '#/admin';
@@ -167,7 +157,6 @@ const hashFromView = (view: AppView): string => {
     case 'admin-settings': return '#/admin/pengaturan';
     case 'admin-visitors': return '#/admin/pengunjung';
     case 'admin-scan': return '#/admin/scan';
-    case 'admin-collections': return '#/admin/koleksi';
     case 'admin-users': return '#/admin/petugas';
     default: return '#/';
   }
@@ -1043,79 +1032,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
   };
 
-  // Musewangi Artefak & Koleksi Cagar Budaya
-  const [artifacts, setArtifacts] = useState<MusewangiArtifact[]>(() => {
-    try {
-      const saved = localStorage.getItem('mb_musewangi_artifacts');
-      return saved ? JSON.parse(saved) : INITIAL_ARTIFACTS;
-    } catch (_) {
-      return INITIAL_ARTIFACTS;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('mb_musewangi_artifacts', JSON.stringify(artifacts));
-    } catch (_) {}
-  }, [artifacts]);
-
-  const addArtifact = (input: Omit<MusewangiArtifact, 'id' | 'createdAt' | 'qrPayload'>): MusewangiArtifact => {
-    const id = `MW-${input.kategori.slice(0, 3).toUpperCase()}-${Date.now().toString().slice(-4)}`;
-    const newArt: MusewangiArtifact = {
-      ...input,
-      id,
-      qrPayload: `MUSEWANGI:${id}`,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    setArtifacts(prev => [newArt, ...prev]);
-
-    const newAct: ActivityLog = {
-      id: `act-${Date.now()}`,
-      user: currentAdminUser?.nama || 'Petugas Kurator',
-      action: `Menambahkan artefak Musewangi: ${newArt.nama} (${newArt.kategori})`,
-      target: newArt.id,
-      timestamp: 'Baru saja'
-    };
-    setActivities(prev => [newAct, ...prev]);
-
-    return newArt;
-  };
-
-  const updateArtifact = (id: string, updated: Partial<MusewangiArtifact>) => {
-    setArtifacts(prev => prev.map(a => a.id === id ? { ...a, ...updated } : a));
-
-    const targetArt = artifacts.find(a => a.id === id);
-    const newAct: ActivityLog = {
-      id: `act-${Date.now()}`,
-      user: currentAdminUser?.nama || 'Petugas Kurator',
-      action: `Memperbarui artefak Musewangi: ${targetArt?.nama || id}`,
-      target: id,
-      timestamp: 'Baru saja'
-    };
-    setActivities(prev => [newAct, ...prev]);
-  };
-
-  const deleteArtifact = (id: string) => {
-    const targetArt = artifacts.find(a => a.id === id);
-    setArtifacts(prev => prev.filter(a => a.id !== id));
-
-    const newAct: ActivityLog = {
-      id: `act-${Date.now()}`,
-      user: currentAdminUser?.nama || 'Petugas Kurator',
-      action: `Menghapus artefak Musewangi: ${targetArt?.nama || id}`,
-      target: id,
-      timestamp: 'Baru saja'
-    };
-    setActivities(prev => [newAct, ...prev]);
-  };
-
-  const resetArtifacts = () => {
-    setArtifacts(INITIAL_ARTIFACTS);
-    try {
-      localStorage.setItem('mb_musewangi_artifacts', JSON.stringify(INITIAL_ARTIFACTS));
-    } catch (_) {}
-  };
-
   const resetAllData = () => {
     localStorage.removeItem('mb_bookings');
     localStorage.removeItem('mb_notifications');
@@ -1123,12 +1039,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     localStorage.removeItem('mb_my_booking_ids');
     localStorage.removeItem('mb_admin_users');
     localStorage.removeItem('mb_current_admin');
-    localStorage.removeItem('mb_musewangi_artifacts');
     setBookings(INITIAL_BOOKINGS);
     setNotifications(INITIAL_NOTIFICATIONS);
     setActivities(INITIAL_ACTIVITIES);
     setAdmins(INITIAL_ADMINS);
-    setArtifacts(INITIAL_ARTIFACTS);
     setCurrentAdminUser(null);
     setMyBookingIds([]);
     setCurrentBooking(null);
@@ -1181,11 +1095,6 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateAllSessions,
         updateIshoma,
         resetSchedule,
-        artifacts,
-        addArtifact,
-        updateArtifact,
-        deleteArtifact,
-        resetArtifacts,
       }}
     >
       {children}

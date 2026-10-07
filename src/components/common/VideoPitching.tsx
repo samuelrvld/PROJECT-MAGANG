@@ -20,12 +20,12 @@ import { MuseumLogo } from './MuseumLogo';
 import { GajahOlingMotif } from './GajahOlingMotif';
 
 const CHAPTERS = [
-  { time: 0, title: '01 • Pendahuluan & Proyek', desc: 'Pengenalan Sistem Informasi & E-Ticketing MUSEWANGI' },
+  { time: 0, title: '01 • Pendahuluan & Proyek', desc: 'Pengenalan Sistem Informasi E-Ticketing Museum Blambangan' },
   { time: 5, title: '02 • Latar Belakang & Masalah', desc: 'Tantangan antrean fisik & risiko kebocoran retribusi manual' },
   { time: 11, title: '03 • Solusi: Ekosistem Digital', desc: 'Pemesanan 24/7, kuota sesi, QRIS resmi, & gate validator' },
   { time: 17, title: '04 • Pengalaman Wisatawan', desc: 'Pemesanan 3 langkah, tarif resmi, & E-Tiket PDF 300 DPI' },
   { time: 23, title: '05 • Gate Petugas & Scanner', desc: 'Kamera BarcodeDetector, audio beep indikator, & anti-duplikat' },
-  { time: 29, title: '06 • Keuangan & Cagar Budaya', desc: 'Laporan PAD transparan & katalog digital koleksi Musewangi' },
+  { time: 29, title: '06 • Keuangan & PAD', desc: 'Laporan PAD transparan & rekapitulasi retribusi daerah' },
   { time: 35, title: '07 • Tim Mahasiswa TRPL', desc: 'Fitria Nur Aini, Syifa\'ul Qolbi, Ahmad Rofi Ridho, Samuel Christian H.' },
   { time: 42, title: '08 • Penutup & Implementasi', desc: 'Melestarikan sejarah dengan teknologi masa kini (Poliwangi 2026)' },
 ];
@@ -142,7 +142,7 @@ export const VideoPitching: React.FC = () => {
             <span>Presentasi Proyek Magang D4 TRPL Poliwangi</span>
           </div>
           <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">
-            MUSEWANGI: Sistem E-Ticketing & Rekayasa Digital
+            Sistem Informasi E-Ticketing Museum Blambangan
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto">
             Video pitching resmi untuk pengujian magang, instansi Dinas Kebudayaan & Pariwisata Kab. Banyuwangi, serta publikasi pariwisata daerah.

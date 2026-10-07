@@ -96,17 +96,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       ]
     },
     {
-      categoryTitle: 'Cagar Budaya & Kurasi',
-      items: [
-        { 
-          id: 'admin-collections', 
-          label: 'Koleksi Musewangi', 
-          subtitle: 'Digitalisasi & Label Etalase',
-          icon: <Compass className="w-3.5 h-3.5" /> 
-        },
-      ]
-    },
-    {
       categoryTitle: 'Data & Keuangan',
       items: [
         { 

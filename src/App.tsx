@@ -23,9 +23,7 @@ const AdminLaporan = lazy(() => import('./components/admin/AdminLaporan').then(m
 const AdminPengaturan = lazy(() => import('./components/admin/AdminPengaturan').then(m => ({ default: m.AdminPengaturan })));
 const AdminDataPengunjung = lazy(() => import('./components/admin/AdminDataPengunjung').then(m => ({ default: m.AdminDataPengunjung })));
 const AdminScanValidasi = lazy(() => import('./components/admin/AdminScanValidasi').then(m => ({ default: m.AdminScanValidasi })));
-const AdminKoleksiMusewangi = lazy(() => import('./components/admin/AdminKoleksiMusewangi').then(m => ({ default: m.AdminKoleksiMusewangi })));
 const AdminManajemenPetugas = lazy(() => import('./components/admin/AdminManajemenPetugas').then(m => ({ default: m.AdminManajemenPetugas })));
-const UserMusewangiDashboard = lazy(() => import('./components/user/UserMusewangiDashboard').then(m => ({ default: m.UserMusewangiDashboard })));
 const VideoPitching = lazy(() => import('./components/common/VideoPitching').then(m => ({ default: m.VideoPitching })));
 
 const FallbackLoader: React.FC = () => (
@@ -75,23 +73,12 @@ const MainViewRouter: React.FC = () => {
               return <AdminDataPengunjung />;
             case 'admin-scan':
               return <AdminScanValidasi />;
-            case 'admin-collections':
-              return <AdminKoleksiMusewangi />;
             case 'admin-users':
               return <AdminManajemenPetugas />;
             default:
               return <AdminDashboard />;
           }
         })()}
-      </Suspense>
-    );
-  }
-
-  // Musewangi Smart Heritage Guide & Audio Tour
-  if (activeView === 'user-musewangi') {
-    return (
-      <Suspense fallback={<FallbackLoader />}>
-        <UserMusewangiDashboard />
       </Suspense>
     );
   }

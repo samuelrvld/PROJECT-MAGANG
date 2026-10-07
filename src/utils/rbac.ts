@@ -23,7 +23,6 @@ export const ROLE_CONFIGS: Record<AdminRole, RoleConfig> = {
       'admin-order-detail',
       'admin-ticket-view',
       'admin-scan',
-      'admin-collections',
       'admin-visitors',
       'admin-reports',
       'admin-users',
@@ -90,21 +89,19 @@ export const ROLE_CONFIGS: Record<AdminRole, RoleConfig> = {
   },
   'Keuangan': {
     role: 'Keuangan',
-    title: 'Bagian Keuangan & Kurasi Budaya',
+    title: 'Bagian Keuangan & Rekap Retribusi PAD',
     badgeColor: 'bg-amber-50 text-amber-700 border-amber-200',
-    description: 'Mengelola pembukuan pendapatan retribusi daerah (PAD) dan pendataan katalog artefak cagar budaya.',
+    description: 'Mengelola pembukuan pendapatan retribusi daerah (PAD) dan rekapitulasi transaksi tiket museum.',
     allowedViews: [
       'admin-dashboard',
       'admin-visitors',
       'admin-reports',
-      'admin-collections',
       'admin-notifications',
     ],
     allowedFeatures: [
       'Ekspor laporan retribusi kunjungan (Excel / PDF)',
       'Rekap transaksi harian, bulanan, dan tahunan',
-      'Katalogisasi & digitalisasi cagar budaya Musewangi',
-      'Pencetakan label QR akrilik showcase museum'
+      'Monitoring grafik tren pendapatan PAD museum'
     ],
     restrictedFeatures: [
       'Pemindaian kamera gate masuk (dipegang Petugas Loket)',
@@ -154,14 +151,6 @@ export const PERMISSION_MATRIX: MatrixRow[] = [
     verifikator: true,
     petugasLoket: true,
     keuangan: false,
-  },
-  {
-    modul: 'Kurasi Koleksi Musewangi & Cetak Label',
-    deskripsi: 'Manajemen narasi cagar budaya dan label akrilik etalase',
-    superadmin: true,
-    verifikator: false,
-    petugasLoket: false,
-    keuangan: true,
   },
   {
     modul: 'Laporan Rekap Retribusi & Ekspor PAD',

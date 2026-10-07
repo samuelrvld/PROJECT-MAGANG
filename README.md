@@ -210,7 +210,8 @@ PROJECT MAGANG/
 │   │   │   ├── AdminWalkInModal.tsx         # Tiket on-the-spot di meja loket
 │   │   │   ├── AdminLaporan.tsx             # Rekap laporan retribusi & ekspor CSV
 │   │   │   ├── AdminNotifikasiRiwayat.tsx   # Pusat notifikasi pesanan masuk
-│   │   │   └── AdminPengaturan.tsx          # Pengaturan sesi, ISHOMA & Manajemen Admin
+│   │   │   ├── AdminManajemenPetugas.tsx    # Manajemen akun tim petugas & hak akses (RBAC)
+│   │   │   └── AdminPengaturan.tsx          # Pengaturan sesi, jam buka, tarif & ISHOMA
 │   │   ├── common/                          # Komponen Budaya & Utilitas Bersama
 │   │   │   ├── GandrungSewuSidebarFormation.tsx # Formasi siluet Gandrung Sewu di sidebar
 │   │   │   ├── ModernTicketPass.tsx         # E-Tiket ber-Barcode, QR & isolated print
@@ -229,7 +230,6 @@ PROJECT MAGANG/
 │   │       ├── StatusTiket.tsx              # Pelacakan status verifikasi pembayaran
 │   │       ├── TiketKunjungan.tsx           # Tampilan e-tiket aktif pengunjung
 │   │       ├── SimulatorMobile.tsx          # Pratinjau tampilan aplikasi mobile
-│   │       ├── UserMusewangiDashboard.tsx   # Panduan cerdas & katalog cagar budaya
 │   │       └── UserWebPortal.tsx            # Portal utama publik (desktop & mobile drawer)
 │   ├── context/
 │   │   └── BookingContext.tsx               # State global transaksi & manajemen admin

@@ -80,22 +80,3 @@ export interface AdminUser {
   createdAt: string;
 }
 
-export type MusewangiCategory = 'Arkeologi' | 'Etnografi' | 'Historika' | 'Numismatika' | 'Filologi';
-
-export interface MusewangiArtifact {
-  id: string; // e.g. "MW-ARK-001"
-  noRegistrasi: string; // e.g. "03.01.MB.1982"
-  nama: string;
-  kategori: MusewangiCategory;
-  era: string;
-  lokasiPameran: string;
-  dimensi: string;
-  gambarUrl: string;
-  deskripsiId: string;
-  deskripsiEn: string;
-  deskripsiOsing: string;
-  audioNarrative?: string;
-  qrPayload: string; // e.g. "MUSEWANGI:MW-ARK-001"
-  createdAt: string;
-}
-

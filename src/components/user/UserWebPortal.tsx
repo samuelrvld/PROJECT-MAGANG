@@ -347,7 +347,7 @@ export const UserWebPortal: React.FC = () => {
 
                   <button
                     type="button"
-                    onClick={() => { setActiveView('user-musewangi'); setMobileSidebarOpen(false); }}
+                    onClick={() => { setActiveModal('koleksi'); setMobileSidebarOpen(false); }}
                     className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-all text-left cursor-pointer group"
                   >
                     <div className="flex items-center gap-3">
@@ -606,7 +606,7 @@ export const UserWebPortal: React.FC = () => {
             <nav className="space-y-1 text-xs">
               <button
                 type="button"
-                onClick={() => setActiveView('user-musewangi')}
+                onClick={() => setActiveModal('koleksi')}
                 className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer group"
               >
                 <div className="flex items-center gap-3 text-left">
@@ -1026,7 +1026,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setActiveView('user-musewangi')}
+                    onClick={() => setActiveModal('koleksi')}
                     className="text-xs font-bold text-[#092C48] hover:text-[#D4A359] transition-colors flex items-center gap-1 shrink-0 self-start sm:self-auto cursor-pointer"
                   >
                     <span>Lihat Seluruh Koleksi</span>
@@ -1462,7 +1462,7 @@ export const UserWebPortal: React.FC = () => {
                   <li>
                     <button
                       type="button"
-                      onClick={() => setActiveView('user-musewangi')}
+                      onClick={() => setActiveModal('koleksi')}
                       className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer"
                     >
                       <span className="text-[#D4A359] text-xs">›</span>
