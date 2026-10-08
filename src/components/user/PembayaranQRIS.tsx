@@ -177,13 +177,56 @@ export const PembayaranQRIS: React.FC = () => {
   const processFile = (file: File) => {
     setFileName(file.name);
     setFileSize(`${(file.size / 1024).toFixed(0)} KB`);
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
-      if (uploadEvent.target?.result) {
-        setUploadedReceipt(uploadEvent.target.result as string);
-      }
-    };
-    reader.readAsDataURL(file);
+
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        const rawUrl = uploadEvent.target?.result as string;
+        if (!rawUrl) return;
+
+        const img = new Image();
+        img.onload = () => {
+          const MAX_SIZE = 900;
+          let w = img.width;
+          let h = img.height;
+          if (w > h) {
+            if (w > MAX_SIZE) {
+              h = Math.round((h * MAX_SIZE) / w);
+              w = MAX_SIZE;
+            }
+          } else {
+            if (h > MAX_SIZE) {
+              w = Math.round((w * MAX_SIZE) / h);
+              h = MAX_SIZE;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, w, h);
+            const compressed = canvas.toDataURL('image/jpeg', 0.75);
+            setUploadedReceipt(compressed);
+            const approxKb = Math.round((compressed.length * 3) / 4 / 1024);
+            setFileSize(`${approxKb} KB (Dioptimasi)`);
+          } else {
+            setUploadedReceipt(rawUrl);
+          }
+        };
+        img.onerror = () => setUploadedReceipt(rawUrl);
+        img.src = rawUrl;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        if (uploadEvent.target?.result) {
+          setUploadedReceipt(uploadEvent.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleUseDemoReceipt = () => {

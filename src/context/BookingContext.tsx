@@ -222,17 +222,40 @@ const mapSupabaseToAdmin = (d: any): AdminUser => ({
   createdAt: d.created_at || '2026-09-01',
 });
 
+// Helper penyimpanan aman: hapus string base64 raksasa sebelum disimpan ke localStorage agar tidak crash kuota 5MB browser
+const safeSaveBookingsToStorage = (bookingsList: Booking[]) => {
+  try {
+    const lightweight = bookingsList.slice(0, 50).map((b) => ({
+      ...b,
+      buktiPembayaranUrl: b.buktiPembayaranUrl && b.buktiPembayaranUrl.length > 500
+        ? (b.buktiPembayaranUrl.startsWith('data:') ? '/assets/sample-receipt.jpg' : b.buktiPembayaranUrl)
+        : b.buktiPembayaranUrl,
+    }));
+    localStorage.setItem('mb_bookings', JSON.stringify(lightweight));
+  } catch (err) {
+    console.warn('[LocalStorage] Kuota penuh untuk mb_bookings, data tetap aman di Supabase:', err);
+  }
+};
+
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
 export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [bookings, setBookings] = useState<Booking[]>(() => {
-    const saved = localStorage.getItem('mb_bookings');
-    return saved ? JSON.parse(saved) : INITIAL_BOOKINGS;
+    try {
+      const saved = localStorage.getItem('mb_bookings');
+      return saved ? JSON.parse(saved) : INITIAL_BOOKINGS;
+    } catch (_) {
+      return INITIAL_BOOKINGS;
+    }
   });
 
   const [notifications, setNotifications] = useState<AdminNotification[]>(() => {
-    const saved = localStorage.getItem('mb_notifications');
-    return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
+    try {
+      const saved = localStorage.getItem('mb_notifications');
+      return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
+    } catch (_) {
+      return INITIAL_NOTIFICATIONS;
+    }
   });
 
   const [activities, setActivities] = useState<ActivityLog[]>(() => {
@@ -610,21 +633,31 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('mb_bookings', JSON.stringify(bookings));
+    safeSaveBookingsToStorage(bookings);
   }, [bookings]);
 
   useEffect(() => {
-    localStorage.setItem('mb_notifications', JSON.stringify(notifications));
+    try {
+      localStorage.setItem('mb_notifications', JSON.stringify(notifications.slice(0, 50)));
+    } catch (_) {}
   }, [notifications]);
 
   useEffect(() => {
-    localStorage.setItem('mb_activities', JSON.stringify(activities));
+    try {
+      localStorage.setItem('mb_activities', JSON.stringify(activities.slice(0, 50)));
+    } catch (_) {}
   }, [activities]);
 
   useEffect(() => {
     try {
       if (currentBooking) {
-        localStorage.setItem('mb_current_booking', JSON.stringify(currentBooking));
+        const lightweight = {
+          ...currentBooking,
+          buktiPembayaranUrl: currentBooking.buktiPembayaranUrl && currentBooking.buktiPembayaranUrl.length > 500
+            ? (currentBooking.buktiPembayaranUrl.startsWith('data:') ? '/assets/sample-receipt.jpg' : currentBooking.buktiPembayaranUrl)
+            : currentBooking.buktiPembayaranUrl,
+        };
+        localStorage.setItem('mb_current_booking', JSON.stringify(lightweight));
       } else {
         localStorage.removeItem('mb_current_booking');
       }
@@ -686,9 +719,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           setBookings((prev) => {
             if (prev.some((b) => b.id === newB.id)) return prev;
             const updated = [newB, ...prev];
-            try {
-              localStorage.setItem('mb_bookings', JSON.stringify(updated));
-            } catch (_) {}
+            safeSaveBookingsToStorage(updated);
             return updated;
           });
 
@@ -703,7 +734,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             type: 'booking_baru',
           };
           setNotifications((prev) => {
-            const updated = [newNotif, ...prev];
+            const updated = [newNotif, ...prev.slice(0, 49)];
             try {
               localStorage.setItem('mb_notifications', JSON.stringify(updated));
             } catch (_) {}
@@ -718,7 +749,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             timestamp: 'Baru saja',
           };
           setActivities((prev) => {
-            const updated = [newAct, ...prev];
+            const updated = [newAct, ...prev.slice(0, 49)];
             try {
               localStorage.setItem('mb_activities', JSON.stringify(updated));
             } catch (_) {}
@@ -731,9 +762,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           const targetId = payload.bookingId;
           setBookings((prev) => {
             const updated = prev.map((b) => (b.id === targetId ? { ...b, status: 'Terverifikasi' as const } : b));
-            try {
-              localStorage.setItem('mb_bookings', JSON.stringify(updated));
-            } catch (_) {}
+            safeSaveBookingsToStorage(updated);
             return updated;
           });
 
@@ -750,9 +779,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const updated = prev.map((b) =>
               b.id === targetId ? { ...b, status: 'Ditolak' as const, alasanPenolakan: reason } : b
             );
-            try {
-              localStorage.setItem('mb_bookings', JSON.stringify(updated));
-            } catch (_) {}
+            safeSaveBookingsToStorage(updated);
             return updated;
           });
 
@@ -769,9 +796,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const updated = prev.map((b) =>
               b.id === targetId ? { ...b, checkInStatus: 'Sudah Masuk' as const, checkInTime } : b
             );
-            try {
-              localStorage.setItem('mb_bookings', JSON.stringify(updated));
-            } catch (_) {}
+            safeSaveBookingsToStorage(updated);
             return updated;
           });
 
@@ -812,9 +837,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           if (bData.length > 0) {
             const mapped = bData.map(mapSupabaseToBooking);
             setBookings(mapped);
-            try {
-              localStorage.setItem('mb_bookings', JSON.stringify(mapped));
-            } catch (_) {}
+            safeSaveBookingsToStorage(mapped);
           } else {
             // Seed sample bookings ke Supabase jika tabel masih kosong
             const initialPayload = INITIAL_BOOKINGS.map(mapBookingToSupabase);
@@ -859,9 +882,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             setBookings((prev) => {
               if (prev.some((b) => b.id === newB.id)) return prev;
               const updated = [newB, ...prev];
-              try {
-                localStorage.setItem('mb_bookings', JSON.stringify(updated));
-              } catch (_) {}
+              safeSaveBookingsToStorage(updated);
               return updated;
             });
 
@@ -875,20 +896,22 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
               read: false,
               type: 'booking_baru',
             };
-            setNotifications((prev) => [newNotif, ...prev]);
+            setNotifications((prev) => [newNotif, ...prev.slice(0, 49)]);
           } else if (payload.eventType === 'UPDATE' && payload.new) {
             const updatedB = mapSupabaseToBooking(payload.new);
             setBookings((prev) => {
               const updated = prev.map((b) => (b.id === updatedB.id ? updatedB : b));
-              try {
-                localStorage.setItem('mb_bookings', JSON.stringify(updated));
-              } catch (_) {}
+              safeSaveBookingsToStorage(updated);
               return updated;
             });
             setCurrentBooking((prev) => (prev && prev.id === updatedB.id ? updatedB : prev));
           } else if (payload.eventType === 'DELETE' && payload.old) {
             const deletedId = payload.old.id;
-            setBookings((prev) => prev.filter((b) => b.id !== deletedId));
+            setBookings((prev) => {
+              const updated = prev.filter((b) => b.id !== deletedId);
+              safeSaveBookingsToStorage(updated);
+              return updated;
+            });
           }
         }
       )
@@ -1169,9 +1192,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setBookings((prev) => {
       const updated = prev.filter((b) => b.id !== id);
-      try {
-        localStorage.setItem('mb_bookings', JSON.stringify(updated));
-      } catch (_) {}
+      safeSaveBookingsToStorage(updated);
       return updated;
     });
 

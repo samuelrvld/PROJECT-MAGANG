@@ -245,9 +245,10 @@ export const AdminLogin: React.FC = () => {
                     { nama: 'Samuel Rivaldo S.', nim: '362358302156', role: 'Keuangan', pass: 'admin123' },
                   ]).map((m) => {
                     const identifier = m.nim || ('nip' in m ? m.nip : '') || ('username' in m ? m.username : '') || ('email' in m ? m.email : '');
-                    const displayName = m.nama.length > 17
-                      ? m.nama.split(' ').slice(0, 3).map((w, idx) => idx === 2 ? w[0] + '.' : w).join(' ')
-                      : m.nama;
+                    const safeNama = m?.nama || 'Petugas';
+                    const displayName = safeNama.length > 17
+                      ? safeNama.split(' ').slice(0, 3).map((w, idx) => (idx === 2 && w ? w[0] + '.' : w)).join(' ')
+                      : safeNama;
                     const isNonaktif = 'status' in m && m.status === 'Nonaktif';
 
                     return (
