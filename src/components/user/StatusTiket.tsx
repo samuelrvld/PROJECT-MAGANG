@@ -7,7 +7,6 @@ import {
   Ticket, 
   ChevronLeft,
   Hourglass,
-  Sparkles,
   ShieldCheck,
   RefreshCw,
   AlertCircle
@@ -100,12 +99,11 @@ export const StatusTiket: React.FC = () => {
                     <Check className="w-9 h-9 stroke-[3]" />
                   </div>
                 </div>
-                <span className="absolute -top-1 -right-1 text-emerald-300 text-xs font-bold animate-pulse">✦</span>
               </div>
             ) : (
               <div className="relative group">
-                {/* Glowing backdrop pulse */}
-                <div className="absolute inset-0 rounded-3xl bg-[#DAB36E]/20 blur-xl -z-10 animate-pulse" />
+                {/* Glowing backdrop */}
+                <div className="absolute inset-0 rounded-3xl bg-[#DAB36E]/15 blur-xl -z-10" />
 
                 {/* Central Medallion */}
                 <div className="w-19 h-19 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-[#1B3654] via-[#254A73] to-[#152E4A] p-1 shadow-2xl border border-[#DAB36E]/60 flex items-center justify-center relative">
@@ -163,7 +161,7 @@ export const StatusTiket: React.FC = () => {
               <span className="text-[#D4A359]">✦</span>
             </div>
 
-            <h1 className="text-[18px] sm:text-xl font-extrabold text-slate-900 leading-tight">
+            <h1 className="font-serif text-lg sm:text-xl font-bold text-slate-900 leading-tight">
               {isVerified
                 ? 'Pembayaran Berhasil Diverifikasi!'
                 : 'Bukti Pembayaran Sedang Diverifikasi'}
@@ -270,8 +268,8 @@ export const StatusTiket: React.FC = () => {
               </div>
               <div className="flex-1 pr-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-[#F5E6CC] flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#D4A359]" />
+                  <span className="text-[11px] font-bold text-[#F5E6CC] flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
                     <span>Motif Khas Gajah Oling</span>
                   </span>
                   <span className="text-[8px] font-extrabold uppercase tracking-wider text-[#D4A359] bg-[#D4A359]/20 px-1.5 py-0.5 rounded-full border border-[#D4A359]/30">
@@ -349,8 +347,8 @@ export const StatusTiket: React.FC = () => {
                 Status otomatis disinkronkan saat Admin Loket menyetujui pembayaran
               </p>
 
-              {/* Mode Uji Coba Cepat (Khusus Simulasi Saat Presentasi) */}
-              {booking && (
+              {/* Mode Uji Coba Cepat (Khusus Simulasi Dev Saat Presentasi) */}
+              {import.meta.env.DEV && booking && (
                 <div className="pt-1 text-center">
                   <button
                     type="button"

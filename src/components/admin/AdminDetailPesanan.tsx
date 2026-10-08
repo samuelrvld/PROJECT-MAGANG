@@ -20,7 +20,8 @@ import {
   ExternalLink,
   Ticket,
   Maximize2,
-  Trash2
+  Trash2,
+  RotateCcw
 } from 'lucide-react';
 
 export const AdminDetailPesanan: React.FC = () => {
@@ -29,6 +30,7 @@ export const AdminDetailPesanan: React.FC = () => {
     selectedBookingId, 
     setActiveView, 
     verifyBooking, 
+    cancelVerification,
     rejectBooking,
     deleteBooking
   } = useBooking();
@@ -37,6 +39,7 @@ export const AdminDetailPesanan: React.FC = () => {
 
   // Modals state
   const [modalVerifyOpen, setModalVerifyOpen] = useState(false);
+  const [modalCancelVerifyOpen, setModalCancelVerifyOpen] = useState(false);
   const [modalRejectOpen, setModalRejectOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [modalSuccessOpen, setModalSuccessOpen] = useState(false);
@@ -59,6 +62,11 @@ export const AdminDetailPesanan: React.FC = () => {
       spread: 70,
       origin: { y: 0.6 }
     });
+  };
+
+  const handleConfirmCancelVerify = () => {
+    cancelVerification(booking.id);
+    setModalCancelVerifyOpen(false);
   };
 
   const handleConfirmReject = () => {
@@ -304,13 +312,25 @@ export const AdminDetailPesanan: React.FC = () => {
               {/* Tombol Aksi Verifikasi dan Tolak */}
               <div className="space-y-2.5 pt-2">
                 {booking.status === 'Terverifikasi' ? (
-                  <button
-                    onClick={() => setActiveView('admin-ticket-view')}
-                    className="w-full py-3 bg-[#092C48] hover:bg-[#071F33] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
-                  >
-                    <Ticket className="w-4 h-4 text-[#D4A359]" />
-                    <span>Lihat & Cetak Tiket Kunjungan</span>
-                  </button>
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setActiveView('admin-ticket-view')}
+                      className="w-full py-3 bg-[#092C48] hover:bg-[#071F33] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Ticket className="w-4 h-4 text-[#D4A359]" />
+                      <span>Lihat & Cetak Tiket Kunjungan</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setModalCancelVerifyOpen(true)}
+                      className="w-full py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+                    >
+                      <RotateCcw className="w-4 h-4 text-amber-600" />
+                      <span>Batalkan Verifikasi Tiket</span>
+                    </button>
+                  </div>
                 ) : (
                   <>
                     <button
@@ -579,6 +599,48 @@ export const AdminDetailPesanan: React.FC = () => {
               >
                 <span>Unduh Berkas</span>
               </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Batalkan Verifikasi */}
+      {modalCancelVerifyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center border border-slate-100 space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 mx-auto">
+              <RotateCcw className="w-7 h-7" />
+            </div>
+
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900">
+                Batalkan Verifikasi Tiket?
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                Status pesanan <strong className="text-slate-800 font-mono">{booking.id}</strong> atas nama <strong className="text-slate-800">{booking.nama}</strong> ({booking.jumlahOrang} Orang) akan dikembalikan ke status <strong>"Menunggu Verifikasi"</strong>.
+              </p>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-800 flex items-start gap-2 text-left">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+              <span>E-tiket pengunjung tidak akan dapat digunakan untuk masuk museum hingga pembayaran diverifikasi kembali oleh petugas.</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => setModalCancelVerifyOpen(false)}
+                className="py-2.5 px-4 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+              >
+                Kembali
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmCancelVerify}
+                className="py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                Ya, Batalkan Verifikasi
+              </button>
             </div>
           </div>
         </div>

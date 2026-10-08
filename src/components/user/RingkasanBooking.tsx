@@ -16,7 +16,6 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
-import { GajahOlingMotif } from '../common/GajahOlingMotif';
 
 export const RingkasanBooking: React.FC = () => {
   const { setActiveView, formData } = useBooking();
@@ -96,15 +95,12 @@ export const RingkasanBooking: React.FC = () => {
         <main className="flex-1 px-5 py-4 overflow-y-auto space-y-3.5 text-left">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-[18px] font-extrabold text-slate-900 leading-tight">
+              <h1 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
                 Ringkasan Pesanan
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
                 Periksa kembali detail pesanan Anda sebelum melanjutkan ke pembayaran.
               </p>
-            </div>
-            <div className="w-10 h-10 shrink-0 opacity-20 pointer-events-none select-none hidden sm:block">
-              <GajahOlingMotif variant="gold" className="w-full h-full object-contain" />
             </div>
           </div>
 

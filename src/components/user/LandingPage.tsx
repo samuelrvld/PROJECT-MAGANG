@@ -82,7 +82,7 @@ export const LandingPage: React.FC = () => {
               }`}
             />
           ))}
-          {/* Metallic Blue Vignette Gradient */}
+          {/* Background Gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 via-45% to-[#081523]" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#081523]/90 via-[#081523]/50 via-50% to-transparent pointer-events-none" />
         </div>
@@ -319,7 +319,7 @@ export const LandingPage: React.FC = () => {
           {/* Slideshow Pill & Dot Indicators */}
           <div className="flex items-center gap-2 mb-3.5 relative z-10">
             <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-md px-3 py-1 rounded-full border border-[#D4A359]/30 text-[10.5px] text-[#E5BE7E] shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
               <span className="font-medium">{heroSlides[activeSlide].caption}</span>
             </div>
             <div className="flex items-center gap-1 bg-black/35 backdrop-blur-xs px-2 py-1.5 rounded-full border border-white/10">
@@ -339,9 +339,9 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Main Title */}
-          <h1 className="text-[25px] sm:text-[27px] font-bold text-white leading-[1.3] mb-2.5 drop-shadow-md relative z-10">
+          <h1 className="font-serif text-[26px] sm:text-[30px] font-bold text-white leading-[1.25] mb-2.5 drop-shadow-md relative z-10 tracking-normal">
             Selamat Datang di<br />
-            Museum Blambangan
+            <span className="text-[#F3E2C4]">Museum Blambangan</span>
           </h1>
 
           {/* Subtitle */}
@@ -365,9 +365,8 @@ export const LandingPage: React.FC = () => {
           </div>
         </main>
 
-        {/* Bottom 3 Features Bar with Metallic Blue Finish */}
+        {/* Footer Features */}
         <footer className="relative z-10 w-full bg-gradient-to-r from-[#061422] via-[#0E2640] to-[#061422] px-4 py-4 border-t border-[#2B5780]/40 overflow-hidden select-none">
-          {/* Subtle Top Gold Highlight Line */}
           <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-[#DAB36E]/40 to-transparent" />
 
           {/* Ornamen Motif Gajah Oling Footer */}

@@ -13,7 +13,7 @@ import {
   Tag, 
   Users, 
   ShieldCheck, 
-  Sparkles, 
+  Zap, 
   Download, 
   GraduationCap, 
   Globe, 
@@ -240,11 +240,6 @@ export const UserWebPortal: React.FC = () => {
               <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
             </div>
 
-            {/* Bottom-Right Gajah Oling Motif */}
-            <div className="absolute -right-8 -bottom-8 w-44 h-44 opacity-[0.09] pointer-events-none select-none">
-              <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-lg" />
-            </div>
-
             <div className="space-y-4 relative z-10 flex-1 overflow-y-auto">
               {/* Header inside drawer */}
               <div className="pb-3.5 border-b border-white/10 space-y-2">
@@ -260,7 +255,7 @@ export const UserWebPortal: React.FC = () => {
                   </button>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10.5px] text-[#E3C693]/90 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
                   <span>Dinas Kebudayaan & Pariwisata Banyuwangi</span>
                 </div>
               </div>
@@ -270,67 +265,73 @@ export const UserWebPortal: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => { setActiveView('user-landing'); setMobileSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
+                  className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
                     activeView === 'user-landing'
-                      ? 'bg-gradient-to-r from-[#D4A359]/25 via-[#D4A359]/10 to-transparent text-[#F5E6CC] font-bold border-l-4 border-[#D4A359] shadow-sm'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                      ? 'bg-white/[0.09] border border-white/15 text-white shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
+                      : 'text-slate-200 hover:bg-white/[0.05] hover:text-white border border-transparent'
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                     activeView === 'user-landing'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-md shadow-[#D4A359]/25 font-bold'
-                      : 'bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-white/15 group-hover:text-white'
+                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/25 font-bold'
+                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
                   }`}>
                     <Home className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Beranda</span>
-                    <span className="text-[10px] text-slate-400 block leading-none mt-0.5">Halaman Utama</span>
+                    <span className="block font-semibold leading-tight">Beranda</span>
+                    <span className={`text-[10px] block leading-none mt-0.5 ${
+                      activeView === 'user-landing' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300'
+                    }`}>Halaman Utama</span>
                   </div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => { setActiveView('user-form'); setMobileSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
+                  className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
                     activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                      ? 'bg-gradient-to-r from-[#D4A359]/25 via-[#D4A359]/10 to-transparent text-[#F5E6CC] font-bold border-l-4 border-[#D4A359] shadow-sm'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                      ? 'bg-white/[0.09] border border-white/15 text-white shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
+                      : 'text-slate-200 hover:bg-white/[0.05] hover:text-white border border-transparent'
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                     activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-md shadow-[#D4A359]/25 font-bold'
-                      : 'bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-white/15 group-hover:text-white'
+                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/25 font-bold'
+                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
                   }`}>
                     <Calendar className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Booking Tiket</span>
-                    <span className="text-[10px] text-slate-400 block leading-none mt-0.5">Pilih Jadwal & Sesi</span>
+                    <span className="block font-semibold leading-tight">Booking Tiket</span>
+                    <span className={`text-[10px] block leading-none mt-0.5 ${
+                      activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300'
+                    }`}>Pilih Jadwal & Sesi</span>
                   </div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => { setActiveView('user-web-portal'); setMobileSidebarOpen(false); }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
-                    activeView === 'user-web-portal' || activeView === 'user-ticket'
-                      ? 'bg-gradient-to-r from-[#D4A359]/25 via-[#D4A359]/10 to-transparent text-[#F5E6CC] font-bold border-l-4 border-[#D4A359] shadow-sm'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
+                    (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
+                      ? 'bg-white/[0.09] border border-white/15 text-white shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
+                      : 'text-slate-200 hover:bg-white/[0.05] hover:text-white border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                      activeView === 'user-web-portal' || activeView === 'user-ticket'
-                        ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-md shadow-[#D4A359]/25 font-bold'
-                        : 'bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-white/15 group-hover:text-white'
+                      (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
+                        ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/25 font-bold'
+                        : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
                     }`}>
                       <Ticket className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="block font-bold leading-tight">Tiket Saya</span>
-                      <span className="text-[10px] text-slate-400 block leading-none mt-0.5">E-Tiket & QR Code</span>
+                      <span className="block font-semibold leading-tight">Tiket Saya</span>
+                      <span className={`text-[10px] block leading-none mt-0.5 ${
+                        (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300'
+                      }`}>E-Tiket & QR Code</span>
                     </div>
                   </div>
                   {targetBookings.length > 0 && (
@@ -341,59 +342,59 @@ export const UserWebPortal: React.FC = () => {
                 </button>
 
                 <div className="pt-2.5 border-t border-white/10 space-y-1.5">
-                  <div className="text-[10px] font-extrabold tracking-widest text-[#D4A359] uppercase px-3 py-1">
+                  <div className="text-[10px] font-bold tracking-wider text-[#D4A359] uppercase px-3 py-1">
                     Informasi Museum
                   </div>
 
                   <button
                     type="button"
                     onClick={() => { setActiveModal('koleksi'); setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-all text-left cursor-pointer group"
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:bg-white/[0.05] hover:text-white transition-all text-left cursor-pointer group border border-transparent"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center shrink-0 text-[#E5C287] group-hover:bg-[#D4A359]/20 group-hover:text-white transition-colors">
+                      <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 transition-colors">
                         <Landmark className="w-4 h-4" />
                       </div>
                       <div>
-                        <span className="block font-bold leading-tight">Koleksi Sejarah</span>
-                        <span className="text-[10px] text-slate-400 block leading-none mt-0.5">4.300+ Benda Kuno</span>
+                        <span className="block font-medium leading-tight">Koleksi Sejarah</span>
+                        <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block leading-none mt-0.5">4.300+ Benda Kuno</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
                   </button>
 
                   <button
                     type="button"
                     onClick={() => { setActiveModal('informasi'); setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-all text-left cursor-pointer group"
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:bg-white/[0.05] hover:text-white transition-all text-left cursor-pointer group border border-transparent"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center shrink-0 text-[#E5C287] group-hover:bg-[#D4A359]/20 group-hover:text-white transition-colors">
+                      <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 transition-colors">
                         <Info className="w-4 h-4" />
                       </div>
                       <div>
-                        <span className="block font-bold leading-tight">Jadwal & Tarif</span>
-                        <span className="text-[10px] text-slate-400 block leading-none mt-0.5">Mulai Rp 5.000 / Org</span>
+                        <span className="block font-medium leading-tight">Jadwal & Tarif</span>
+                        <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block leading-none mt-0.5">Mulai Rp 5.000 / Org</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
                   </button>
 
                   <button
                     type="button"
                     onClick={() => { setActiveModal('kontak'); setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:bg-white/5 hover:text-white transition-all text-left cursor-pointer group"
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:bg-white/[0.05] hover:text-white transition-all text-left cursor-pointer group border border-transparent"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center shrink-0 text-[#E5C287] group-hover:bg-[#D4A359]/20 group-hover:text-white transition-colors">
+                      <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 transition-colors">
                         <PhoneCall className="w-4 h-4" />
                       </div>
                       <div>
-                        <span className="block font-bold leading-tight">Kontak & Lokasi</span>
-                        <span className="text-[10px] text-slate-400 block leading-none mt-0.5">Peta & WhatsApp</span>
+                        <span className="block font-medium leading-tight">Kontak & Lokasi</span>
+                        <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block leading-none mt-0.5">Peta & WhatsApp</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
                   </button>
                 </div>
               </nav>
@@ -407,37 +408,45 @@ export const UserWebPortal: React.FC = () => {
             {/* Jam Operasional dan Footer Drawer */}
             <div className="pt-2 border-t border-white/10 space-y-2 relative z-10 shrink-0">
               {/* Jam Buka Loket Box */}
-              <div className="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 space-y-1.5 text-left">
-                <div className="flex items-center justify-between text-[11px] font-semibold text-slate-200">
-                  <span className="flex items-center gap-1.5 text-[#F3E2C4]">
-                    <Clock className="w-3 h-3 text-[#D4A359]" />
+              <div className="p-3 rounded-xl bg-white/[0.04] backdrop-blur-md border border-white/10 space-y-2 text-left shadow-xs">
+                <div className="flex items-center justify-between text-[11px] font-semibold">
+                  <span className="flex items-center gap-1.5 text-slate-200 font-medium">
+                    <Clock className="w-3.5 h-3.5 text-[#D4A359]" />
                     Jam Buka Loket
                   </span>
-                  <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded-full border border-emerald-500/25">
-                    ● Buka Hari Ini
-                  </span>
+                  {isWeekendToday ? (
+                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      Tutup Hari Ini
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Buka Hari Ini
+                    </span>
+                  )}
                 </div>
-                <div className="text-[10.5px] text-slate-300 space-y-0.5">
-                  <div className="flex justify-between">
-                    <span>Senin – Jumat:</span>
+                <div className="text-[10.5px] space-y-1 pt-0.5">
+                  <div className="flex justify-between items-center text-slate-300">
+                    <span className="font-normal text-slate-400">Senin – Jumat:</span>
                     <span className="font-semibold text-white">07:30 – 16:00 WIB</span>
                   </div>
-                  <div className="flex justify-between text-amber-300/90 text-[10px]">
-                    <span>Sabtu & Minggu:</span>
-                    <span className="font-semibold text-amber-300">Tutup (Libur)</span>
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-amber-200/80 font-normal">Sabtu & Minggu:</span>
+                    <span className="font-bold text-amber-300">Tutup (Libur)</span>
                   </div>
                 </div>
               </div>
 
               {/* Social Media */}
               <div className="pt-0.5 text-center">
-                <span className="text-[9.5px] font-semibold text-slate-400 block mb-1.5">
+                <span className="text-[10px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">
                   Sosial Media Resmi
                 </span>
                 <SocialMediaIconRow size="sm" />
               </div>
 
-              <div className="text-[10px] text-slate-400 text-center font-medium">
+              <div className="text-[10px] text-slate-400 text-center font-normal">
                 Museum Blambangan Banyuwangi
               </div>
             </div>
@@ -448,24 +457,19 @@ export const UserWebPortal: React.FC = () => {
       {/* Sidebar Desktop Web */}
       <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden z-40 select-none print:hidden">
         {/* Ornamen Gajah Oling Atas */}
-        <div className="absolute -top-6 -right-6 w-36 h-36 opacity-[0.09] pointer-events-none select-none transform rotate-12">
+        <div className="absolute -top-6 -right-6 w-36 h-36 opacity-[0.08] pointer-events-none select-none transform rotate-12">
           <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
         </div>
 
-        {/* Ornamen Gajah Oling Bawah */}
-        <div className="absolute -bottom-8 -right-8 w-48 h-48 opacity-[0.07] pointer-events-none select-none transform -rotate-12">
-          <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-lg" />
-        </div>
-
-        <div className="space-y-3.5 relative z-10">
-          {/* Logo Brand Card - Rich Ethnic Cultural Border */}
+        <div className="space-y-3 relative z-10">
+          {/* Logo Brand */}
           <div className="pt-1 pb-3 border-b border-white/10 relative">
             <div className="flex items-center justify-between">
               <MuseumLogo variant="white" className="h-9 sm:h-10 w-auto" />
             </div>
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[10.5px] text-[#E3C693] font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
                 <span>Kab. Banyuwangi</span>
               </div>
               <span className="text-[9px] font-bold text-[#4A90E2] bg-[#4A90E2]/15 px-2 py-0.5 rounded-full border border-[#4A90E2]/30 tracking-wider">
@@ -477,10 +481,10 @@ export const UserWebPortal: React.FC = () => {
           {/* Section: Menu Navigasi Utama */}
           <div className="space-y-1">
             <div className="flex items-center justify-between px-2.5 py-1">
-              <span className="text-[10px] font-black tracking-widest text-[#D4A359] uppercase">
+              <span className="text-[10px] font-bold tracking-wider text-[#D4A359] uppercase">
                 Menu Utama
               </span>
-              <span className="text-[9px] text-slate-400 font-medium">Layanan E-Tiket</span>
+              <span className="text-[9.5px] text-slate-400 font-medium">Layanan E-Tiket</span>
             </div>
 
             <nav className="space-y-1 text-xs">
@@ -488,195 +492,201 @@ export const UserWebPortal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => { setActiveView('user-landing'); setViewingTicketId(null); }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
+                className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
                   activeView === 'user-landing'
-                    ? 'bg-gradient-to-r from-[#D4A359]/25 via-[#D4A359]/10 to-transparent text-[#F5E6CC] font-bold border-l-4 border-[#D4A359] shadow-inner'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-white/[0.09] border border-white/15 text-white font-semibold shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
+                    : 'text-slate-200 hover:text-white hover:bg-white/[0.05] border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-3 text-left">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                     activeView === 'user-landing'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-md shadow-[#D4A359]/25 font-bold'
-                      : 'bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-white/15 group-hover:text-white'
+                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/20 font-bold'
+                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
                   }`}>
                     <Home className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Beranda</span>
-                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Halaman Utama</span>
+                    <span className="block font-semibold leading-tight">Beranda</span>
+                    <span className={`text-[11px] block leading-tight mt-0.5 ${
+                      activeView === 'user-landing' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300 font-normal'
+                    }`}>Halaman Utama</span>
                   </div>
                 </div>
-                {activeView === 'user-landing' && <span className="text-[#D4A359] text-xs font-bold">◆</span>}
               </button>
 
               {/* Booking Tiket */}
               <button
                 type="button"
                 onClick={() => { setActiveView('user-form'); setViewingTicketId(null); }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
+                className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
                   activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                    ? 'bg-gradient-to-r from-[#D4A359]/25 via-[#D4A359]/10 to-transparent text-[#F5E6CC] font-bold border-l-4 border-[#D4A359] shadow-inner'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-white/[0.09] border border-white/15 text-white font-semibold shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
+                    : 'text-slate-200 hover:text-white hover:bg-white/[0.05] border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-3 text-left">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                     activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-md shadow-[#D4A359]/25 font-bold'
-                      : 'bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-white/15 group-hover:text-white'
+                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/20 font-bold'
+                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
                   }`}>
                     <Calendar className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Booking Tiket</span>
-                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Pilih Jadwal & Sesi</span>
+                    <span className="block font-semibold leading-tight">Booking Tiket</span>
+                    <span className={`text-[11px] block leading-tight mt-0.5 ${
+                      activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300 font-normal'
+                    }`}>Pilih Jadwal & Sesi</span>
                   </div>
                 </div>
-                {(activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris') && (
-                  <span className="text-[#D4A359] text-xs font-bold">◆</span>
-                )}
               </button>
 
               {/* Tiket Saya */}
               <button
                 type="button"
                 onClick={() => { setActiveView('user-web-portal'); setViewingTicketId(null); }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
+                className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
                   (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
-                    ? 'bg-gradient-to-r from-[#D4A359]/25 via-[#D4A359]/10 to-transparent text-[#F5E6CC] font-bold border-l-4 border-[#D4A359] shadow-inner'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-white/[0.09] border border-white/15 text-white font-semibold shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
+                    : 'text-slate-200 hover:text-white hover:bg-white/[0.05] border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-3 text-left">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                     (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-md shadow-[#D4A359]/25 font-bold'
-                      : 'bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-white/15 group-hover:text-white'
+                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/20 font-bold'
+                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
                   }`}>
                     <Ticket className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Tiket Saya</span>
-                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">E-Tiket & QR Code</span>
+                    <span className="block font-semibold leading-tight">Tiket Saya</span>
+                    <span className={`text-[11px] block leading-tight mt-0.5 ${
+                      (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300 font-normal'
+                    }`}>E-Tiket & QR Code</span>
                   </div>
                 </div>
-                {targetBookings.length > 0 ? (
-                  <span className="bg-gradient-to-r from-[#D4A359] to-[#E5BE7E] text-[#051829] text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-md">
+                {targetBookings.length > 0 && (
+                  <span className="bg-gradient-to-r from-[#D4A359] to-[#E5BE7E] text-[#051829] text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
                     {targetBookings.length}
                   </span>
-                ) : (
-                  (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal && (
-                    <span className="text-[#D4A359] text-xs font-bold">◆</span>
-                  )
                 )}
               </button>
             </nav>
           </div>
 
           {/* Section: Informasi Museum */}
-          <div className="space-y-1 pt-2.5 border-t border-white/10">
+          <div className="space-y-1 pt-2 border-t border-white/10">
             <div className="flex items-center justify-between px-2.5 py-1">
-              <span className="text-[10px] font-black tracking-widest text-[#D4A359] uppercase">
+              <span className="text-[10px] font-bold tracking-wider text-[#D4A359] uppercase">
                 Informasi Museum
               </span>
-              <span className="text-[9px] text-slate-400 font-medium">Edukasi Budaya</span>
+              <span className="text-[9.5px] text-slate-400 font-medium">Edukasi Budaya</span>
             </div>
 
             <nav className="space-y-1 text-xs">
               <button
                 type="button"
                 onClick={() => setActiveModal('koleksi')}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer group"
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
               >
                 <div className="flex items-center gap-3 text-left">
-                  <div className="w-8 h-8 rounded-xl bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-[#D4A359]/20 group-hover:text-white group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
+                  <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
                     <Landmark className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Koleksi Sejarah</span>
-                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">4.300+ Benda Kuno</span>
+                    <span className="block font-medium text-slate-200 group-hover:text-white leading-tight transition-colors">Koleksi Sejarah</span>
+                    <span className="text-[11px] text-slate-400 group-hover:text-slate-300 font-normal block leading-tight mt-0.5 transition-colors">4.300+ Benda Kuno</span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveModal('informasi')}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer group"
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
               >
                 <div className="flex items-center gap-3 text-left">
-                  <div className="w-8 h-8 rounded-xl bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-[#D4A359]/20 group-hover:text-white group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
+                  <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
                     <Info className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Jadwal & Tarif</span>
-                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Mulai Rp 5.000 / Org</span>
+                    <span className="block font-medium text-slate-200 group-hover:text-white leading-tight transition-colors">Jadwal & Tarif</span>
+                    <span className="text-[11px] text-slate-400 group-hover:text-slate-300 font-normal block leading-tight mt-0.5 transition-colors">Mulai Rp 5.000 / Org</span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveModal('kontak')}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer group"
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
               >
                 <div className="flex items-center gap-3 text-left">
-                  <div className="w-8 h-8 rounded-xl bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-[#D4A359]/20 group-hover:text-white group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
+                  <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
                     <PhoneCall className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="block font-bold leading-tight">Kontak & Lokasi</span>
-                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Peta & WhatsApp</span>
+                    <span className="block font-medium text-slate-200 group-hover:text-white leading-tight transition-colors">Kontak & Lokasi</span>
+                    <span className="text-[11px] text-slate-400 group-hover:text-slate-300 font-normal block leading-tight mt-0.5 transition-colors">Peta & WhatsApp</span>
                   </div>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
               </button>
             </nav>
           </div>
 
           {/* Ilustrasi Gandrung Sewu di Sidebar */}
-          <div className="pt-2 px-1 relative z-10 shrink-0">
+          <div className="pt-1.5 px-0.5 relative z-10 shrink-0">
             <GandrungSewuSidebarFormation />
           </div>
         </div>
 
-        {/* Bottom Section: Sleek Operational Hours & Login Petugas (Simple & Elegant) */}
+        {/* Jam Operasional */}
         <div className="pt-2 border-t border-white/10 space-y-2 relative z-10 shrink-0">
           {/* Operational Hours Compact Card */}
-          <div className="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 space-y-1.5 text-left">
-            <div className="flex items-center justify-between text-[11px] font-semibold text-slate-200">
-              <span className="flex items-center gap-1.5 text-[#F3E2C4]">
-                <Clock className="w-3 h-3 text-[#D4A359]" />
+          <div className="p-3 rounded-xl bg-white/[0.04] backdrop-blur-md border border-white/10 space-y-2 text-left shadow-xs">
+            <div className="flex items-center justify-between text-[11px] font-semibold">
+              <span className="flex items-center gap-1.5 text-slate-200 font-medium">
+                <Clock className="w-3.5 h-3.5 text-[#D4A359]" />
                 Jam Buka Loket
               </span>
-              <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded-full border border-emerald-500/25">
-                ● Buka Hari Ini
-              </span>
+              {isWeekendToday ? (
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  Tutup Hari Ini
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Buka Hari Ini
+                </span>
+              )}
             </div>
-            <div className="text-[10.5px] text-slate-300 space-y-0.5">
-              <div className="flex justify-between">
-                <span>Senin – Jumat:</span>
+            <div className="text-[10.5px] space-y-1 pt-0.5">
+              <div className="flex justify-between items-center text-slate-300">
+                <span className="font-normal text-slate-400">Senin – Jumat:</span>
                 <span className="font-semibold text-white">07:30 – 16:00 WIB</span>
               </div>
-              <div className="flex justify-between text-amber-300/90 text-[10px]">
-                <span>Sabtu & Minggu:</span>
-                <span className="font-semibold text-amber-300">Tutup (Libur)</span>
+              <div className="flex justify-between items-center text-[10px]">
+                <span className="text-amber-200/80 font-normal">Sabtu & Minggu:</span>
+                <span className="font-bold text-amber-300">Tutup (Libur)</span>
               </div>
             </div>
           </div>
 
           {/* Social Media Quick Links */}
-          <div className="pt-1.5 pb-0.5 text-center">
-            <span className="text-[9.5px] font-semibold text-slate-400 block mb-1.5">
+          <div className="pt-1 pb-0.5 text-center">
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">
               Sosial Media Resmi
             </span>
             <SocialMediaIconRow size="sm" />
           </div>
 
-          <div className="text-[9.5px] text-slate-400 text-center font-medium pt-0.5">
+          <div className="text-[10px] text-slate-400 text-center font-normal pt-0.5">
             Museum Blambangan Banyuwangi
           </div>
         </div>
@@ -710,10 +720,10 @@ export const UserWebPortal: React.FC = () => {
 
         {/* Content Body */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto relative z-10 text-left print:p-0 print:m-0 print:max-w-none">
-          {/* ================= CASE 1: BERANDA WEB ================= */}
+          {/* Beranda Web */}
           {activeView === 'user-landing' && (
             <div className="space-y-8 animate-in fade-in duration-200">
-              {/* Grand Panoramic Hero Banner with Metallic Blue & Gandrung Heritage */}
+              {/* Hero Banner */}
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-[#224A72]/40 bg-[#081827] text-white min-h-[340px] flex flex-col justify-end p-6 sm:p-10 select-none">
                 {/* Slider Foto Museum */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -740,7 +750,7 @@ export const UserWebPortal: React.FC = () => {
                   {/* Slideshow Pill & Indicators */}
                   <div className="flex items-center gap-2 mb-1">
                     <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-md px-3 py-1 rounded-full border border-[#D4A359]/30 text-[11px] text-[#E5BE7E] shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
                       <span className="font-semibold">{heroSlides[activeHeroSlide].caption}</span>
                     </div>
                     <div className="flex items-center gap-1 bg-black/35 backdrop-blur-xs px-2 py-1 rounded-full border border-white/10">
@@ -759,9 +769,9 @@ export const UserWebPortal: React.FC = () => {
                     </div>
                   </div>
 
-                  <h1 className="text-2xl sm:text-4xl font-extrabold leading-snug sm:leading-tight text-white drop-shadow-sm">
+                  <h1 className="font-serif text-2xl sm:text-4xl lg:text-[40px] font-bold leading-snug sm:leading-tight text-white drop-shadow-sm tracking-normal">
                     Selamat Datang di <br />
-                    Museum Blambangan Banyuwangi
+                    <span className="text-[#F3E2C4]">Museum Blambangan Banyuwangi</span>
                   </h1>
 
                   <p className="text-xs sm:text-sm text-slate-200 max-w-xl leading-relaxed">
@@ -794,7 +804,7 @@ export const UserWebPortal: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-center gap-3.5">
                   <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-5 h-5" />
+                    <Zap className="w-5 h-5" />
                   </div>
                   <div>
                     <h2 className="text-xs font-bold text-slate-900">Mudah & Cepat</h2>
@@ -879,8 +889,8 @@ export const UserWebPortal: React.FC = () => {
                                 ⛔ Kuota Penuh (0/100)
                               </span>
                             ) : (
-                              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-2xs flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-2xs flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                                 <span>Tersedia: Sisa {quotaStats.remaining}/100</span>
                               </span>
                             )}
@@ -983,7 +993,7 @@ export const UserWebPortal: React.FC = () => {
                         Warisan Budaya Bumi Blambangan
                       </span>
                     </div>
-                    <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                    <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tracking-normal">
                       Jelajahi Peninggalan Bersejarah & Seni Khas Banyuwangi
                     </h2>
                     <p className="text-xs text-slate-500">
@@ -1014,7 +1024,7 @@ export const UserWebPortal: React.FC = () => {
                         <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-[#E5BE7E] bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
                           Era Kerajaan Blambangan
                         </span>
-                        <h3 className="text-sm font-black mt-1 text-white">
+                        <h3 className="font-serif text-base font-bold mt-1 text-white">
                           Artefak Candi Macan Putih
                         </h3>
                       </div>
@@ -1039,7 +1049,7 @@ export const UserWebPortal: React.FC = () => {
                         <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-[#E5BE7E] bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
                           Abad ke-14 Masehi
                         </span>
-                        <h3 className="text-sm font-black mt-1 text-white">
+                        <h3 className="font-serif text-base font-bold mt-1 text-white">
                           Peninggalan Arca Lingga-Yoni
                         </h3>
                       </div>
@@ -1064,7 +1074,7 @@ export const UserWebPortal: React.FC = () => {
                         <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-[#E5BE7E] bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
                           Dokumentasi Sejarah
                         </span>
-                        <h3 className="text-sm font-black mt-1 text-white">
+                        <h3 className="font-serif text-base font-bold mt-1 text-white">
                           Banyuwangi Tempo Doeloe
                         </h3>
                       </div>
@@ -1087,7 +1097,7 @@ export const UserWebPortal: React.FC = () => {
                     />
                   </div>
                   <div className="relative z-10 max-w-xl mx-auto space-y-2">
-                    <p className="text-sm sm:text-base font-semibold italic text-[#F5DEB3]">
+                    <p className="font-serif text-base sm:text-lg font-normal italic text-[#F5DEB3] leading-relaxed">
                       &ldquo;Jaga bersama warisan budaya, untuk masa depan yang lebih baik.&rdquo;
                     </p>
                     <div className="text-[11px] font-bold tracking-wider text-slate-300 uppercase">
@@ -1104,7 +1114,7 @@ export const UserWebPortal: React.FC = () => {
             <div className="space-y-6 animate-in fade-in duration-200">
               <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 ${viewingTicketId ? 'print:hidden' : ''}`}>
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">
+                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-normal">
                     Tiket Saya
                   </h1>
                   <p className="text-xs text-slate-500">
@@ -1519,7 +1529,7 @@ export const UserWebPortal: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-emerald-400 pl-6">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         <span>Akses mudah via R2, R4, & Bus Pariwisata</span>
                       </div>
                     </div>

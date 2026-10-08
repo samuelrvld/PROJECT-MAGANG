@@ -9,7 +9,8 @@ import {
   XCircle, 
   Ticket, 
   ArrowRight,
-  ShieldCheck 
+  ShieldCheck,
+  RotateCcw
 } from 'lucide-react';
 
 export const AdminNotifikasiRiwayat: React.FC = () => {
@@ -66,6 +67,8 @@ export const AdminNotifikasiRiwayat: React.FC = () => {
                     return <XCircle className="w-4 h-4 text-red-600" />;
                   case 'tiket_terbit':
                     return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
+                  case 'verifikasi_dibatalkan':
+                    return <RotateCcw className="w-4 h-4 text-amber-600" />;
                   default:
                     return <Bell className="w-4 h-4 text-slate-600" />;
                 }
@@ -77,6 +80,7 @@ export const AdminNotifikasiRiwayat: React.FC = () => {
                   case 'bukti_diterima': return 'bg-blue-50';
                   case 'pembayaran_ditolak': return 'bg-red-50';
                   case 'tiket_terbit': return 'bg-emerald-50';
+                  case 'verifikasi_dibatalkan': return 'bg-amber-50';
                   default: return 'bg-slate-50';
                 }
               };

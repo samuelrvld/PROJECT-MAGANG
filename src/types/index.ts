@@ -38,7 +38,7 @@ export interface AdminNotification {
   nama: string;
   time: string;
   read: boolean;
-  type: 'booking_baru' | 'bukti_diterima' | 'pembayaran_ditolak' | 'tiket_terbit';
+  type: 'booking_baru' | 'bukti_diterima' | 'pembayaran_ditolak' | 'tiket_terbit' | 'verifikasi_dibatalkan';
 }
 
 export interface ActivityLog {

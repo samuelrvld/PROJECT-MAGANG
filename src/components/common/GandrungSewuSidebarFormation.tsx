@@ -13,38 +13,37 @@ interface GandrungSewuSidebarFormationProps {
  */
 export const GandrungSewuSidebarFormation: React.FC<GandrungSewuSidebarFormationProps> = ({
   className = '',
-  variant = 'gold',
 }) => {
   return (
     <div
-      className={`relative w-full overflow-hidden pointer-events-none select-none ${className}`}
+      className={`relative w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#102C4A]/80 via-[#0C233C]/80 to-[#081827]/95 border border-[#D4A359]/25 p-2.5 shadow-lg select-none ${className}`}
       aria-hidden="true"
     >
-      {/* Top subtle fade gradient to blend naturally into dark blue sidebar */}
-      <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-[#081827] via-[#081827]/40 to-transparent z-10 pointer-events-none" />
+      {/* Subtle Golden Ambient Light */}
+      <div className="absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-[#D4A359]/15 to-transparent pointer-events-none" />
 
-      {/* Gandrung Sewu Formation Container */}
-      <div className="relative w-full h-36 flex items-end justify-center px-1">
-        {/* Dancer 1 (Far Left - Outer Formation) */}
-        <div className="absolute left-1 bottom-0 w-16 h-24 opacity-50 transform -translate-x-1 filter drop-shadow">
+      {/* Dancers Formation */}
+      <div className="relative w-full h-24 flex items-end justify-center px-1">
+        {/* Dancer 1 (Far Left) */}
+        <div className="absolute left-1 bottom-0 w-12 h-18 opacity-50 transform -translate-x-0.5 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
-            alt="Gandrung Sewu"
+            alt=""
             className="w-full h-full object-contain"
           />
         </div>
 
-        {/* Dancer 2 (Mid Left - Second Layer) */}
-        <div className="absolute left-8 bottom-1 w-20 h-28 opacity-70 filter drop-shadow">
+        {/* Dancer 2 (Mid Left) */}
+        <div className="absolute left-6 bottom-0.5 w-16 h-22 opacity-75 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
-            alt="Gandrung Sewu"
+            alt=""
             className="w-full h-full object-contain"
           />
         </div>
 
-        {/* Dancer 3 (Center Lead Dancer - Primadonna Gandrung) */}
-        <div className="relative z-10 w-24 h-34 opacity-95 filter drop-shadow-[0_2px_14px_rgba(212,163,89,0.5)] -mb-1">
+        {/* Dancer 3 (Center Lead) */}
+        <div className="relative z-10 w-20 h-24 opacity-100 filter drop-shadow-[0_2px_12px_rgba(212,163,89,0.45)] -mb-0.5">
           <img
             src="/assets/penari-gandrung-gold.png"
             alt="Gandrung Sewu Utama"
@@ -52,33 +51,35 @@ export const GandrungSewuSidebarFormation: React.FC<GandrungSewuSidebarFormation
           />
         </div>
 
-        {/* Dancer 4 (Mid Right - Second Layer) */}
-        <div className="absolute right-8 bottom-1 w-20 h-28 opacity-70 filter drop-shadow">
+        {/* Dancer 4 (Mid Right) */}
+        <div className="absolute right-6 bottom-0.5 w-16 h-22 opacity-75 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
-            alt="Gandrung Sewu"
+            alt=""
             className="w-full h-full object-contain"
           />
         </div>
 
-        {/* Dancer 5 (Far Right - Outer Formation) */}
-        <div className="absolute right-1 bottom-0 w-16 h-24 opacity-50 transform translate-x-1 filter drop-shadow">
+        {/* Dancer 5 (Far Right) */}
+        <div className="absolute right-1 bottom-0 w-12 h-18 opacity-50 transform translate-x-0.5 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
-            alt="Gandrung Sewu"
+            alt=""
             className="w-full h-full object-contain"
           />
         </div>
       </div>
 
-      {/* Golden Stage Base Line with Batik Gajah Oling Accent */}
-      <div className="relative z-10 w-full flex flex-col items-center pt-0.5">
-        <div className="w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#D4A359]/40 to-transparent" />
-        <div className="flex items-center gap-1.5 pt-1 text-[9px] text-[#D4A359]/75 font-semibold tracking-widest uppercase">
-          <span className="w-1 h-1 rounded-full bg-[#D4A359]/70" />
+      {/* Cultural Label Header / Footer */}
+      <div className="pt-2 border-t border-white/10 relative z-10 text-center">
+        <div className="flex items-center justify-center gap-1.5 text-[10px] font-extrabold tracking-widest text-[#E5C287] uppercase">
+          <span className="w-1 h-1 rounded-full bg-[#D4A359]" />
           <span>Pesona Gandrung Sewu</span>
-          <span className="w-1 h-1 rounded-full bg-[#D4A359]/70" />
+          <span className="w-1 h-1 rounded-full bg-[#D4A359]" />
         </div>
+        <p className="text-[9.5px] text-slate-400 mt-0.5 leading-tight font-medium">
+          Warisan Seni & Budaya Khas Banyuwangi
+        </p>
       </div>
     </div>
   );

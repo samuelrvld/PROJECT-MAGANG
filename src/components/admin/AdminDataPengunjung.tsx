@@ -17,7 +17,6 @@ import {
   Clock, 
   XCircle, 
   RotateCcw,
-  Sparkles,
   ExternalLink,
   Download,
   Trash2,

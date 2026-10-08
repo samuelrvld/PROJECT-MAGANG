@@ -14,17 +14,19 @@ import {
   Check,
   Trash2,
   AlertTriangle,
-  QrCode
+  QrCode,
+  RotateCcw
 } from 'lucide-react';
 import { AdminWalkInModal } from './AdminWalkInModal';
 
 export const AdminPesananKunjungan: React.FC = () => {
-  const { bookings, setActiveView, setSelectedBookingId, verifyBooking, deleteBooking } = useBooking();
+  const { bookings, setActiveView, setSelectedBookingId, verifyBooking, cancelVerification, deleteBooking } = useBooking();
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'verified' | 'rejected'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [walkInModalOpen, setWalkInModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
+  const [cancelVerifyTarget, setCancelVerifyTarget] = useState<any | null>(null);
 
   // Advanced Filter states
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -450,6 +452,16 @@ export const AdminPesananKunjungan: React.FC = () => {
                           <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                         </button>
                       )}
+                      {b.status === 'Terverifikasi' && (
+                        <button
+                          type="button"
+                          onClick={() => setCancelVerifyTarget(b)}
+                          className="w-7 h-7 rounded-lg bg-amber-50 hover:bg-amber-600 text-amber-700 hover:text-white border border-amber-200 transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
+                          title="Batalkan Verifikasi Tiket (Kembalikan ke Menunggu)"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
@@ -574,6 +586,51 @@ export const AdminPesananKunjungan: React.FC = () => {
                 className="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-95 text-white text-xs font-extrabold shadow-md transition-all cursor-pointer"
               >
                 Ya, Hapus Data
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Batalkan Verifikasi */}
+      {cancelVerifyTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center border border-slate-100 space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 mx-auto">
+              <RotateCcw className="w-7 h-7" />
+            </div>
+
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900">
+                Batalkan Verifikasi Tiket?
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                Pesanan <strong className="text-slate-800 font-mono">{cancelVerifyTarget.id}</strong> atas nama <strong className="text-slate-800">{cancelVerifyTarget.nama}</strong> ({cancelVerifyTarget.jumlahOrang} Orang) akan dikembalikan ke status <strong>"Menunggu Verifikasi"</strong>.
+              </p>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-800 flex items-start gap-2 text-left">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+              <span>E-tiket pengunjung tidak dapat digunakan untuk masuk museum hingga pembayaran diverifikasi kembali.</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => setCancelVerifyTarget(null)}
+                className="py-2.5 px-4 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+              >
+                Kembali
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  cancelVerification(cancelVerifyTarget.id);
+                  setCancelVerifyTarget(null);
+                }}
+                className="py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                Ya, Batalkan
               </button>
             </div>
           </div>

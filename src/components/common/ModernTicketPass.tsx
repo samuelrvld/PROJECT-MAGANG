@@ -373,7 +373,7 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
               <span className="text-[10px] uppercase font-bold tracking-wider text-[#D4A359] block mb-0.5">
                 Karcis Masuk Wisata Budaya
               </span>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white" style={{ color: '#FFFFFF' }}>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-wide text-white" style={{ color: '#FFFFFF' }}>
                 MUSEUM BLAMBANGAN
               </h2>
               <p className="text-[11px] text-slate-300 mt-0.5">

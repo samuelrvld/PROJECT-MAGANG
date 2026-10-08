@@ -11,7 +11,6 @@ import {
   ZoomIn, 
   RefreshCw, 
   FileCheck, 
-  Sparkles, 
   Image as ImageIcon, 
   Download, 
   CheckCircle2,
@@ -24,7 +23,6 @@ import {
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { QRISLogo } from '../common/QRISLogo';
-import { GajahOlingMotif } from '../common/GajahOlingMotif';
 import { downloadOfficialQRISImage } from '../../utils/qrisDownloadUtils';
 
 const OFFICIAL_QRIS_PAYLOAD = '00020101021126710019ID.CO.BANKJATIM.WWW01189360011400001592930215ID20240015907050303URE51440014ID.CO.QRIS.WWW0215ID20243268647230303URE5204939953033605802ID5917MUSEUM BLAMBANGAN6010BANYUWANGI61056841462070703A0163047681';
@@ -259,15 +257,12 @@ export const PembayaranQRIS: React.FC = () => {
         <main className="flex-1 px-4 sm:px-5 py-4 overflow-y-auto space-y-3.5 text-left">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-[18px] font-extrabold text-slate-900 leading-tight">
+              <h1 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
                 Pembayaran Resmi E-Tiket
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
                 Pilih metode pembayaran resmi Museum Blambangan di bawah ini.
               </p>
-            </div>
-            <div className="w-10 h-10 shrink-0 opacity-20 pointer-events-none select-none hidden sm:block">
-              <GajahOlingMotif variant="gold" className="w-full h-full object-contain" />
             </div>
           </div>
 
@@ -701,7 +696,7 @@ export const PembayaranQRIS: React.FC = () => {
                     {import.meta.env.DEV && (
                       <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-300 flex items-center justify-between text-left">
                         <div className="flex items-center gap-1.5 text-[11px] text-amber-900 font-semibold">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                          <Info className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                           <span>[Mode Dev Only] Uji coba cepat</span>
                         </div>
                         <button

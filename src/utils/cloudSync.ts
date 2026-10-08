@@ -3,6 +3,7 @@ import type { Booking, AdminUser } from '../types';
 export type SyncEventType = 
   | 'NEW_BOOKING'
   | 'VERIFY_BOOKING'
+  | 'CANCEL_VERIFY_BOOKING'
   | 'REJECT_BOOKING'
   | 'CHECKIN_BOOKING'
   | 'UPDATE_ADMINS'

@@ -14,12 +14,10 @@ import {
   Check, 
   Plus, 
   Minus, 
-  Sparkles,
   Clock,
   AlertCircle
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
-import { GajahOlingMotif } from '../common/GajahOlingMotif';
 import { 
   isSessionTimePassed, 
   getSessionQuotaStats, 
@@ -213,34 +211,31 @@ export const FormBooking: React.FC = () => {
           <main className="flex-1 px-4 sm:px-6 py-4 overflow-y-auto space-y-4 text-left">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-tight">
+                <h1 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
                   Pemesanan Tiket Museum
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
                   Lengkapi data pemesan dan jadwal rencana kunjungan Anda di bawah ini.
                 </p>
               </div>
-              <div className="w-10 h-10 shrink-0 opacity-20 pointer-events-none select-none hidden sm:block">
-                <GajahOlingMotif variant="gold" className="w-full h-full object-contain" />
-              </div>
             </div>
 
-            {/* Single Clean Progress Bar (Replaces 3 fragmented counters) */}
-            <div className="bg-[#FAF7EE] border border-[#E9DFBE] rounded-2xl p-3.5 space-y-2 shadow-2xs">
+            {/* Indikator Kelengkapan Formulir */}
+            <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-3.5 space-y-2 shadow-2xs">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-[#092C48] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#D4A359]" />
-                  <span>Kelengkapan Data Pemesanan</span>
+                <span className="font-semibold text-slate-700 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#092C48]" />
+                  <span>Kelengkapan Data Formulir</span>
                 </span>
-                <span className="font-extrabold text-emerald-800 bg-white px-2 py-0.5 rounded-md border border-[#E9DFBE]">
+                <span className="font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-md border border-slate-200 text-[11px]">
                   {progressPercent}% Terisi
                 </span>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-[#E5DCC5] h-2 rounded-full overflow-hidden">
+              <div className="w-full bg-slate-200/80 h-1.5 rounded-full overflow-hidden">
                 <div
-                  className="bg-[#16A34A] h-full transition-all duration-300 rounded-full"
+                  className="bg-[#092C48] h-full transition-all duration-300 rounded-full"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -677,7 +672,7 @@ export const FormBooking: React.FC = () => {
                 {extractSessionId(formData.sesi) && (
                   <div className="mt-2.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs animate-in fade-in">
                     <div className="flex items-center gap-2 text-emerald-950 font-medium truncate mr-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
                       <span className="truncate">Sesi terpilih: <strong className="font-bold">{formData.sesi}</strong></span>
                     </div>
                     <button

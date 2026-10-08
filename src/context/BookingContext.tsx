@@ -63,6 +63,7 @@ interface BookingContextType {
   createBooking: (receiptUrl: string) => Booking;
   createWalkInBooking: (input: WalkInBookingInput) => Booking;
   verifyBooking: (id: string) => void;
+  cancelVerification: (id: string, reason?: string) => void;
   rejectBooking: (id: string, reason: string) => void;
   deleteBooking: (id: string) => void;
   checkInBooking: (queryOrId: string, autoVerifyPending?: boolean) => { success: boolean; message: string; booking?: Booking };
@@ -771,6 +772,26 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           );
         }
 
+        // 2.5 Pembatalan Verifikasi Tiket dari Laptop diterima di HP
+        if (payload.type === 'CANCEL_VERIFY_BOOKING' && payload.bookingId) {
+          const targetId = payload.bookingId;
+          setBookings((prev) => {
+            const updated = prev.map((b) =>
+              b.id === targetId
+                ? { ...b, status: 'Menunggu Verifikasi' as const, checkInStatus: 'Belum Hadir' as const, checkInTime: undefined, alasanPenolakan: undefined }
+                : b
+            );
+            safeSaveBookingsToStorage(updated);
+            return updated;
+          });
+
+          setCurrentBooking((prev) =>
+            prev && prev.id === targetId
+              ? { ...prev, status: 'Menunggu Verifikasi' as const, checkInStatus: 'Belum Hadir' as const, checkInTime: undefined, alasanPenolakan: undefined }
+              : prev
+          );
+        }
+
         // 3. Penolakan Tiket diterima di HP
         if (payload.type === 'REJECT_BOOKING' && payload.bookingId) {
           const targetId = payload.bookingId;
@@ -1148,6 +1169,72 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (_) {}
   };
 
+  const cancelVerification = (id: string, reason?: string) => {
+    const cancelReason = reason || 'Verifikasi dibatalkan oleh petugas loket (perlu tinjau ulang)';
+    setBookings((prev) =>
+      prev.map((b) =>
+        b.id === id
+          ? { 
+              ...b, 
+              status: 'Menunggu Verifikasi' as const, 
+              checkInStatus: 'Belum Hadir' as const, 
+              checkInTime: undefined,
+              alasanPenolakan: undefined 
+            }
+          : b
+      )
+    );
+
+    if (currentBooking && currentBooking.id === id) {
+      setCurrentBooking({
+        ...currentBooking,
+        status: 'Menunggu Verifikasi',
+        checkInStatus: 'Belum Hadir',
+        checkInTime: undefined,
+        alasanPenolakan: undefined,
+      });
+    }
+
+    const targetBooking = bookings.find((b) => b.id === id);
+    const visitorName = targetBooking?.nama || 'Pengunjung';
+
+    const newNotif: AdminNotification = {
+      id: `notif-${Date.now()}`,
+      title: `Verifikasi tiket dibatalkan (${visitorName})`,
+      bookingId: id,
+      nama: visitorName,
+      time: 'Baru saja',
+      read: false,
+      type: 'verifikasi_dibatalkan',
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+
+    const newAct: ActivityLog = {
+      id: `act-${Date.now()}`,
+      user: currentAdminUser?.nama || 'Petugas Loket',
+      action: `Membatalkan verifikasi tiket: ${visitorName}`,
+      target: `${id} - "${cancelReason}"`,
+      timestamp: 'Baru saja',
+    };
+    setActivities((prev) => [newAct, ...prev]);
+
+    // Broadcast ke HP pengunjung agar status e-tiket kembali ke antrean
+    broadcastSyncEvent({ type: 'CANCEL_VERIFY_BOOKING', bookingId: id, reason: cancelReason });
+
+    // Update status ke Supabase PostgreSQL Cloud
+    try {
+      supabase
+        .from('bookings')
+        .update({
+          status: 'Menunggu Verifikasi',
+          check_in_status: 'Belum Hadir',
+          check_in_time: null,
+        })
+        .eq('id', id)
+        .then();
+    } catch (_) {}
+  };
+
   const rejectBooking = (id: string, reason: string) => {
     setBookings((prev) =>
       prev.map((b) => (b.id === id ? { ...b, status: 'Ditolak', alasanPenolakan: reason } : b))
@@ -1503,6 +1590,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         createBooking,
         createWalkInBooking,
         verifyBooking,
+        cancelVerification,
         rejectBooking,
         deleteBooking,
         checkInBooking,

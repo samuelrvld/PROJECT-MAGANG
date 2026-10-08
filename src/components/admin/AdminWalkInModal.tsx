@@ -16,7 +16,6 @@ import {
   CheckCircle2, 
   Plus, 
   Minus,
-  Sparkles,
   MessageSquare
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';

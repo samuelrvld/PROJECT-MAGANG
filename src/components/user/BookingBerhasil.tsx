@@ -63,11 +63,7 @@ export const BookingBerhasil: React.FC = () => {
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAF3E0] border border-[#D4A359]/30 text-[#8B6E32] text-[10px] font-bold mb-1 shadow-2xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] animate-pulse" />
-                  <span>The Sunrise of Java • Museum Blambangan</span>
-                </div>
-                <h1 className="text-[18px] font-bold text-slate-900 leading-tight">
+                <h1 className="font-serif text-xl font-bold text-slate-900 leading-tight">
                   Booking Berhasil!
                 </h1>
                 <p className="text-[11px] text-slate-500 max-w-[260px] mx-auto mt-1 leading-relaxed">
@@ -87,7 +83,7 @@ export const BookingBerhasil: React.FC = () => {
                 <span className="text-[10px] text-slate-400 block font-normal">
                   Nomor Booking
                 </span>
-                <span className="font-bold text-[#092C48] text-sm tracking-wide">
+                <span className="font-bold text-[#092C48] text-sm tracking-wider font-mono">
                   {booking.id}
                 </span>
               </div>
@@ -156,29 +152,31 @@ export const BookingBerhasil: React.FC = () => {
             </div>
           </div>
 
-          {/* Stepper link to Screen 7 */}
-          <button
-            onClick={() => setActiveView('user-status')}
-            className="w-full py-2.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 flex items-center justify-center gap-1.5"
-          >
-            <span>Pantau Status Verifikasi</span>
-            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-          </button>
           </>
           )}
         </main>
 
-        {/* Tombol Kembali ke Beranda */}
-        <footer className="p-4 pb-6 sm:pb-4 border-t border-slate-100 bg-white">
-          <button
-            type="button"
-            onClick={() => setActiveView('user-landing')}
-            className="w-full py-3 bg-[#092C48] hover:bg-[#071f33] text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center justify-center gap-2 active:scale-95"
-          >
-            <Home className="w-4 h-4" />
-            <span>Kembali ke Beranda</span>
-          </button>
-        </footer>
+        {/* Footer Actions: Primary = Pantau Status, Secondary = Kembali ke Beranda */}
+        {booking && (
+          <footer className="p-4 pb-6 sm:pb-4 border-t border-slate-100 bg-white space-y-2">
+            <button
+              type="button"
+              onClick={() => setActiveView('user-status')}
+              className="w-full py-3 bg-[#092C48] hover:bg-[#071f33] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+            >
+              <span>Pantau Status Verifikasi Tiket</span>
+              <ArrowRight className="w-4 h-4 text-[#DAB36E]" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveView('user-landing')}
+              className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+            >
+              <Home className="w-3.5 h-3.5 text-slate-500" />
+              <span>Kembali ke Beranda</span>
+            </button>
+          </footer>
+        )}
       </div>
     </div>
   );
