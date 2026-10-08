@@ -11,7 +11,9 @@ import {
   Clock, 
   Tag, 
   ClipboardList,
-  ShieldCheck
+  Edit3,
+  ShieldCheck,
+  ShieldAlert
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
@@ -39,7 +41,7 @@ export const RingkasanBooking: React.FC = () => {
   const total = pricePerPerson * formData.jumlahOrang;
 
   const formatFullDateIndo = (dateStr: string): string => {
-    if (!dateStr) return '15 Agustus 2025';
+    if (!dateStr) return '-';
     try {
       const parts = dateStr.split('-');
       if (parts.length === 3) {
@@ -63,7 +65,7 @@ export const RingkasanBooking: React.FC = () => {
       {/* Responsive Frame: 100% full width on mobile, centered card on desktop */}
       <div className="w-full max-w-full sm:max-w-[420px] md:max-w-xl min-h-screen sm:min-h-[800px] bg-white text-slate-800 flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl border-0 sm:border sm:border-slate-200 overflow-hidden">
         
-        {/* Header Ringkasan Pesanan (Langkah 2/5) */}
+        {/* Header Ringkasan Pesanan */}
         <header className="bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30 relative">
           <div className="flex items-center gap-1.5 z-10 w-24 justify-start">
             <button
@@ -84,8 +86,8 @@ export const RingkasanBooking: React.FC = () => {
           </div>
 
           <div className="flex items-center z-10 w-24 justify-end">
-            <span className="text-[11px] font-bold text-[#092C48] bg-slate-100 px-2.5 py-0.5 rounded-full">
-              Langkah 2/5
+            <span className="text-[11px] font-bold text-[#092C48] bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+              Ringkasan
             </span>
           </div>
         </header>
@@ -94,14 +96,10 @@ export const RingkasanBooking: React.FC = () => {
         <main className="flex-1 px-5 py-4 overflow-y-auto space-y-3.5 text-left">
           <div className="flex items-start justify-between">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAF3E0] border border-[#D4A359]/30 text-[#8B6E32] text-[10px] font-bold mb-1 shadow-2xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] animate-pulse" />
-                <span>The Sunrise of Java • Kab. Banyuwangi</span>
-              </div>
-              <h1 className="text-[17px] font-bold text-slate-900 leading-tight">
+              <h1 className="text-[18px] font-extrabold text-slate-900 leading-tight">
                 Ringkasan Pesanan
               </h1>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Periksa kembali detail pesanan Anda sebelum melanjutkan ke pembayaran.
               </p>
             </div>
@@ -112,40 +110,41 @@ export const RingkasanBooking: React.FC = () => {
 
           {/* Kartu Detail Pengunjung */}
           <div className="border border-slate-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
-            <div className="px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
               <h2 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                 <ClipboardList className="w-3.5 h-3.5 text-[#092C48]" />
-                <span>Detail Pengunjung</span>
+                <span>Detail Pemesan</span>
               </h2>
-              <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                <span>Lengkap</span>
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveView('user-form')}
+                  className="text-xs font-bold text-[#092C48] hover:text-[#D4A359] flex items-center gap-1 transition-colors cursor-pointer px-2 py-0.5 rounded-md hover:bg-white border border-transparent hover:border-slate-200"
+                  title="Ubah data pemesan"
+                >
+                  <Edit3 className="w-3 h-3 text-[#D4A359]" />
+                  <span>Ubah</span>
+                </button>
+                <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                  <span>Lengkap</span>
+                </span>
+              </div>
             </div>
 
             <div className="p-3.5 divide-y divide-slate-100 text-xs">
               <div className="pb-2 flex justify-between items-center">
                 <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
                   <User className="w-3 h-3 text-slate-400" />
-                  Nama Pengunjung
+                  Nama Pemesan
                 </span>
                 <span className="font-bold text-slate-800 text-[11px]">{formData.nama || '-'}</span>
               </div>
 
               <div className="py-2 flex justify-between items-center">
                 <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
-                  <Users className="w-3 h-3 text-slate-400" />
-                  Jumlah Orang
-                </span>
-                <span className="font-semibold text-slate-800 text-[11px] bg-slate-100 px-2 py-0.5 rounded-md">
-                  {formData.jumlahOrang} orang
-                </span>
-              </div>
-
-              <div className="py-2 flex justify-between items-center">
-                <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
                   <Phone className="w-3 h-3 text-slate-400" />
-                  Kontak WhatsApp
+                  WhatsApp / HP
                 </span>
                 <span className="font-semibold text-slate-800 text-[11px] font-mono">{formData.telepon || '-'}</span>
               </div>
@@ -158,13 +157,13 @@ export const RingkasanBooking: React.FC = () => {
                 <span className="font-semibold text-slate-800 text-[11px] font-mono">{formData.email || '-'}</span>
               </div>
 
-              <div className="pt-2 flex justify-between items-start">
-                <span className="text-slate-500 flex items-center gap-1.5 text-[11px] pt-0.5">
+              <div className="pt-2 flex justify-between items-center">
+                <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
                   <MapPin className="w-3 h-3 text-slate-400" />
-                  Alamat
+                  Kota / Asal
                 </span>
-                <span className="font-semibold text-slate-800 text-[11px] text-right max-w-[200px] leading-relaxed">
-                  {formData.alamat || '-'}
+                <span className="font-semibold text-slate-800 text-[11px] text-right">
+                  {formData.alamat || 'Banyuwangi'}
                 </span>
               </div>
             </div>
@@ -172,31 +171,47 @@ export const RingkasanBooking: React.FC = () => {
 
           {/* Kartu Detail Kunjungan */}
           <div className="border border-slate-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
-            <div className="px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
               <h2 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[#092C48]" />
-                <span>Detail Kunjungan</span>
+                <span>Detail Jadwal & Tiket</span>
               </h2>
-              <span className="text-[9.5px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-                Museum Blambangan
-              </span>
+              <button
+                type="button"
+                onClick={() => setActiveView('user-form')}
+                className="text-xs font-bold text-[#092C48] hover:text-[#D4A359] flex items-center gap-1 transition-colors cursor-pointer px-2 py-0.5 rounded-md hover:bg-white border border-transparent hover:border-slate-200"
+                title="Ubah jadwal & tiket"
+              >
+                <Edit3 className="w-3 h-3 text-[#D4A359]" />
+                <span>Ubah</span>
+              </button>
             </div>
 
             <div className="p-3.5 divide-y divide-slate-100 text-xs">
               <div className="pb-2 flex justify-between items-center">
                 <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
                   <Tag className="w-3 h-3 text-slate-400" />
-                  Kategori
+                  Kategori Tiket
                 </span>
                 <span className="font-bold text-slate-800 text-[11px]">
-                  {formData.kategori} <span className="font-normal text-slate-500">(Rp {pricePerPerson.toLocaleString('id-ID')}/orang)</span>
+                  {formData.kategori} <span className="font-normal text-slate-500">(Rp {pricePerPerson.toLocaleString('id-ID')}/org)</span>
+                </span>
+              </div>
+
+              <div className="py-2 flex justify-between items-center">
+                <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
+                  <Users className="w-3 h-3 text-slate-400" />
+                  Jumlah Pengunjung
+                </span>
+                <span className="font-semibold text-slate-800 text-[11px] bg-slate-100 px-2 py-0.5 rounded-md">
+                  {formData.jumlahOrang} orang
                 </span>
               </div>
 
               <div className="py-2 flex justify-between items-center">
                 <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
                   <Calendar className="w-3 h-3 text-slate-400" />
-                  Tanggal
+                  Tanggal Kunjungan
                 </span>
                 <span className="font-bold text-slate-800 text-[11px]">
                   {formatFullDateIndo(formData.tanggalKunjungan)}
@@ -206,7 +221,7 @@ export const RingkasanBooking: React.FC = () => {
               <div className="pt-2 flex justify-between items-center">
                 <span className="text-slate-500 flex items-center gap-1.5 text-[11px]">
                   <Clock className="w-3 h-3 text-slate-400" />
-                  Sesi
+                  Sesi Kunjungan
                 </span>
                 <span className="font-bold text-[#092C48] text-[11px] bg-slate-100 px-2 py-0.5 rounded-md">
                   {formData.sesi || 'Sesi belum dipilih'}
@@ -218,24 +233,37 @@ export const RingkasanBooking: React.FC = () => {
           {/* Rincian Perhitungan Biaya */}
           <div className="bg-[#FCF8EF] border border-[#E9DFBE] rounded-2xl p-4 space-y-2 text-xs shadow-2xs">
             <div className="flex justify-between text-slate-600 text-[11px]">
-              <span>Harga per orang</span>
+              <span>Tarif per orang ({formData.kategori || 'Umum'})</span>
               <span className="font-semibold text-slate-800">Rp {pricePerPerson.toLocaleString('id-ID')}</span>
             </div>
             <div className="flex justify-between text-slate-600 text-[11px]">
-              <span>Jumlah orang</span>
+              <span>Jumlah tiket</span>
               <span className="font-semibold text-slate-800">{formData.jumlahOrang} orang</span>
             </div>
             <div className="border-t border-[#E5DCC5] pt-2.5 flex justify-between items-center">
               <div>
                 <span className="font-bold text-slate-900 text-xs block">
-                  Total Pembayaran
+                  Total Tagihan
                 </span>
-                <span className="text-[10px] text-slate-500">Termasuk akses seluruh pameran</span>
+                <span className="text-[10px] text-slate-500">Termasuk akses seluruh ruang pameran</span>
               </div>
               <span className="font-black text-[#092C48] text-base tracking-tight">
                 Rp {total.toLocaleString('id-ID')}
               </span>
             </div>
+          </div>
+
+          {/* Kebijakan Tiket Resmi Museum */}
+          <div className="p-3 bg-slate-50 border border-slate-200/90 rounded-2xl text-left space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>Kebijakan Kunjungan & Tiket</span>
+            </div>
+            <ul className="text-[11px] text-slate-600 space-y-0.5 list-disc list-inside leading-relaxed">
+              <li>Tiket berlaku khusus untuk tanggal & sesi yang telah Anda pilih.</li>
+              <li>Tiket yang telah diverifikasi bersifat final (non-refundable) dan tidak dapat diuangkan kembali.</li>
+              <li>Tunjukkan QR code e-tiket kepada petugas loket saat tiba di museum untuk verifikasi masuk.</li>
+            </ul>
           </div>
         </main>
 

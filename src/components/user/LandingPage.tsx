@@ -40,7 +40,7 @@ export const LandingPage: React.FC = () => {
       src: '/assets/slide-2-candi-macan-putih-hd.jpg',
       title: 'Koleksi Arkeologi Candi Macan Putih',
       caption: 'Artefak Purbakala & Sejarah Blambangan',
-      position: 'object-center',
+      position: 'object-[right_center]',
     },
     {
       src: '/assets/slide-3-galeri-sejarah-hd.jpg',
@@ -83,7 +83,8 @@ export const LandingPage: React.FC = () => {
             />
           ))}
           {/* Metallic Blue Vignette Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/35 via-45% to-[#081523]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 via-45% to-[#081523]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#081523]/90 via-[#081523]/50 via-50% to-transparent pointer-events-none" />
         </div>
 
         {/* Top Header: Logo (left) + Hamburger Icon (right) */}
@@ -338,7 +339,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Main Title */}
-          <h1 className="text-[25px] sm:text-[27px] font-bold text-white leading-[1.25] mb-2.5 tracking-tight drop-shadow-md relative z-10">
+          <h1 className="text-[25px] sm:text-[27px] font-bold text-white leading-[1.3] mb-2.5 drop-shadow-md relative z-10">
             Selamat Datang di<br />
             Museum Blambangan
           </h1>

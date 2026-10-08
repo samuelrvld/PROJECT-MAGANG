@@ -26,7 +26,7 @@ export const GandrungSewuSidebarFormation: React.FC<GandrungSewuSidebarFormation
       {/* Gandrung Sewu Formation Container */}
       <div className="relative w-full h-36 flex items-end justify-center px-1">
         {/* Dancer 1 (Far Left - Outer Formation) */}
-        <div className="absolute left-1 bottom-0 w-16 h-24 opacity-15 transform -translate-x-1 filter drop-shadow">
+        <div className="absolute left-1 bottom-0 w-16 h-24 opacity-50 transform -translate-x-1 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
             alt="Gandrung Sewu"
@@ -35,7 +35,7 @@ export const GandrungSewuSidebarFormation: React.FC<GandrungSewuSidebarFormation
         </div>
 
         {/* Dancer 2 (Mid Left - Second Layer) */}
-        <div className="absolute left-8 bottom-1 w-20 h-28 opacity-25 filter drop-shadow">
+        <div className="absolute left-8 bottom-1 w-20 h-28 opacity-70 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
             alt="Gandrung Sewu"
@@ -44,7 +44,7 @@ export const GandrungSewuSidebarFormation: React.FC<GandrungSewuSidebarFormation
         </div>
 
         {/* Dancer 3 (Center Lead Dancer - Primadonna Gandrung) */}
-        <div className="relative z-10 w-24 h-34 opacity-35 filter drop-shadow-[0_2px_12px_rgba(212,163,89,0.35)] -mb-1">
+        <div className="relative z-10 w-24 h-34 opacity-95 filter drop-shadow-[0_2px_14px_rgba(212,163,89,0.5)] -mb-1">
           <img
             src="/assets/penari-gandrung-gold.png"
             alt="Gandrung Sewu Utama"
@@ -53,7 +53,7 @@ export const GandrungSewuSidebarFormation: React.FC<GandrungSewuSidebarFormation
         </div>
 
         {/* Dancer 4 (Mid Right - Second Layer) */}
-        <div className="absolute right-8 bottom-1 w-20 h-28 opacity-25 filter drop-shadow">
+        <div className="absolute right-8 bottom-1 w-20 h-28 opacity-70 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
             alt="Gandrung Sewu"
@@ -62,7 +62,7 @@ export const GandrungSewuSidebarFormation: React.FC<GandrungSewuSidebarFormation
         </div>
 
         {/* Dancer 5 (Far Right - Outer Formation) */}
-        <div className="absolute right-1 bottom-0 w-16 h-24 opacity-15 transform translate-x-1 filter drop-shadow">
+        <div className="absolute right-1 bottom-0 w-16 h-24 opacity-50 transform translate-x-1 filter drop-shadow">
           <img
             src="/assets/penari-gandrung-gold.png"
             alt="Gandrung Sewu"

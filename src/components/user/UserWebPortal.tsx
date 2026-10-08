@@ -105,7 +105,7 @@ export const UserWebPortal: React.FC = () => {
       src: '/assets/slide-2-candi-macan-putih-hd.jpg',
       title: 'Koleksi Arkeologi Candi Macan Putih',
       caption: 'Artefak Purbakala & Sejarah Blambangan',
-      position: 'object-center',
+      position: 'object-[right_center]',
     },
     {
       src: '/assets/slide-3-galeri-sejarah-hd.jpg',
@@ -174,10 +174,10 @@ export const UserWebPortal: React.FC = () => {
   const categories: { type: CategoryType; label: string; price: number; icon: React.ReactNode; desc: string; badgeColor: string }[] = [
     {
       type: 'Pelajar/Mahasiswa',
-      label: 'Pelajar / Mahasiswa',
+      label: 'Pelajar / Mahasiswa (Individu)',
       price: 5000,
       icon: <GraduationCap className="w-5 h-5 text-emerald-600" />,
-      desc: 'Wajib menunjukkan Kartu Pelajar / Mahasiswa aktif saat masuk loket.',
+      desc: 'Kunjungan mandiri (1–9 orang). Wajib menunjukkan Kartu Pelajar/Mahasiswa aktif di loket.',
       badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200'
     },
     {
@@ -185,7 +185,7 @@ export const UserWebPortal: React.FC = () => {
       label: 'Pengunjung Umum',
       price: 7500,
       icon: <User className="w-5 h-5 text-blue-600" />,
-      desc: 'Wisatawan domestik, perorangan, dan keluarga.',
+      desc: 'Wisatawan domestik, perseorangan, dan keluarga non-pelajar.',
       badgeColor: 'bg-blue-50 text-blue-700 border-blue-200'
     },
     {
@@ -193,15 +193,15 @@ export const UserWebPortal: React.FC = () => {
       label: 'Wisatawan Mancanegara',
       price: 20000,
       icon: <Globe className="w-5 h-5 text-purple-600" />,
-      desc: 'International visitors / foreign tourists.',
+      desc: 'International visitors / foreign tourists (all ages).',
       badgeColor: 'bg-purple-50 text-purple-700 border-purple-200'
     },
     {
       type: 'Pelajar Rombongan',
-      label: 'Pelajar Rombongan',
+      label: 'Pelajar Rombongan (Studi Tour)',
       price: 5000,
       icon: <Users className="w-5 h-5 text-teal-600" />,
-      desc: 'Kunjungan studi tour sekolah / universitas (min. 10 orang).',
+      desc: 'Khusus rombongan sekolah / kampus minimal 10 orang terdaftar dengan pendamping resmi.',
       badgeColor: 'bg-teal-50 text-teal-700 border-teal-200'
     },
   ];
@@ -504,7 +504,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                   <div>
                     <span className="block font-bold leading-tight">Beranda</span>
-                    <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">Halaman Utama</span>
+                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Halaman Utama</span>
                   </div>
                 </div>
                 {activeView === 'user-landing' && <span className="text-[#D4A359] text-xs font-bold">◆</span>}
@@ -530,7 +530,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                   <div>
                     <span className="block font-bold leading-tight">Booking Tiket</span>
-                    <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">Pilih Jadwal & Sesi</span>
+                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Pilih Jadwal & Sesi</span>
                   </div>
                 </div>
                 {(activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris') && (
@@ -558,7 +558,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                   <div>
                     <span className="block font-bold leading-tight">Tiket Saya</span>
-                    <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">E-Tiket & QR Code</span>
+                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">E-Tiket & QR Code</span>
                   </div>
                 </div>
                 {targetBookings.length > 0 ? (
@@ -595,7 +595,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                   <div>
                     <span className="block font-bold leading-tight">Koleksi Sejarah</span>
-                    <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">4.300+ Benda Kuno</span>
+                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">4.300+ Benda Kuno</span>
                   </div>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
@@ -612,7 +612,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                   <div>
                     <span className="block font-bold leading-tight">Jadwal & Tarif</span>
-                    <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">Mulai Rp 5.000 / Org</span>
+                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Mulai Rp 5.000 / Org</span>
                   </div>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
@@ -629,7 +629,7 @@ export const UserWebPortal: React.FC = () => {
                   </div>
                   <div>
                     <span className="block font-bold leading-tight">Kontak & Lokasi</span>
-                    <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">Peta & WhatsApp</span>
+                    <span className="text-[11px] text-slate-300 font-medium block leading-tight mt-0.5">Peta & WhatsApp</span>
                   </div>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-500 opacity-60 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
@@ -727,7 +727,8 @@ export const UserWebPortal: React.FC = () => {
                       }`}
                     />
                   ))}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#061422] via-[#061422]/40 via-35% to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#061422] via-[#061422]/60 via-40% to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#061422] via-[#061422]/90 via-50% to-transparent pointer-events-none" />
                 </div>
 
                 {/* Ornamen Gajah Oling */}
@@ -758,7 +759,7 @@ export const UserWebPortal: React.FC = () => {
                     </div>
                   </div>
 
-                  <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight text-white drop-shadow-sm">
+                  <h1 className="text-2xl sm:text-4xl font-extrabold leading-snug sm:leading-tight text-white drop-shadow-sm">
                     Selamat Datang di <br />
                     Museum Blambangan Banyuwangi
                   </h1>
@@ -852,15 +853,17 @@ export const UserWebPortal: React.FC = () => {
                     return (
                       <div
                         key={sesi.id}
-                        className={`p-5 rounded-2xl bg-white border transition-all space-y-2.5 flex flex-col justify-between ${
+                        className={`p-5 rounded-2xl border transition-all space-y-2.5 flex flex-col justify-between ${
                           isUnavailable
-                            ? 'border-slate-200/80 bg-slate-50/50'
-                            : 'border-slate-200 shadow-2xs hover:border-[#17293D] hover:shadow-md'
+                            ? 'border-slate-200 bg-slate-100/70 opacity-60 grayscale-[30%] shadow-none'
+                            : 'border-[#D4A359]/60 bg-gradient-to-b from-white to-[#FDFBF7] shadow-md ring-1 ring-[#D4A359]/25 hover:border-[#D4A359] hover:shadow-lg'
                         }`}
                       >
                         <div className="space-y-2.5">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-extrabold text-[#17293D] bg-slate-100 px-2.5 py-1 rounded-lg">
+                            <span className={`text-xs font-extrabold px-2.5 py-1 rounded-lg ${
+                              isUnavailable ? 'text-slate-500 bg-slate-200/80' : 'text-[#0E2C4A] bg-[#0E2C4A]/10'
+                            }`}>
                               {sesi.label}
                             </span>
                             {isWeekendToday ? (
@@ -868,7 +871,7 @@ export const UserWebPortal: React.FC = () => {
                                 Tutup (Akhir Pekan)
                               </span>
                             ) : isPassed ? (
-                              <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
+                              <span className="text-[10px] font-bold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded-full border border-slate-300">
                                 ✕ Lewat Jam Hari Ini
                               </span>
                             ) : isFull ? (
@@ -876,16 +879,19 @@ export const UserWebPortal: React.FC = () => {
                                 ⛔ Kuota Penuh (0/100)
                               </span>
                             ) : (
-                              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                                ✓ Sisa {quotaStats.remaining}/100 Kuota
+                              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-2xs flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                                <span>Tersedia: Sisa {quotaStats.remaining}/100</span>
                               </span>
                             )}
                           </div>
-                          <div className="text-base font-bold text-slate-900 flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-slate-400" />
+                          <div className={`text-base font-bold flex items-center gap-2 ${
+                            isUnavailable ? 'text-slate-500' : 'text-slate-900 font-extrabold'
+                          }`}>
+                            <Clock className={`w-4 h-4 ${isUnavailable ? 'text-slate-400' : 'text-[#D4A359]'}`} />
                             <span>{sesi.time}</span>
                           </div>
-                          <div className="text-[11px] text-slate-500">
+                          <div className={`text-[11px] ${isUnavailable ? 'text-slate-400' : 'text-slate-600'}`}>
                             {sesi.subLabel} • Maksimal 100 pengunjung per sesi
                           </div>
                         </div>
@@ -907,10 +913,10 @@ export const UserWebPortal: React.FC = () => {
                             }
                             setActiveView('user-form');
                           }}
-                          className={`w-full mt-2 py-2 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+                          className={`w-full mt-2 py-2.5 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                             isUnavailable
-                              ? 'bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer'
-                              : 'bg-slate-100 hover:bg-[#17293D] hover:text-white text-slate-800 shadow-2xs cursor-pointer'
+                              ? 'bg-slate-200/80 hover:bg-slate-300/80 text-slate-600'
+                              : 'bg-gradient-to-r from-[#0E2C4A] to-[#173D63] hover:from-[#173D63] hover:to-[#0E2C4A] text-white shadow-md active:scale-98'
                           }`}
                         >
                           <span>{isUnavailable ? 'Pilih untuk Hari Lain' : 'Pilih Sesi Ini'}</span>
