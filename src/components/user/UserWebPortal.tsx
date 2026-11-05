@@ -588,7 +588,9 @@ export const UserWebPortal: React.FC = () => {
             <nav className="space-y-1 text-xs">
               <button
                 type="button"
-                onClick={() => setActiveModal('koleksi')}
+onClick={() => {
+                  window.location.href = 'http://127.0.0.1:8000';
+                }}
                 className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
               >
                 <div className="flex items-center gap-3 text-left">
