@@ -10,10 +10,10 @@ import { BookingBerhasil } from './components/user/BookingBerhasil';
 import { StatusTiket } from './components/user/StatusTiket';
 import { TiketKunjungan } from './components/user/TiketKunjungan';
 import { UserWebPortal } from './components/user/UserWebPortal';
+import { AdminLogin } from './components/admin/AdminLogin';
 
 // Halaman Admin & Fitur Tambahan (Lazy loading)
 const SimulatorMobile = lazy(() => import('./components/user/SimulatorMobile').then(m => ({ default: m.SimulatorMobile })));
-const AdminLogin = lazy(() => import('./components/admin/AdminLogin').then(m => ({ default: m.AdminLogin })));
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 const AdminPesananKunjungan = lazy(() => import('./components/admin/AdminPesananKunjungan').then(m => ({ default: m.AdminPesananKunjungan })));
 const AdminDetailPesanan = lazy(() => import('./components/admin/AdminDetailPesanan').then(m => ({ default: m.AdminDetailPesanan })));

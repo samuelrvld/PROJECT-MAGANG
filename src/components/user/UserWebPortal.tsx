@@ -31,7 +31,9 @@ import {
   Compass,
   Copy,
   ExternalLink,
-  Play
+  Play,
+  QrCode,
+  Lock
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
@@ -214,6 +216,25 @@ export const UserWebPortal: React.FC = () => {
           <MuseumLogo variant="white" className="h-8" />
         </div>
 
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setActiveView('user-qris')}
+            className="text-[11px] font-bold text-[#E5BE7E] bg-white/10 px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1"
+          >
+            <QrCode className="w-3 h-3 text-[#D4A359]" />
+            <span>QRIS</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveView('admin-login')}
+            className="text-[11px] font-bold text-white bg-[#D4A359]/20 text-[#E5BE7E] px-2.5 py-1 rounded-lg border border-[#D4A359]/40 flex items-center gap-1"
+          >
+            <Lock className="w-3 h-3 text-[#D4A359]" />
+            <span>Admin</span>
+          </button>
+        </div>
+
         <button
           type="button"
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
@@ -348,7 +369,7 @@ export const UserWebPortal: React.FC = () => {
 
                   <button
                     type="button"
-                    onClick={() => { setActiveModal('koleksi'); setMobileSidebarOpen(false); }}
+                    onClick={() => { window.location.href = 'http://musewangi.rf.gd/?i=1'; setMobileSidebarOpen(false); }}
                     className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:bg-white/[0.05] hover:text-white transition-all text-left cursor-pointer group border border-transparent"
                   >
                     <div className="flex items-center gap-3">
@@ -589,7 +610,7 @@ export const UserWebPortal: React.FC = () => {
               <button
                 type="button"
 onClick={() => {
-                  window.location.href = 'http://127.0.0.1:8000';
+                  window.location.href = 'http://musewangi.rf.gd/?i=1';
                 }}
                 className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
               >
@@ -705,7 +726,28 @@ onClick={() => {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Quick Access to Mockup Screens */}
+            <button
+              type="button"
+              onClick={() => setActiveView('user-qris')}
+              className="flex items-center gap-1.5 text-xs font-bold text-[#0c233c] hover:text-[#D4A359] transition-all px-3 py-1.5 rounded-xl bg-[#FAF7F0] hover:bg-[#F3EFE6] border border-[#E0D7C4] shadow-2xs cursor-pointer"
+              title="Lihat Desain Baru Pembayaran QRIS Resmi"
+            >
+              <QrCode className="w-3.5 h-3.5 text-[#D4A359]" />
+              <span>Desain QRIS</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveView('admin-login')}
+              className="flex items-center gap-1.5 text-xs font-bold text-white bg-[#0c233c] hover:bg-[#071828] transition-all px-3.5 py-1.5 rounded-xl shadow-xs cursor-pointer border border-[#D4A359]/30"
+              title="Lihat Desain Baru Login Admin"
+            >
+              <Lock className="w-3.5 h-3.5 text-[#D4A359]" />
+              <span>Desain Admin</span>
+            </button>
+
             {/* Profil Button */}
             <button
               type="button"
@@ -1004,7 +1046,7 @@ onClick={() => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setActiveModal('koleksi')}
+                    onClick={() => { window.location.href = 'http://musewangi.rf.gd/?i=1'; }}
                     className="text-xs font-bold text-[#092C48] hover:text-[#D4A359] transition-colors flex items-center gap-1 shrink-0 self-start sm:self-auto cursor-pointer"
                   >
                     <span>Lihat Seluruh Koleksi</span>
@@ -1440,7 +1482,7 @@ onClick={() => {
                   <li>
                     <button
                       type="button"
-                      onClick={() => setActiveModal('koleksi')}
+                      onClick={() => { window.location.href = 'http://musewangi.rf.gd/?i=1'; }}
                       className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer"
                     >
                       <span className="text-[#D4A359] text-xs">›</span>
