@@ -48,19 +48,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
 
   const [rbacDeniedMsg, setRbacDeniedMsg] = React.useState<string | null>(null);
 
-  const handleMenuClick = (item: { id: AppView; label: string; externalUrl?: string }) => {
+  const handleMenuClick = (item: { id: AppView; label: string }) => {
     const isAllowed = hasPermission(currentAdminUser?.role, item.id);
     if (!isAllowed) {
       setRbacDeniedMsg(`Akses Dibatasi: Modul "${item.label}" khusus untuk peran yang berwenang (Role Anda saat ini: ${adminRole}).`);
       setTimeout(() => setRbacDeniedMsg(null), 4000);
-      return;
-    }
-    if (item.externalUrl) {
-      const win = window.open(item.externalUrl, '_blank', 'noopener,noreferrer');
-      if (!win || win.closed || typeof win.closed === 'undefined') {
-        window.location.href = item.externalUrl;
-      }
-      setMobileMenuOpen(false);
       return;
     }
     setActiveView(item.id);
@@ -75,7 +67,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       subtitle: string;
       icon: React.ReactNode;
       badge?: number;
-      externalUrl?: string;
     }[];
   }
 
@@ -126,10 +117,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       items: [
         {
           id: 'admin-koleksi',
-          label: 'Kelola Museum',
-          subtitle: 'Admin & Kuratorial Musewangi',
+          label: 'Koleksi Cagar Budaya',
+          subtitle: 'Katalog Artefak & Cetak QR Plakat',
           icon: <Landmark className="w-3.5 h-3.5" />,
-          externalUrl: 'http://musewangi.rf.gd/login?i=1'
+          badge: 10
         }
       ]
     },
@@ -270,10 +261,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
                               <span className="p-1 rounded bg-white/5 text-slate-400" title="Akses Dibatasi">
                                 <Lock className="w-3 h-3 text-slate-400" />
                               </span>
-                            ) : item.externalUrl ? (
-                              <span className="p-1 rounded bg-white/5 text-[#D4A359]/80" title="Buka Portal Admin Musewangi">
-                                <ExternalLink className="w-3.5 h-3.5" />
-                              </span>
                             ) : item.badge !== undefined ? (
                               <span className="bg-[#D4A359] text-[#092C48] text-[10px] font-black px-2 py-0.5 rounded-full shadow-2xs">
                                 {item.badge}
@@ -405,10 +392,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
                         {!isPermitted ? (
                           <span className="p-1 rounded bg-white/5 text-slate-400 flex items-center gap-1 text-[9.5px]" title="Akses Dibatasi Peran">
                             <Lock className="w-3 h-3 text-slate-400" />
-                          </span>
-                        ) : item.externalUrl ? (
-                          <span className="p-1 rounded bg-white/5 text-[#D4A359]/80 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all flex items-center gap-1" title="Buka Portal Admin Musewangi">
-                            <ExternalLink className="w-3.5 h-3.5" />
                           </span>
                         ) : item.badge !== undefined ? (
                           <span className="bg-[#D4A359] text-[#092C48] text-[10px] font-black px-2 py-0.5 rounded-full shadow-2xs">
