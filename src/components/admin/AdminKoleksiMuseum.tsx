@@ -189,7 +189,7 @@ export const AdminKoleksiMuseum: React.FC = () => {
               </select>
 
               <a
-                href="http://musewangi.rf.gd/login"
+                href="http://musewangi.rf.gd/login?i=1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#D4A359] to-[#B38038] hover:from-[#C39247] hover:to-[#A3702B] text-[#081827] text-xs font-black rounded-xl shadow-xs transition-all cursor-pointer whitespace-nowrap"
