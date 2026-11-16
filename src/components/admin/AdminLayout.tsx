@@ -18,8 +18,7 @@ import {
   QrCode,
   Compass,
   UserCheck,
-  Lock,
-  Landmark
+  Lock
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { hasPermission } from '../../utils/rbac';
@@ -110,18 +109,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
           subtitle: 'Rekap Transaksi & PAD',
           icon: <BarChart3 className="w-3.5 h-3.5" /> 
         },
-      ]
-    },
-    {
-      categoryTitle: 'Kuratorial & Museum (Musewangi)',
-      items: [
-        {
-          id: 'admin-koleksi',
-          label: 'Koleksi Cagar Budaya',
-          subtitle: 'Katalog Artefak & Cetak QR Plakat',
-          icon: <Landmark className="w-3.5 h-3.5" />,
-          badge: 10
-        }
       ]
     },
     {
