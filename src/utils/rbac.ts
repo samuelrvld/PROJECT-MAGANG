@@ -25,6 +25,7 @@ export const ROLE_CONFIGS: Record<AdminRole, RoleConfig> = {
       'admin-scan',
       'admin-visitors',
       'admin-reports',
+      'admin-koleksi',
       'admin-users',
       'admin-settings',
       'admin-notifications',
@@ -48,6 +49,7 @@ export const ROLE_CONFIGS: Record<AdminRole, RoleConfig> = {
       'admin-order-detail',
       'admin-ticket-view',
       'admin-visitors',
+      'admin-koleksi',
       'admin-notifications',
     ],
     allowedFeatures: [
@@ -73,6 +75,7 @@ export const ROLE_CONFIGS: Record<AdminRole, RoleConfig> = {
       'admin-scan',
       'admin-order-detail',
       'admin-ticket-view',
+      'admin-koleksi',
       'admin-notifications',
     ],
     allowedFeatures: [
@@ -96,6 +99,7 @@ export const ROLE_CONFIGS: Record<AdminRole, RoleConfig> = {
       'admin-dashboard',
       'admin-visitors',
       'admin-reports',
+      'admin-koleksi',
       'admin-notifications',
     ],
     allowedFeatures: [

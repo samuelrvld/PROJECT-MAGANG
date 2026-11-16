@@ -24,6 +24,8 @@ const AdminPengaturan = lazy(() => import('./components/admin/AdminPengaturan').
 const AdminDataPengunjung = lazy(() => import('./components/admin/AdminDataPengunjung').then(m => ({ default: m.AdminDataPengunjung })));
 const AdminScanValidasi = lazy(() => import('./components/admin/AdminScanValidasi').then(m => ({ default: m.AdminScanValidasi })));
 const AdminManajemenPetugas = lazy(() => import('./components/admin/AdminManajemenPetugas').then(m => ({ default: m.AdminManajemenPetugas })));
+const AdminKoleksiMuseum = lazy(() => import('./components/admin/AdminKoleksiMuseum').then(m => ({ default: m.AdminKoleksiMuseum })));
+const KatalogKoleksiMuseum = lazy(() => import('./components/user/KatalogKoleksiMuseum').then(m => ({ default: m.KatalogKoleksiMuseum })));
 
 const FallbackLoader: React.FC = () => (
   <div className="min-h-screen bg-[#081827] flex items-center justify-center text-white">
@@ -74,6 +76,8 @@ const MainViewRouter: React.FC = () => {
               return <AdminScanValidasi />;
             case 'admin-users':
               return <AdminManajemenPetugas />;
+            case 'admin-koleksi':
+              return <AdminKoleksiMuseum />;
             default:
               return <AdminDashboard />;
           }
@@ -117,6 +121,12 @@ const MainViewRouter: React.FC = () => {
       return <TiketKunjungan />;
     case 'user-web-portal':
       return <UserWebPortal />;
+    case 'user-koleksi':
+      return (
+        <Suspense fallback={<FallbackLoader />}>
+          <KatalogKoleksiMuseum />
+        </Suspense>
+      );
     default:
       return userViewMode === 'web' ? <UserWebPortal /> : <LandingPage />;
   }

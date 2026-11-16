@@ -6,12 +6,17 @@ export type CategoryType =
   | 'Mancanegara' 
   | 'Pelajar Rombongan'
   | 'Pelajar' 
-  | 'Luar Negeri';
+  | 'Luar Negeri'
+  | 'Campuran (Dewasa & Mahasiswa)';
 
 export interface Booking {
   id: string; // e.g. "MB-20250815-0012"
   nama: string;
   jumlahOrang: number;
+  jumlahDewasa?: number;
+  jumlahMahasiswa?: number;
+  jumlahMancanegara?: number;
+  rincianPengunjung?: string;
   telepon: string;
   email: string;
   alamat: string;
@@ -29,6 +34,32 @@ export interface Booking {
   checkInStatus?: 'Belum Hadir' | 'Sudah Masuk';
   checkInTime?: string;
   createdAt: string;
+}
+
+export type KuratorialCategory = 
+  | 'Arkeologi' 
+  | 'Etnografi' 
+  | 'Numismatika & Heraldika' 
+  | 'Filologi' 
+  | 'Keramologi' 
+  | 'Seni Rupa & Kriya' 
+  | 'Teknologi Tradisional' 
+  | 'Geologi';
+
+export interface KoleksiItem {
+  id: string;
+  namaKoleksi: string;
+  noRegistrasi: string;
+  noRegistrasiLama?: string;
+  kodeUnik: string;
+  kategori: KuratorialCategory;
+  jenisBenda: string;
+  tahunPembuatan: string;
+  asal: string;
+  kondisi: 'Sangat Baik' | 'Baik' | 'Cukup' | 'Perlu Konservasi';
+  deskripsi: string;
+  fotoUrl: string;
+  audioGuideUrl?: string;
 }
 
 export interface AdminNotification {
@@ -52,6 +83,10 @@ export interface ActivityLog {
 export interface WalkInBookingInput {
   nama: string;
   jumlahOrang: number;
+  jumlahDewasa?: number;
+  jumlahMahasiswa?: number;
+  jumlahMancanegara?: number;
+  rincianPengunjung?: string;
   kategori: CategoryType;
   sesi: string;
   metodePembayaran: 'Tunai (Cash Loket)' | 'QRIS Loket';

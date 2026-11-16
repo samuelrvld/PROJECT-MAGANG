@@ -33,15 +33,23 @@ import {
   ExternalLink,
   Play,
   QrCode,
-  Lock
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { GajahOlingMotif } from '../common/GajahOlingMotif';
-import { SiluetPenariGandrung } from '../common/SiluetPenariGandrung';
-import { GandrungSewuSidebarFormation } from '../common/GandrungSewuSidebarFormation';
 import { ModernTicketPass } from '../common/ModernTicketPass';
 import { MuseumFeatureModals, type MuseumModalType } from '../common/MuseumFeatureModals';
-import { SocialMediaIconRow } from '../common/SocialMediaLinks';
+import { 
+  SocialMediaIconRow, 
+  InstagramIcon, 
+  FacebookIcon, 
+  YouTubeIcon, 
+  TikTokIcon, 
+  WhatsAppIcon, 
+  TwitterBirdIcon,
+  TwitterIcon
+} from '../common/SocialMediaLinks';
 import type { CategoryType } from '../../types';
 
 import { 
@@ -51,6 +59,13 @@ import {
   getTodayWIB, 
   isWeekendClosed 
 } from '../../utils/sessionUtils';
+
+const TYPEWRITER_PHRASES = [
+  'Kabupaten Banyuwangi',
+  'Pusat Sejarah & Kebudayaan Blambangan',
+  'Wisata Edukasi Sejarah & Budaya',
+  'Setiap Koleksi Punya Cerita'
+];
 
 export const UserWebPortal: React.FC = () => {
   const { 
@@ -81,6 +96,49 @@ export const UserWebPortal: React.FC = () => {
   const [activeHeroSlide, setActiveHeroSlide] = useState(0);
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [showScrollBookPill, setShowScrollBookPill] = useState(false);
+
+  // Typewriter Animation State (Like museumnegeri.ntbprov.go.id)
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [typewriterText, setTypewriterText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<1 | 2>(1);
+
+  // Auto-cycle video: Video 1 rotates after 12s, Video 2 (Lingga-Yoni) rotates after 5s
+  useEffect(() => {
+    const cycleTimer = setTimeout(() => {
+      setSelectedVideo(prev => prev === 1 ? 2 : 1);
+    }, selectedVideo === 1 ? 12000 : 5000);
+    return () => clearTimeout(cycleTimer);
+  }, [selectedVideo]);
+
+  useEffect(() => {
+    const currentPhrase = TYPEWRITER_PHRASES[phraseIndex % TYPEWRITER_PHRASES.length];
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (!isDeleting) {
+      if (typewriterText.length < currentPhrase.length) {
+        timer = setTimeout(() => {
+          setTypewriterText(currentPhrase.slice(0, typewriterText.length + 1));
+        }, 70);
+      } else {
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 2200);
+      }
+    } else {
+      if (typewriterText.length > 0) {
+        timer = setTimeout(() => {
+          setTypewriterText(currentPhrase.slice(0, typewriterText.length - 1));
+        }, 35);
+      } else {
+        setIsDeleting(false);
+        setPhraseIndex(prev => (prev + 1) % TYPEWRITER_PHRASES.length);
+        timer = setTimeout(() => {}, 400);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [typewriterText, isDeleting, phraseIndex]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -209,640 +267,312 @@ export const UserWebPortal: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row text-slate-800 selection:bg-[#0F292F] selection:text-white">
-      {/* ================= MOBILE COMPACT TOPBAR (Phones only) ================= */}
-      <div className="md:hidden bg-[#0F2236] text-white px-4 py-3 border-b border-[#1B3654] sticky top-0 z-40 flex items-center justify-between shadow-sm print:hidden">
-        <div className="flex items-center gap-2">
-          <MuseumLogo variant="white" className="h-8" />
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setActiveView('user-qris')}
-            className="text-[11px] font-bold text-[#E5BE7E] bg-white/10 px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1"
-          >
-            <QrCode className="w-3 h-3 text-[#D4A359]" />
-            <span>QRIS</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveView('admin-login')}
-            className="text-[11px] font-bold text-white bg-[#D4A359]/20 text-[#E5BE7E] px-2.5 py-1 rounded-lg border border-[#D4A359]/40 flex items-center gap-1"
-          >
-            <Lock className="w-3 h-3 text-[#D4A359]" />
-            <span>Admin</span>
-          </button>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
-          aria-label="Toggle Navigation"
-        >
-          {mobileSidebarOpen ? <X className="w-5 h-5 text-[#DAB36E]" /> : <Menu className="w-5 h-5 text-white" />}
-        </button>
-      </div>
-
-      {/* ================= MOBILE SLIDE-IN SIDEBAR DRAWER (Phones only) ================= */}
-      {mobileSidebarOpen && (
-        <div className="fixed inset-0 z-50 md:hidden print:hidden">
-          {/* Backdrop Blur Overlay */}
-          <div 
-            onClick={() => setMobileSidebarOpen(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
-          />
-
-          {/* Slide-in Drawer from Left */}
-          <aside className="fixed top-0 bottom-0 left-0 w-[300px] max-w-[85vw] bg-gradient-to-b from-[#051829] via-[#092C48] to-[#04121F] text-white z-50 flex flex-col justify-between shadow-2xl p-5 border-r border-[#153E66] animate-in slide-in-from-left duration-250 relative overflow-hidden">
-            {/* Top-Right Gajah Oling Motif */}
-            <div className="absolute -top-4 -right-4 w-32 h-32 opacity-10 pointer-events-none select-none transform rotate-12">
-              <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
-            </div>
-
-            <div className="space-y-4 relative z-10 flex-1 overflow-y-auto">
-              {/* Header inside drawer */}
-              <div className="pb-3.5 border-b border-white/10 space-y-2">
-                <div className="flex items-center justify-between">
-                  <MuseumLogo variant="white" className="h-8" />
-                  <button
-                    type="button"
-                    onClick={() => setMobileSidebarOpen(false)}
-                    className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-[#D4A359] transition-colors cursor-pointer"
-                    aria-label="Tutup Menu"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="flex items-center gap-1.5 text-[10.5px] text-[#E3C693]/90 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
-                  <span>Dinas Kebudayaan & Pariwisata Banyuwangi</span>
-                </div>
-              </div>
-
-              {/* Navigation Items */}
-              <nav className="space-y-1.5 text-xs font-semibold">
-                <button
-                  type="button"
-                  onClick={() => { setActiveView('user-landing'); setMobileSidebarOpen(false); }}
-                  className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
-                    activeView === 'user-landing'
-                      ? 'bg-white/[0.09] border border-white/15 text-white shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
-                      : 'text-slate-200 hover:bg-white/[0.05] hover:text-white border border-transparent'
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                    activeView === 'user-landing'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/25 font-bold'
-                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
-                  }`}>
-                    <Home className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-semibold leading-tight">Beranda</span>
-                    <span className={`text-[10px] block leading-none mt-0.5 ${
-                      activeView === 'user-landing' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300'
-                    }`}>Halaman Utama</span>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { setActiveView('user-form'); setMobileSidebarOpen(false); }}
-                  className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
-                    activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                      ? 'bg-white/[0.09] border border-white/15 text-white shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
-                      : 'text-slate-200 hover:bg-white/[0.05] hover:text-white border border-transparent'
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                    activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/25 font-bold'
-                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
-                  }`}>
-                    <Calendar className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-semibold leading-tight">Booking Tiket</span>
-                    <span className={`text-[10px] block leading-none mt-0.5 ${
-                      activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300'
-                    }`}>Pilih Jadwal & Sesi</span>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { setActiveView('user-web-portal'); setMobileSidebarOpen(false); }}
-                  className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all text-left cursor-pointer group ${
-                    (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
-                      ? 'bg-white/[0.09] border border-white/15 text-white shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
-                      : 'text-slate-200 hover:bg-white/[0.05] hover:text-white border border-transparent'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                      (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
-                        ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/25 font-bold'
-                        : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
-                    }`}>
-                      <Ticket className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="block font-semibold leading-tight">Tiket Saya</span>
-                      <span className={`text-[10px] block leading-none mt-0.5 ${
-                        (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300'
-                      }`}>E-Tiket & QR Code</span>
-                    </div>
-                  </div>
-                  {targetBookings.length > 0 && (
-                    <span className="bg-gradient-to-r from-[#D4A359] to-[#E5BE7E] text-[#051829] text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
-                      {targetBookings.length}
-                    </span>
-                  )}
-                </button>
-
-                <div className="pt-2.5 border-t border-white/10 space-y-1.5">
-                  <div className="text-[10px] font-bold tracking-wider text-[#D4A359] uppercase px-3 py-1">
-                    Informasi Museum
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => { window.location.href = 'http://musewangi.rf.gd/?i=1'; setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:bg-white/[0.05] hover:text-white transition-all text-left cursor-pointer group border border-transparent"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 transition-colors">
-                        <Landmark className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <span className="block font-medium leading-tight">Koleksi Sejarah</span>
-                        <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block leading-none mt-0.5">4.300+ Benda Kuno</span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setActiveModal('informasi'); setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:bg-white/[0.05] hover:text-white transition-all text-left cursor-pointer group border border-transparent"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 transition-colors">
-                        <Info className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <span className="block font-medium leading-tight">Jadwal & Tarif</span>
-                        <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block leading-none mt-0.5">Mulai Rp 5.000 / Org</span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setActiveModal('kontak'); setMobileSidebarOpen(false); }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:bg-white/[0.05] hover:text-white transition-all text-left cursor-pointer group border border-transparent"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 transition-colors">
-                        <PhoneCall className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <span className="block font-medium leading-tight">Kontak & Lokasi</span>
-                        <span className="text-[10px] text-slate-400 group-hover:text-slate-300 block leading-none mt-0.5">Peta & WhatsApp</span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
-                  </button>
-                </div>
-              </nav>
-            </div>
-
-            {/* Ilustrasi Gandrung Sewu di Sidebar */}
-            <div className="pt-2 px-1 relative z-10 shrink-0">
-              <GandrungSewuSidebarFormation />
-            </div>
-
-            {/* Jam Operasional dan Footer Drawer */}
-            <div className="pt-2 border-t border-white/10 space-y-2 relative z-10 shrink-0">
-              {/* Jam Buka Loket Box */}
-              <div className="p-3 rounded-xl bg-white/[0.04] backdrop-blur-md border border-white/10 space-y-2 text-left shadow-xs">
-                <div className="flex items-center justify-between text-[11px] font-semibold">
-                  <span className="flex items-center gap-1.5 text-slate-200 font-medium">
-                    <Clock className="w-3.5 h-3.5 text-[#D4A359]" />
-                    Jam Buka Loket
-                  </span>
-                  {isWeekendToday ? (
-                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                      Tutup Hari Ini
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Buka Hari Ini
-                    </span>
-                  )}
-                </div>
-                <div className="text-[10.5px] space-y-1 pt-0.5">
-                  <div className="flex justify-between items-center text-slate-300">
-                    <span className="font-normal text-slate-400">Senin – Jumat:</span>
-                    <span className="font-semibold text-white">07:30 – 16:00 WIB</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-amber-200/80 font-normal">Sabtu & Minggu:</span>
-                    <span className="font-bold text-amber-300">Tutup (Libur)</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Social Media */}
-              <div className="pt-0.5 text-center">
-                <span className="text-[10px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">
-                  Sosial Media Resmi
-                </span>
-                <SocialMediaIconRow size="sm" />
-              </div>
-
-              <div className="text-[10px] text-slate-400 text-center font-normal">
-                Museum Blambangan Banyuwangi
-              </div>
-            </div>
-          </aside>
-        </div>
-      )}
-
-      {/* Sidebar Desktop Web */}
-      <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden z-40 select-none print:hidden">
-        {/* Ornamen Gajah Oling Atas */}
-        <div className="absolute -top-6 -right-6 w-36 h-36 opacity-[0.08] pointer-events-none select-none transform rotate-12">
-          <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
-        </div>
-
-        <div className="space-y-3 relative z-10">
-          {/* Logo Brand */}
-          <div className="pt-1 pb-3 border-b border-white/10 relative">
-            <div className="flex items-center justify-between">
-              <MuseumLogo variant="white" className="h-9 sm:h-10 w-auto" />
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-[10.5px] text-[#E3C693] font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
-                <span>Kab. Banyuwangi</span>
-              </div>
-              <span className="text-[9px] font-bold text-[#4A90E2] bg-[#4A90E2]/15 px-2 py-0.5 rounded-full border border-[#4A90E2]/30 tracking-wider">
-                DISBUDPAR
-              </span>
-            </div>
-          </div>
-
-          {/* Section: Menu Navigasi Utama */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between px-2.5 py-1">
-              <span className="text-[10px] font-bold tracking-wider text-[#D4A359] uppercase">
-                Menu Utama
-              </span>
-              <span className="text-[9.5px] text-slate-400 font-medium">Layanan E-Tiket</span>
-            </div>
-
-            <nav className="space-y-1 text-xs">
-              {/* Beranda */}
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col text-slate-800 selection:bg-[#0F292F] selection:text-white font-sans">
+      {/* ================= STICKY TOP NAVBAR (Clean White Theme like Majestic Banyuwangi) ================= */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 text-slate-800 shadow-xs transition-all print:hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 sm:h-24">
+            {/* Left: Brand Logo (Enlarged Museum Blambangan Logo - High Precision) */}
+            <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => { setActiveView('user-landing'); setViewingTicketId(null); }}
-                className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
-                  activeView === 'user-landing'
-                    ? 'bg-white/[0.09] border border-white/15 text-white font-semibold shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
-                    : 'text-slate-200 hover:text-white hover:bg-white/[0.05] border border-transparent'
-                }`}
+                className="flex items-center gap-2.5 text-left cursor-pointer group py-1.5"
+                title="Museum Blambangan Banyuwangi"
               >
-                <div className="flex items-center gap-3 text-left">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                    activeView === 'user-landing'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/20 font-bold'
-                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
-                  }`}>
-                    <Home className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-semibold leading-tight">Beranda</span>
-                    <span className={`text-[11px] block leading-tight mt-0.5 ${
-                      activeView === 'user-landing' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300 font-normal'
-                    }`}>Halaman Utama</span>
-                  </div>
-                </div>
+                <MuseumLogo 
+                  variant="dark" 
+                  className="h-14 sm:h-16 lg:h-20 w-auto object-contain transition-transform group-hover:scale-[1.02] drop-shadow-xs" 
+                />
               </button>
+            </div>
 
-              {/* Booking Tiket */}
+            {/* Right: Clean Text Navigation Links - Refined & Aesthetic */}
+            <nav className="hidden lg:flex items-center gap-7 xl:gap-8 text-[13.5px] font-semibold text-slate-600 font-sans tracking-normal">
               <button
                 type="button"
-                onClick={() => { setActiveView('user-form'); setViewingTicketId(null); }}
-                className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
-                  activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                    ? 'bg-white/[0.09] border border-white/15 text-white font-semibold shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
-                    : 'text-slate-200 hover:text-white hover:bg-white/[0.05] border border-transparent'
+                onClick={() => { setActiveView('user-landing'); setViewingTicketId(null); }}
+                className={`transition-all duration-150 cursor-pointer py-1.5 relative ${
+                  activeView === 'user-landing'
+                    ? 'text-[#0B3B60] font-extrabold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#D4A359] after:rounded-full'
+                    : 'hover:text-[#0B3B60]'
                 }`}
               >
-                <div className="flex items-center gap-3 text-left">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                    activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris'
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/20 font-bold'
-                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
-                  }`}>
-                    <Calendar className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-semibold leading-tight">Booking Tiket</span>
-                    <span className={`text-[11px] block leading-tight mt-0.5 ${
-                      activeView === 'user-form' || activeView === 'user-summary' || activeView === 'user-qris' ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300 font-normal'
-                    }`}>Pilih Jadwal & Sesi</span>
-                  </div>
-                </div>
+                Home
               </button>
 
-              {/* Tiket Saya */}
+              <a
+                href="https://online.fliphtml5.com/Museum-Blambangan/Katalog-Koleksi-Museum-Blambangan-2026/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-all duration-150 cursor-pointer py-1.5 hover:text-[#0B3B60] flex items-center gap-1.5 font-bold text-slate-700"
+                title="Katalog Koleksi Resmi Museum Blambangan"
+              >
+                <span>Katalog Museum</span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#D4A359]" />
+              </a>
+
               <button
                 type="button"
                 onClick={() => { setActiveView('user-web-portal'); setViewingTicketId(null); }}
-                className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all cursor-pointer group ${
-                  (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
-                    ? 'bg-white/[0.09] border border-white/15 text-white font-semibold shadow-xs before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-[#D4A359] before:rounded-r-full'
-                    : 'text-slate-200 hover:text-white hover:bg-white/[0.05] border border-transparent'
+                className={`relative transition-all duration-150 cursor-pointer py-1.5 flex items-center gap-1.5 ${
+                  activeView === 'user-web-portal'
+                    ? 'text-[#0B3B60] font-extrabold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#D4A359] after:rounded-full'
+                    : 'hover:text-[#0B3B60]'
                 }`}
               >
-                <div className="flex items-center gap-3 text-left">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                    (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal
-                      ? 'bg-gradient-to-br from-[#D4A359] to-[#B38038] text-[#051829] shadow-sm shadow-[#D4A359]/20 font-bold'
-                      : 'bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30'
-                  }`}>
-                    <Ticket className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-semibold leading-tight">Tiket Saya</span>
-                    <span className={`text-[11px] block leading-tight mt-0.5 ${
-                      (activeView === 'user-web-portal' || activeView === 'user-ticket') && !activeModal ? 'text-[#E5BE7E] font-medium' : 'text-slate-400 group-hover:text-slate-300 font-normal'
-                    }`}>E-Tiket & QR Code</span>
-                  </div>
-                </div>
-                {targetBookings.length > 0 && (
-                  <span className="bg-gradient-to-r from-[#D4A359] to-[#E5BE7E] text-[#051829] text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
-                    {targetBookings.length}
+                <span>Tiket Saya</span>
+                {myBookings.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4A359] text-[#081827]">
+                    {myBookings.length}
                   </span>
                 )}
-              </button>
-            </nav>
-          </div>
-
-          {/* Section: Informasi Museum */}
-          <div className="space-y-1 pt-2 border-t border-white/10">
-            <div className="flex items-center justify-between px-2.5 py-1">
-              <span className="text-[10px] font-bold tracking-wider text-[#D4A359] uppercase">
-                Informasi Museum
-              </span>
-              <span className="text-[9.5px] text-slate-400 font-medium">Edukasi Budaya</span>
-            </div>
-
-            <nav className="space-y-1 text-xs">
-              <button
-                type="button"
-onClick={() => {
-                  window.location.href = 'http://musewangi.rf.gd/?i=1';
-                }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
-              >
-                <div className="flex items-center gap-3 text-left">
-                  <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
-                    <Landmark className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-medium text-slate-200 group-hover:text-white leading-tight transition-colors">Koleksi Sejarah</span>
-                    <span className="text-[11px] text-slate-400 group-hover:text-slate-300 font-normal block leading-tight mt-0.5 transition-colors">4.300+ Benda Kuno</span>
-                  </div>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveModal('informasi')}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
+                className="hover:text-[#0B3B60] transition-colors cursor-pointer py-1.5"
               >
-                <div className="flex items-center gap-3 text-left">
-                  <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
-                    <Info className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-medium text-slate-200 group-hover:text-white leading-tight transition-colors">Jadwal & Tarif</span>
-                    <span className="text-[11px] text-slate-400 group-hover:text-slate-300 font-normal block leading-tight mt-0.5 transition-colors">Mulai Rp 5.000 / Org</span>
-                  </div>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
+                Jadwal & Tarif
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveModal('kontak')}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer group border border-transparent hover:border-white/5"
+                className="hover:text-[#0B3B60] transition-colors cursor-pointer py-1.5"
               >
-                <div className="flex items-center gap-3 text-left">
-                  <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/10 text-[#D4A359] group-hover:bg-[#D4A359]/15 group-hover:text-amber-200 group-hover:border-[#D4A359]/30 flex items-center justify-center shrink-0 transition-all">
-                    <PhoneCall className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="block font-medium text-slate-200 group-hover:text-white leading-tight transition-colors">Kontak & Lokasi</span>
-                    <span className="text-[11px] text-slate-400 group-hover:text-slate-300 font-normal block leading-tight mt-0.5 transition-colors">Peta & WhatsApp</span>
-                  </div>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-400 opacity-60 group-hover:opacity-100 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all" />
+                Kontak & Layanan
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveView('admin-login')}
+                className="hover:text-[#0B3B60] font-bold transition-all cursor-pointer flex items-center gap-1.5 border-l border-slate-200 pl-5 py-1 text-slate-800"
+                title="Portal Petugas & Admin"
+              >
+                <Lock className="w-3.5 h-3.5 text-[#D4A359]" />
+                <span>Login Petugas</span>
               </button>
             </nav>
-          </div>
 
-          {/* Ilustrasi Gandrung Sewu di Sidebar */}
-          <div className="pt-1.5 px-0.5 relative z-10 shrink-0">
-            <GandrungSewuSidebarFormation />
+            {/* Mobile Actions: Profile & Hamburger */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <button
+                type="button"
+                onClick={() => setActiveModal('profil')}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                title="Profil Pengunjung"
+              >
+                <User className="w-4 h-4 text-slate-700" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                aria-label="Toggle Menu"
+              >
+                {mobileSidebarOpen ? <X className="w-5 h-5 text-[#D4A359]" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Jam Operasional */}
-        <div className="pt-2 border-t border-white/10 space-y-2 relative z-10 shrink-0">
-          {/* Operational Hours Compact Card */}
-          <div className="p-3 rounded-xl bg-white/[0.04] backdrop-blur-md border border-white/10 space-y-2 text-left shadow-xs">
-            <div className="flex items-center justify-between text-[11px] font-semibold">
-              <span className="flex items-center gap-1.5 text-slate-200 font-medium">
-                <Clock className="w-3.5 h-3.5 text-[#D4A359]" />
-                Jam Buka Loket
-              </span>
-              {isWeekendToday ? (
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                  Tutup Hari Ini
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Buka Hari Ini
-                </span>
-              )}
-            </div>
-            <div className="text-[10.5px] space-y-1 pt-0.5">
-              <div className="flex justify-between items-center text-slate-300">
-                <span className="font-normal text-slate-400">Senin – Jumat:</span>
-                <span className="font-semibold text-white">07:30 – 16:00 WIB</span>
-              </div>
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="text-amber-200/80 font-normal">Sabtu & Minggu:</span>
-                <span className="font-bold text-amber-300">Tutup (Libur)</span>
-              </div>
-            </div>
-          </div>
+        {/* Mobile Dropdown Menu Drawer (Clean White Theme) */}
+        {mobileSidebarOpen && (
+          <div className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-2 shadow-xl animate-in slide-in-from-top-2 duration-200">
+            <nav className="grid grid-cols-1 gap-1 text-sm font-semibold text-slate-700">
+              <button
+                type="button"
+                onClick={() => { setActiveView('user-landing'); setViewingTicketId(null); setMobileSidebarOpen(false); }}
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all text-left ${
+                  activeView === 'user-landing' ? 'bg-[#092C48]/8 text-[#092C48] font-extrabold' : 'hover:bg-slate-50'
+                }`}
+              >
+                <Home className="w-4 h-4 text-[#D4A359]" />
+                <span>Home</span>
+              </button>
 
-          {/* Social Media Quick Links */}
-          <div className="pt-1 pb-0.5 text-center">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">
-              Sosial Media Resmi
-            </span>
-            <SocialMediaIconRow size="sm" />
-          </div>
+              <a
+                href="https://online.fliphtml5.com/Museum-Blambangan/Katalog-Koleksi-Museum-Blambangan-2026/"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="flex items-center justify-between px-3 py-2.5 rounded-xl transition-all text-left text-slate-700 hover:bg-slate-50 cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Landmark className="w-4 h-4 text-[#D4A359]" />
+                  <span className="font-bold">Katalog Museum</span>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+              </a>
 
-          <div className="text-[10px] text-slate-400 text-center font-normal pt-0.5">
-            Museum Blambangan Banyuwangi
+              <button
+                type="button"
+                onClick={() => { setActiveView('user-web-portal'); setViewingTicketId(null); setMobileSidebarOpen(false); }}
+                className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all text-left ${
+                  activeView === 'user-web-portal' ? 'bg-[#092C48]/8 text-[#092C48] font-extrabold' : 'hover:bg-slate-50'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Ticket className="w-4 h-4 text-[#D4A359]" />
+                  <span>Tiket Saya</span>
+                </div>
+                {myBookings.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4A359] text-[#081827]">
+                    {myBookings.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveModal('informasi'); setMobileSidebarOpen(false); }}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 text-left transition-colors"
+              >
+                <Clock className="w-4 h-4 text-[#D4A359]" />
+                <span>Jadwal & Tarif</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveModal('kontak'); setMobileSidebarOpen(false); }}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 text-left transition-colors"
+              >
+                <PhoneCall className="w-4 h-4 text-[#D4A359]" />
+                <span>Layanan Lainnya</span>
+              </button>
+            </nav>
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <button
+                type="button"
+                onClick={() => { setActiveView('user-qris'); setMobileSidebarOpen(false); }}
+                className="text-slate-600 hover:text-slate-900 flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg bg-slate-100 font-semibold cursor-pointer"
+              >
+                <QrCode className="w-3.5 h-3.5 text-[#D4A359]" />
+                <span>Desain QRIS</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveView('admin-login'); setMobileSidebarOpen(false); }}
+                className="text-[#092C48] hover:underline flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg font-bold cursor-pointer"
+              >
+                <Lock className="w-3.5 h-3.5 text-[#D4A359]" />
+                <span>Login Petugas</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </aside>
+        )}
+      </header>
+
+
+      
 
       {/* ================= MAIN CONTENT AREA ================= */}
-      <div className="md:ml-72 lg:ml-80 flex-1 flex flex-col min-h-screen relative overflow-x-hidden bg-white w-full print:m-0 print:p-0 print:min-h-0 print:overflow-visible">
-        {/* Header Desktop */}
-        <header className="hidden md:flex bg-white border-b border-slate-100 px-6 sm:px-8 py-3.5 items-center justify-between sticky top-0 z-30 print:hidden">
-          <div className="flex items-center gap-3">
-            <MuseumLogo variant="dark" className="h-8" />
-            <span className="hidden sm:inline text-xs text-slate-400 border-l border-slate-200 pl-3">
-              Portal Pengunjung Web
-            </span>
-          </div>
+      <div className="flex-1 flex flex-col min-h-screen relative overflow-x-hidden bg-white w-full print:m-0 print:p-0 print:min-h-0 print:overflow-visible">
+        {/* Beranda Web (Full-width Wide Hero Video & Content) */}
+        {activeView === 'user-landing' && (
+          <div className="w-full animate-in fade-in duration-200">
+            {/* Hero Banner with Full-width HD Video Background & Reference Typewriter Typography */}
+            <div className="relative w-full bg-[#081827] text-white min-h-[640px] sm:min-h-[720px] lg:min-h-[820px] xl:min-h-[880px] min-h-[75vh] lg:min-h-[85vh] flex flex-col justify-end select-none overflow-hidden group">
+              {/* Full HD Background Video - Edge to Edge with Smooth Dissolve */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                {/* Video 1: Exterior Architecture */}
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                    selectedVideo === 1 ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  }`}
+                >
+                  <source src="/assets/museum-hero-video-1.mp4" type="video/mp4" />
+                </video>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Quick Access to Mockup Screens */}
-            <button
-              type="button"
-              onClick={() => setActiveView('user-qris')}
-              className="flex items-center gap-1.5 text-xs font-bold text-[#0c233c] hover:text-[#D4A359] transition-all px-3 py-1.5 rounded-xl bg-[#FAF7F0] hover:bg-[#F3EFE6] border border-[#E0D7C4] shadow-2xs cursor-pointer"
-              title="Lihat Desain Baru Pembayaran QRIS Resmi"
-            >
-              <QrCode className="w-3.5 h-3.5 text-[#D4A359]" />
-              <span>Desain QRIS</span>
-            </button>
+                {/* Video 2: Lingga-Yoni Artifact Gallery */}
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                    selectedVideo === 2 ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  }`}
+                >
+                  <source src="/assets/museum-hero-video-2.mp4" type="video/mp4" />
+                </video>
 
-            <button
-              type="button"
-              onClick={() => setActiveView('admin-login')}
-              className="flex items-center gap-1.5 text-xs font-bold text-white bg-[#0c233c] hover:bg-[#071828] transition-all px-3.5 py-1.5 rounded-xl shadow-xs cursor-pointer border border-[#D4A359]/30"
-              title="Lihat Desain Baru Login Admin"
-            >
-              <Lock className="w-3.5 h-3.5 text-[#D4A359]" />
-              <span>Desain Admin</span>
-            </button>
+              {/* Crystal Clear HD Video Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#061422] via-transparent via-35% to-black/25 pointer-events-none z-10" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#061422]/85 via-[#061422]/50 via-45% to-transparent pointer-events-none z-10" />
+            </div>
 
-            {/* Profil Button */}
-            <button
-              type="button"
-              onClick={() => setActiveModal('profil')}
-              className="flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-[#17293D] transition-colors p-1.5 rounded-xl hover:bg-slate-50 border border-slate-200"
-            >
-              <span className="hidden md:inline">Profil Pengunjung</span>
-              <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700">
-                <User className="w-4 h-4" />
-              </div>
-            </button>
-          </div>
-        </header>
-
-        {/* Content Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto relative z-10 text-left print:p-0 print:m-0 print:max-w-none">
-          {/* Beranda Web */}
-          {activeView === 'user-landing' && (
-            <div className="space-y-8 animate-in fade-in duration-200">
-              {/* Hero Banner */}
-              <div className="relative rounded-3xl overflow-hidden shadow-xl border border-[#224A72]/40 bg-[#081827] text-white min-h-[340px] flex flex-col justify-end p-6 sm:p-10 select-none">
-                {/* Slider Foto Museum */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  {heroSlides.map((slide, idx) => (
-                    <img
-                      key={slide.src}
-                      src={slide.src}
-                      alt={slide.title}
-                      className={`absolute inset-0 w-full h-full object-cover ${slide.position || 'object-center'} transition-opacity duration-1000 ease-in-out ${
-                        activeHeroSlide === idx ? 'opacity-100 animate-kenburns scale-100' : 'opacity-0'
-                      }`}
-                    />
-                  ))}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#061422] via-[#061422]/60 via-40% to-transparent pointer-events-none" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#061422] via-[#061422]/90 via-50% to-transparent pointer-events-none" />
-                </div>
-
-                {/* Ornamen Gajah Oling */}
-                <div className="hidden sm:block absolute right-0 top-0 w-48 h-48 opacity-15 pointer-events-none select-none z-10">
-                  <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
-                </div>
-
-                <div className="relative z-10 max-w-2xl space-y-3">
-                  {/* Slideshow Pill & Indicators */}
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex items-center gap-1.5 bg-black/45 backdrop-blur-md px-3 py-1 rounded-full border border-[#D4A359]/30 text-[11px] text-[#E5BE7E] shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
-                      <span className="font-semibold">{heroSlides[activeHeroSlide].caption}</span>
-                    </div>
-                    <div className="flex items-center gap-1 bg-black/35 backdrop-blur-xs px-2 py-1 rounded-full border border-white/10">
-                      {heroSlides.map((_, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => setActiveHeroSlide(i)}
-                          className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                            activeHeroSlide === i ? 'w-5 bg-[#D4A359]' : 'w-1.5 bg-white/40 hover:bg-white/70'
-                          }`}
-                          aria-label={`Slide ${i + 1}`}
-                          title={heroSlides[i].title}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <h1 className="font-serif text-2xl sm:text-4xl lg:text-[40px] font-bold leading-snug sm:leading-tight text-white drop-shadow-sm tracking-normal">
-                    Selamat Datang di <br />
-                    <span className="text-[#F3E2C4]">Museum Blambangan Banyuwangi</span>
+            {/* Hero Content Container (Clean, Direct on HD Video) */}
+            <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+              <div className="max-w-3xl space-y-4 sm:space-y-5">
+                {/* Header Titles */}
+                <div className="space-y-1.5 sm:space-y-2">
+                  {/* Line 1: SELAMAT DATANG DI */}
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-[0.22em] text-[#E5C287] block drop-shadow-md">
+                    SELAMAT DATANG DI
+                  </span>
+                  {/* Line 2: MUSEUM BLAMBANGAN (Clean, Balanced, Single Line) */}
+                  <h1 className="font-sans text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black uppercase text-white tracking-tight leading-tight drop-shadow-xl">
+                    MUSEUM BLAMBANGAN
                   </h1>
-
-                  <p className="text-xs sm:text-sm text-slate-200 max-w-xl leading-relaxed">
-                    Jelajahi kekayaan sejarah kerajaan Blambangan, peninggalan purbakala, etnografi suku Osing, dan mahakarya seni budaya Banyuwangi dalam satu tempat.
-                  </p>
-
-                  <div className="pt-2 flex flex-wrap items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setActiveView('user-form')}
-                      className="px-6 py-3 bg-gradient-to-r from-[#D4A359] via-[#E5BE7E] to-[#D4A359] hover:from-[#C39247] hover:to-[#B68439] text-[#081827] font-extrabold text-xs sm:text-sm rounded-xl shadow-lg border border-[#F5E2C2]/40 transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
-                    >
-                      <span>Mulai Booking Kunjungan</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveView('user-web-portal')}
-                      className="px-5 py-3 bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm rounded-xl backdrop-blur-md border border-white/20 transition-all flex items-center gap-2 cursor-pointer"
-                    >
-                      <Ticket className="w-4 h-4 text-[#D4A359]" />
-                      <span>Cek Tiket Saya</span>
-                    </button>
+                  {/* Line 3: Typing Animated Text + Cursor */}
+                  <div className="font-sans text-lg sm:text-2xl md:text-3xl font-extrabold text-[#F3E2C4] drop-shadow-lg min-h-[36px] sm:min-h-[44px] flex items-center pt-0.5">
+                    <span className="inline-flex items-center flex-wrap">
+                      <span>{typewriterText}</span>
+                      <span className="inline-block w-[3px] sm:w-[4px] h-[1em] bg-[#D4A359] ml-1.5 align-middle animate-pulse" />
+                    </span>
                   </div>
                 </div>
+
+                <p className="text-xs sm:text-sm md:text-base text-slate-200 max-w-2xl leading-relaxed font-normal drop-shadow-md">
+                  <strong className="text-white font-semibold">Setiap koleksi punya cerita.</strong> Jelajahi kekayaan sejarah kerajaan Blambangan, artefak purbakala, etnografi suku Osing, dan mahakarya seni budaya Banyuwangi.
+                </p>
+
+                <div className="pt-2 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setActiveView('user-form')}
+                    className="px-6 sm:px-7 py-3.5 sm:py-4 bg-gradient-to-r from-[#D4A359] via-[#E5BE7E] to-[#D4A359] hover:from-[#C39247] hover:to-[#B68439] text-[#081827] font-black text-xs sm:text-sm rounded-xl shadow-xl border border-[#F5E2C2]/50 transition-all active:scale-95 flex items-center gap-2 cursor-pointer hover:shadow-2xl"
+                  >
+                    <span>Mulai Booking Kunjungan</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  <a
+                    href="https://online.fliphtml5.com/Museum-Blambangan/Katalog-Koleksi-Museum-Blambangan-2026/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 sm:px-6 py-3.5 sm:py-4 bg-[#0E2C4A]/85 hover:bg-[#143B60] text-[#E5C287] font-bold text-xs sm:text-sm rounded-xl backdrop-blur-md border border-[#D4A359]/30 transition-all flex items-center gap-2 cursor-pointer shadow-md"
+                  >
+                    <Landmark className="w-4 h-4 text-[#D4A359]" />
+                    <span>Katalog Museum</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-[#D4A359]/80" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveView('user-web-portal')}
+                    className="px-5 sm:px-6 py-3.5 sm:py-4 bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm rounded-xl backdrop-blur-md border border-white/20 transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <Ticket className="w-4 h-4 text-[#D4A359]" />
+                    <span>Cek Tiket Saya</span>
+                  </button>
+                </div>
               </div>
+            </div>
+            </div>
+
+            {/* Landing Page Content Sections */}
+            <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
 
               {/* 3 Core Trust Badges */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -878,78 +608,108 @@ onClick={() => {
               </div>
 
               {/* Sesi Kunjungan & Jam Operasional */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
+              {/* Jadwal Sesi Hari Ini (Traveloka / RedBus Style) */}
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
                   <div>
-                    <h2 className="text-base font-bold text-slate-900">
-                      Jadwal Sesi Kunjungan Hari Ini
-                    </h2>
-                    <p className="text-xs text-slate-500">
-                      Senin – Jumat: 07:30 – 16:00 WIB (Sabtu & Minggu Tutup). Istirahat: {ishomaConfig.label}.
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+                        Pilihan Sesi & Jam Kunjungan Hari Ini
+                      </h2>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                        Live Quota
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Museum Blambangan buka hari <strong>Senin – Jumat (07:30 – 16:00 WIB)</strong>. Istirahat ISHOMA: {ishomaConfig.label}. Sabtu & Minggu libur operasional.
                     </p>
                   </div>
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                    isWeekendToday 
-                      ? 'text-amber-800 bg-amber-50 border-amber-200' 
-                      : 'text-emerald-700 bg-emerald-50 border-emerald-200'
-                  }`}>
-                    {isWeekendToday ? '● Libur Akhir Pekan (Tutup)' : '● Buka 07:30 - 16:00 WIB'}
-                  </span>
+
+                  {/* KAI Access Style Operational Announcement */}
+                  <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#0E2B5C] text-white border border-[#1D4ED8]/40 shadow-xs shrink-0">
+                    <Clock className="w-4 h-4 text-[#D4A359] shrink-0" />
+                    <div className="text-left">
+                      <span className="block text-xs font-bold leading-tight text-white">
+                        Loket Aktif: 07:30 – 16:00 WIB (Senin – Jumat)
+                      </span>
+                      <span className="block text-[10px] text-blue-200 leading-tight mt-0.5 font-medium">
+                        Buka Senin – Jumat • Sabtu & Minggu Libur
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
+                {/* Sesi Cards in RedBus & Traveloka Seat-Slot Style */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {sessionsConfig.map((sesi) => {
                     const isPassed = isSessionTimePassed(sesi, todayStr);
                     const quotaStats = getSessionQuotaStats(sesi.id, todayStr, bookings);
                     const isFull = quotaStats.isFull;
-                    const isUnavailable = isWeekendToday || isPassed || isFull;
+                    const isUnavailable = isPassed || isFull;
+                    const usedQuota = 100 - quotaStats.remaining;
+                    const percentFilled = Math.min(100, Math.round((usedQuota / 100) * 100));
 
                     return (
                       <div
                         key={sesi.id}
-                        className={`p-5 rounded-2xl border transition-all space-y-2.5 flex flex-col justify-between ${
+                        className={`p-5 rounded-2xl border transition-all space-y-3.5 flex flex-col justify-between ${
                           isUnavailable
-                            ? 'border-slate-200 bg-slate-100/70 opacity-60 grayscale-[30%] shadow-none'
-                            : 'border-[#D4A359]/60 bg-gradient-to-b from-white to-[#FDFBF7] shadow-md ring-1 ring-[#D4A359]/25 hover:border-[#D4A359] hover:shadow-lg'
+                            ? 'border-slate-200 bg-slate-50/80 opacity-70 grayscale-[20%]'
+                            : 'border-slate-200/90 bg-white shadow-2xs hover:shadow-md hover:border-[#D4A359] group'
                         }`}
                       >
-                        <div className="space-y-2.5">
+                        <div className="space-y-3">
+                          {/* Top Row: Session Tag & Price */}
                           <div className="flex items-center justify-between">
-                            <span className={`text-xs font-extrabold px-2.5 py-1 rounded-lg ${
-                              isUnavailable ? 'text-slate-500 bg-slate-200/80' : 'text-[#0E2C4A] bg-[#0E2C4A]/10'
-                            }`}>
-                              {sesi.label}
+                            <span className="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-[#081827]/5 text-[#081827] border border-slate-200">
+                              {sesi.label} • {sesi.subLabel}
                             </span>
-                            {isWeekendToday ? (
-                              <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                                Tutup (Akhir Pekan)
-                              </span>
-                            ) : isPassed ? (
-                              <span className="text-[10px] font-bold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded-full border border-slate-300">
-                                ✕ Lewat Jam Hari Ini
-                              </span>
-                            ) : isFull ? (
-                              <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                                ⛔ Kuota Penuh (0/100)
-                              </span>
-                            ) : (
-                              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-2xs flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                                <span>Tersedia: Sisa {quotaStats.remaining}/100</span>
-                              </span>
-                            )}
+                            <span className="text-xs font-bold text-slate-900">
+                              Mulai <strong className="text-emerald-700 font-black">Rp 5.000</strong>
+                            </span>
                           </div>
-                          <div className={`text-base font-bold flex items-center gap-2 ${
-                            isUnavailable ? 'text-slate-500' : 'text-slate-900 font-extrabold'
-                          }`}>
-                            <Clock className={`w-4 h-4 ${isUnavailable ? 'text-slate-400' : 'text-[#D4A359]'}`} />
-                            <span>{sesi.time}</span>
+
+                          {/* Middle: Departure Time */}
+                          <div>
+                            <div className="flex items-center gap-2 text-lg font-black text-slate-900">
+                              <Clock className="w-4 h-4 text-[#D4A359]" />
+                              <span>{sesi.time}</span>
+                            </div>
+                            <span className="text-[11px] text-slate-500 font-medium">
+                              Durasi kunjungan 2,5 jam • Akses seluruh galeri
+                            </span>
                           </div>
-                          <div className={`text-[11px] ${isUnavailable ? 'text-slate-400' : 'text-slate-600'}`}>
-                            {sesi.subLabel} • Maksimal 100 pengunjung per sesi
+
+                          {/* Quota Progress Meter (RedBus Live Seat Indicator) */}
+                          <div className="space-y-1.5 pt-1 border-t border-slate-100">
+                            <div className="flex items-center justify-between text-[11px]">
+                              {isWeekendToday ? (
+                                <span className="font-bold text-amber-700">Libur Akhir Pekan</span>
+                              ) : isPassed ? (
+                                <span className="font-bold text-slate-500">✕ Jam Sesi Telah Lewat</span>
+                              ) : isFull ? (
+                                <span className="font-bold text-rose-700">⛔ Kuota Sesi Penuh</span>
+                              ) : (
+                                <span className="font-bold text-emerald-800 flex items-center gap-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                  <span>Tersisa <strong>{quotaStats.remaining}</strong> kuota</span>
+                                </span>
+                              )}
+                              <span className="text-[10px] text-slate-400 font-medium">{usedQuota}/100 terisi</span>
+                            </div>
+
+                            <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${
+                                  percentFilled > 80 ? 'bg-amber-500' : 'bg-emerald-500'
+                                }`}
+                                style={{ width: `${percentFilled}%` }}
+                              />
+                            </div>
                           </div>
                         </div>
 
+                        {/* Action Button */}
                         <button
                           type="button"
                           onClick={() => {
@@ -967,13 +727,13 @@ onClick={() => {
                             }
                             setActiveView('user-form');
                           }}
-                          className={`w-full mt-2 py-2.5 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                          className={`w-full py-2.5 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs ${
                             isUnavailable
-                              ? 'bg-slate-200/80 hover:bg-slate-300/80 text-slate-600'
-                              : 'bg-gradient-to-r from-[#0E2C4A] to-[#173D63] hover:from-[#173D63] hover:to-[#0E2C4A] text-white shadow-md active:scale-98'
+                              ? 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                              : 'bg-[#081827] hover:bg-[#0d263e] text-[#D4A359] group-hover:text-white'
                           }`}
                         >
-                          <span>{isUnavailable ? 'Pilih untuk Hari Lain' : 'Pilih Sesi Ini'}</span>
+                          <span>{isUnavailable ? 'Pilih Jadwal Lain' : 'Pilih Sesi Ini'}</span>
                           <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -1027,26 +787,20 @@ onClick={() => {
                 </div>
               </div>
 
-              {/* Pesona Warisan Sejarah & Budaya Blambangan */}
+              {/* Koleksi Peninggalan Sejarah & Budaya */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359]" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#D4A359]">
-                        Warisan Budaya Bumi Blambangan
-                      </span>
-                    </div>
-                    <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tracking-normal">
-                      Jelajahi Peninggalan Bersejarah & Seni Khas Banyuwangi
+                    <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                      Koleksi Peninggalan Sejarah & Budaya
                     </h2>
-                    <p className="text-xs text-slate-500">
-                      Museum Blambangan menyimpan lebih dari 4.300 koleksi cagar budaya, arkeologi, etnografi Osing, dan seni tradisi.
+                    <p className="text-xs text-slate-500 mt-1">
+                      Museum Blambangan mengelola ragam koleksi cagar budaya, artefak arkeologi, dan etnografi suku Osing Kabupaten Banyuwangi.
                     </p>
                   </div>
                   <button
                     type="button"
-                    onClick={() => { window.location.href = 'http://musewangi.rf.gd/?i=1'; }}
+                    onClick={() => setActiveView('user-koleksi')}
                     className="text-xs font-bold text-[#092C48] hover:text-[#D4A359] transition-colors flex items-center gap-1 shrink-0 self-start sm:self-auto cursor-pointer"
                   >
                     <span>Lihat Seluruh Koleksi</span>
@@ -1068,7 +822,7 @@ onClick={() => {
                         <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-[#E5BE7E] bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
                           Era Kerajaan Blambangan
                         </span>
-                        <h3 className="font-serif text-base font-bold mt-1 text-white">
+                        <h3 className="font-sans text-base font-bold mt-1 text-white">
                           Artefak Candi Macan Putih
                         </h3>
                       </div>
@@ -1093,7 +847,7 @@ onClick={() => {
                         <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-[#E5BE7E] bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
                           Abad ke-14 Masehi
                         </span>
-                        <h3 className="font-serif text-base font-bold mt-1 text-white">
+                        <h3 className="font-sans text-base font-bold mt-1 text-white">
                           Peninggalan Arca Lingga-Yoni
                         </h3>
                       </div>
@@ -1118,7 +872,7 @@ onClick={() => {
                         <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-[#E5BE7E] bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
                           Dokumentasi Sejarah
                         </span>
-                        <h3 className="font-serif text-base font-bold mt-1 text-white">
+                        <h3 className="font-sans text-base font-bold mt-1 text-white">
                           Banyuwangi Tempo Doeloe
                         </h3>
                       </div>
@@ -1131,34 +885,83 @@ onClick={() => {
                   </div>
                 </div>
 
-                {/* Cultural Quote Banner with Symmetrical Batik Gajah Oling */}
-                <div className="relative p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-[#081827] via-[#0E2C4A] to-[#07192A] text-white border border-[#D4A359]/30 shadow-md text-center overflow-hidden">
-                  <div className="absolute inset-0 pointer-events-none opacity-15 flex items-center justify-between px-3">
+                {/* ================= EYE-CATCHING CULTURAL SHOWPIECE BANNER ================= */}
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-[#D4A359]/50 bg-gradient-to-br from-[#051525] via-[#0C2744] to-[#07192C] text-white p-8 sm:p-12 lg:p-14 text-center group">
+                  {/* Ambient Golden Radial Glow */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#D4A359]/15 blur-[120px] rounded-full pointer-events-none" />
+
+                  {/* Symmetrical Batik Gajah Oling Heritage Watermark */}
+                  <div className="absolute inset-0 pointer-events-none opacity-20 flex items-center justify-between px-4 mix-blend-screen">
                     <img
                       src="/assets/gajah-oling-footer-symmetric.png"
-                      alt="Batik Gajah Oling"
-                      className="w-full h-full object-contain"
+                      alt="Batik Gajah Oling Banyuwangi"
+                      className="w-full h-full object-cover filter brightness-125"
                     />
                   </div>
-                  <div className="relative z-10 max-w-xl mx-auto space-y-2">
-                    <p className="font-serif text-base sm:text-lg font-normal italic text-[#F5DEB3] leading-relaxed">
-                      &ldquo;Jaga bersama warisan budaya, untuk masa depan yang lebih baik.&rdquo;
+
+                  {/* Golden Border Accents */}
+                  <div className="absolute top-0 inset-x-12 h-[2px] bg-gradient-to-r from-transparent via-[#E5BE7E] to-transparent" />
+                  <div className="absolute bottom-0 inset-x-12 h-[2px] bg-gradient-to-r from-transparent via-[#E5BE7E]/60 to-transparent" />
+
+                  <div className="relative z-10 max-w-3xl mx-auto space-y-5">
+                    {/* Sparkling Cultural Pill Badge */}
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4A359]/15 border border-[#D4A359]/40 text-[#E5BE7E] text-xs font-bold tracking-wider uppercase backdrop-blur-md shadow-xs">
+                      <Sparkles className="w-3.5 h-3.5 text-[#E5BE7E] animate-pulse" />
+                      <span>Warisan Luhur Nusantara • Banyuwangi</span>
+                      <Sparkles className="w-3.5 h-3.5 text-[#E5BE7E] animate-pulse" />
+                    </div>
+
+                    {/* Big Eye-Catching Quote with Stylized Amber Highlight */}
+                    <blockquote className="font-sans text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black text-white leading-tight tracking-tight drop-shadow-md">
+                      <span className="text-[#E5BE7E] text-3xl sm:text-4xl md:text-5xl font-serif align-top mr-1">“</span>
+                      <span>Setiap koleksi punya cerita. </span>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5DEB3] via-[#E5BE7E] to-[#F3B755] block sm:inline">
+                        Temukan ceritamu di Museum Blambangan.
+                      </span>
+                      <span className="text-[#E5BE7E] text-3xl sm:text-4xl md:text-5xl font-serif align-top ml-1">”</span>
+                    </blockquote>
+
+                    {/* Subtitle / Explanatory Text */}
+                    <p className="text-xs sm:text-sm md:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal drop-shadow-xs">
+                      Menyimpan lebih dari 4.000 artefak arkeologi, prasasti kerajaan, naskah kuno, hingga kekayaan tradisi suku Osing yang siap memperkaya wawasan dan inspirasi Anda.
                     </p>
-                    <div className="text-[11px] font-bold tracking-wider text-slate-300 uppercase">
-                      Pemerintah Kabupaten Banyuwangi • The Sunrise of Java
+
+                    {/* Action Buttons */}
+                    <div className="pt-3 flex flex-wrap items-center justify-center gap-3.5">
+                      <button
+                        type="button"
+                        onClick={() => setActiveView('user-form')}
+                        className="px-7 py-3.5 bg-gradient-to-r from-[#D4A359] via-[#E5BE7E] to-[#D4A359] hover:from-[#C39247] hover:to-[#B68439] text-[#081827] font-black text-xs sm:text-sm rounded-xl shadow-xl border border-[#F5E2C2]/50 transition-all active:scale-95 flex items-center gap-2 cursor-pointer hover:shadow-2xl"
+                      >
+                        <span>Rencanakan Kunjungan Sekarang</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setActiveView('user-koleksi')}
+                        className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-[#F5DEB3] font-bold text-xs sm:text-sm rounded-xl backdrop-blur-md border border-white/20 transition-all flex items-center gap-2 cursor-pointer"
+                      >
+                        <Landmark className="w-4 h-4 text-[#D4A359]" />
+                        <span>Jelajahi Galeri Koleksi</span>
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* ================= CASE 2: TIKET SAYA WEB ================= */}
-          {(activeView === 'user-web-portal' || viewingTicketId) && (
-            <div className="space-y-6 animate-in fade-in duration-200">
+        {/* ================= OTHER VIEWS (Tiket Saya / Detail Tiket) ================= */}
+        {activeView !== 'user-landing' && (
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto relative z-10 text-left print:p-0 print:m-0 print:max-w-none">
+            {/* ================= CASE 2: TIKET SAYA WEB ================= */}
+            {(activeView === 'user-web-portal' || viewingTicketId) && (
+              <div className="space-y-6 animate-in fade-in duration-200">
               <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 ${viewingTicketId ? 'print:hidden' : ''}`}>
                 <div>
-                  <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-normal">
+                  <h1 className="font-sans text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     Tiket Saya
                   </h1>
                   <p className="text-xs text-slate-500">
@@ -1400,218 +1203,196 @@ onClick={() => {
             </div>
           )}
         </main>
+      )}
 
-        {/* Footer Halaman Web */}
-        <footer className="mt-auto bg-[#071626] text-white border-t border-[#17304C] py-10 px-6 sm:px-10 lg:px-12 select-none font-sans antialiased relative overflow-hidden print:hidden">
-          {/* Ornamen Motif Gajah Oling */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#D4A359]/35 to-transparent pointer-events-none" />
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-80 h-7 opacity-20 pointer-events-none select-none">
-            <img
-              src="/assets/gajah-oling-footer-symmetric.png"
-              alt="Batik Gajah Oling Frieze"
-              className="w-full h-full object-contain filter drop-shadow"
-            />
-          </div>
-          <div className="max-w-6xl mx-auto space-y-8">
-            {/* Main Content Grid: 4 Balanced Columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 text-left">
-              {/* Column 1: Museum Identity & Disbudpar (lg:col-span-4) */}
-              <div className="lg:col-span-4 space-y-3.5">
-                <MuseumLogo variant="white" className="h-9" />
-                <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed font-normal">
-                  Pusat pelestarian sejarah, arkeologi, dan cagar budaya di Banyuwangi di bawah naungan Dinas Kebudayaan dan Pariwisata Kabupaten Banyuwangi.
+        {/* ================= OFFICIAL FOOTER (Disbudpar Banyuwangi Style - Light & Authentic) ================= */}
+        <footer className="mt-auto bg-[#F4F7FB] text-slate-800 border-t border-slate-200/90 pt-12 pb-8 px-4 sm:px-6 lg:px-12 font-sans select-none print:hidden relative overflow-hidden">
+          {/* Subtle Decorative Background Curve */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-sky-100/50 via-transparent to-transparent rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+
+          <div className="max-w-7xl mx-auto space-y-10 relative z-10">
+            {/* Main Content Grid: Left Info & Right Widgets */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start text-left">
+              {/* Left Column: Logos, Description, Follow Us & Contact Rows */}
+              <div className="lg:col-span-7 space-y-6">
+                {/* Brand Logos Row: Majestic Banyuwangi, Ijen Geopark & Disbudpar (Natural Brand Colors) */}
+                <div className="flex flex-wrap items-center gap-5 sm:gap-6">
+                  <img
+                    src="/assets/logo-majestic-banyuwangi.png"
+                    alt="Majestic Banyuwangi"
+                    className="h-10 sm:h-12 w-auto object-contain drop-shadow-2xs"
+                  />
+                  <img
+                    src="/assets/logo-ijen-geopark.png"
+                    alt="Ijen Geopark"
+                    className="h-11 sm:h-13 w-auto object-contain drop-shadow-2xs"
+                  />
+                  <div className="border-l-2 border-slate-300 pl-4 py-0.5">
+                    <div className="text-sm sm:text-base font-extrabold text-[#0B3B60] leading-tight">
+                      Dinas Kebudayaan dan Pariwisata
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] font-bold tracking-widest text-[#B58130] uppercase mt-0.5">
+                      Kabupaten Banyuwangi
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description Paragraph (Official Reference Text Style) */}
+                <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-xl font-normal">
+                  Museum Blambangan adalah sarana pelestarian sejarah, arkeologi, dan cagar budaya resmi Kabupaten Banyuwangi yang dikelola oleh Dinas Kebudayaan dan Pariwisata Kabupaten Banyuwangi.
                 </p>
-                <div className="space-y-2 text-xs text-slate-400 pt-1 font-normal">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 text-[#D4A359] shrink-0 mt-0.5" />
-                    <span>Jl. Jenderal A. Yani No. 78, Taman Baru, Banyuwangi, Jawa Timur</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <PhoneCall className="w-4 h-4 text-[#D4A359] shrink-0" />
-                    <span>Layanan Informasi: +62 852-8725-8502</span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Column 2: Layanan Pengunjung (lg:col-span-3) */}
-              <div className="lg:col-span-3 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4A359]">
-                  Layanan Pengunjung
-                </h4>
-                <ul className="space-y-2 text-xs sm:text-[13px] text-slate-300 font-medium">
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => { setActiveView('user-landing'); setViewingTicketId(null); }}
-                      className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span className="text-[#D4A359] text-xs">›</span>
-                      <span>Beranda Utama</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => { setActiveView('user-form'); setViewingTicketId(null); }}
-                      className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span className="text-[#D4A359] text-xs">›</span>
-                      <span>Booking E-Tiket</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => { setActiveView('user-web-portal'); setViewingTicketId(null); }}
-                      className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span className="text-[#D4A359] text-xs">›</span>
-                      <span>Tiket Saya & QR Code</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => setActiveModal('informasi')}
-                      className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span className="text-[#D4A359] text-xs">›</span>
-                      <span>Jadwal Operasional & Tarif</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => { window.location.href = 'http://musewangi.rf.gd/?i=1'; }}
-                      className="hover:text-white transition-colors text-left flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span className="text-[#D4A359] text-xs">›</span>
-                      <span>Koleksi & Pameran Sejarah</span>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Column 3: Jam Kunjungan & Loket (lg:col-span-2) */}
-              <div className="lg:col-span-2 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4A359]">
-                  Jam Buka Loket
-                </h4>
-                <div className="space-y-2 text-xs sm:text-[13px] text-slate-300">
-                  <div>
-                    <div className="font-semibold text-white">Senin – Jumat</div>
-                    <div className="text-slate-400 text-xs">07:30 – 16:00 WIB</div>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-amber-300/90">Sabtu & Minggu</div>
-                    <div className="text-slate-400 text-xs">Tutup (Libur)</div>
-                  </div>
-                  <div className="pt-1 text-slate-400 text-xs leading-relaxed font-normal">
-                    Tersedia loket pembelian langsung dan verifikasi tiket online.
-                  </div>
-                </div>
-              </div>
-
-              {/* Column 4: Media Sosial & Bantuan Pengunjung (lg:col-span-3) */}
-              <div className="lg:col-span-3 space-y-4">
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4A359]">
-                    Kanal Sosial Media
-                  </h4>
-                  <p className="text-xs text-slate-300 font-normal">
-                    Ikuti kanal resmi kami untuk informasi dan agenda budaya:
-                  </p>
-                  <SocialMediaIconRow size="md" className="justify-start gap-2 pt-1" />
-                </div>
-
-                <div className="pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setActiveModal('kontak')}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/25 text-white text-xs sm:text-[13px] font-semibold transition-colors flex items-center justify-between cursor-pointer group"
-                  >
-                    <span className="flex items-center gap-2">
-                      <PhoneCall className="w-3.5 h-3.5 text-[#D4A359]" />
-                      <span>Hubungi Layanan Pengunjung</span>
+                {/* FOLLOW US Row: Official Real Museum Social Media Icons (Vibrant Brand Colors) */}
+                <div className="pt-1 space-y-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-xs sm:text-sm font-extrabold tracking-wider text-slate-500 uppercase mr-1">
+                      FOLLOW US
                     </span>
-                    <span className="text-[#D4A359] group-hover:translate-x-0.5 transition-transform">→</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Google Maps Location Section */}
-            <div className="pt-6 border-t border-white/10">
-              <div className="bg-[#0B1E32] rounded-2xl border border-[#23456C] p-4 sm:p-6 shadow-xl relative overflow-hidden">
-                {/* Subtle Gajah Oling decorative accent */}
-                <div className="absolute -right-6 -bottom-6 w-32 h-32 opacity-10 pointer-events-none">
-                  <GajahOlingMotif variant="gold" className="w-full h-full object-contain" />
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
-                  {/* Left Column: Info & Directions */}
-                  <div className="lg:col-span-5 space-y-3.5 text-left">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4A359]/15 border border-[#D4A359]/30 text-[#D4A359] text-[11px] font-bold uppercase tracking-wider">
-                      <Compass className="w-3.5 h-3.5" />
-                      <span>Peta & Petunjuk Arah</span>
-                    </div>
-
-                    <div>
-                      <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
-                        Lokasi Museum Blambangan
-                      </h3>
-                      <p className="text-xs text-slate-300 mt-1 leading-relaxed font-normal">
-                        Kunjungi kami di pusat kota Banyuwangi, bersebelahan dengan Kantor Bupati dan Gesibu Blambangan.
-                      </p>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 space-y-1.5">
-                      <div className="flex items-start gap-2.5 text-xs text-slate-200">
-                        <MapPin className="w-4 h-4 text-[#D4A359] shrink-0 mt-0.5" />
-                        <span className="leading-snug">
-                          Jl. Jenderal A. Yani No. 78, Taman Baru, Kec. Banyuwangi, Kabupaten Banyuwangi, Jawa Timur 68416
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-[11px] text-emerald-400 pl-6">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        <span>Akses mudah via R2, R4, & Bus Pariwisata</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                    <div className="flex items-center gap-2.5">
+                      {/* Facebook */}
                       <a
-                        href="https://maps.google.com/?q=Museum+Blambangan+Banyuwangi"
+                        href="https://www.facebook.com/museumblambangan"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#D4A359] to-[#B88738] hover:from-[#E0B26D] hover:to-[#C69344] text-[#0A1E34] text-xs font-bold shadow-md shadow-[#D4A359]/20 transition-all cursor-pointer group"
+                        aria-label="Facebook Museum Blambangan"
+                        title="Facebook: Museum Blambangan (@museumblambangan)"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-xs hover:scale-110 hover:shadow-md transition-all active:scale-95 cursor-pointer"
                       >
-                        <Compass className="w-4 h-4 group-hover:rotate-45 transition-transform" />
-                        <span>Buka di Google Maps</span>
-                        <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                        <FacebookIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </a>
 
-                      <button
-                        type="button"
-                        onClick={handleCopyAddress}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/25 text-white text-xs font-medium transition-colors cursor-pointer"
+                      {/* Twitter / X */}
+                      <a
+                        href="https://twitter.com/bwi_tourism"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Twitter Banyuwangi Tourism"
+                        title="Twitter: @bwi_tourism"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center shadow-xs hover:scale-110 hover:shadow-md transition-all active:scale-95 cursor-pointer"
                       >
-                        {copiedAddress ? (
-                          <>
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                            <span className="text-emerald-400 font-semibold">Tersalin!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5 text-slate-300" />
-                            <span>Salin Alamat</span>
-                          </>
-                        )}
-                      </button>
+                        <TwitterBirdIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+
+                      {/* Instagram */}
+                      <a
+                        href="https://www.instagram.com/museumblambangan/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram Museum Blambangan"
+                        title="Instagram: @museumblambangan"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white flex items-center justify-center shadow-xs hover:scale-110 hover:shadow-md transition-all active:scale-95 cursor-pointer"
+                      >
+                        <InstagramIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+
+                      {/* YouTube */}
+                      <a
+                        href="https://www.youtube.com/@museumblambangan"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="YouTube Museum Blambangan"
+                        title="YouTube: Museum Blambangan Official"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FF0000] text-white flex items-center justify-center shadow-xs hover:scale-110 hover:shadow-md transition-all active:scale-95 cursor-pointer"
+                      >
+                        <YouTubeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+
+                      {/* TikTok */}
+                      <a
+                        href="https://www.tiktok.com/@museumblambangan"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="TikTok Museum Blambangan"
+                        title="TikTok: @museumblambangan"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#010101] text-white flex items-center justify-center shadow-xs hover:scale-110 hover:shadow-md transition-all active:scale-95 cursor-pointer border border-black/10"
+                      >
+                        <TikTokIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+
+                      {/* WhatsApp */}
+                      <a
+                        href="https://wa.me/6285287258502"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="WhatsApp Layanan Museum Blambangan"
+                        title="WhatsApp Layanan: +62 852-8725-8502"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-xs hover:scale-110 hover:shadow-md transition-all active:scale-95 cursor-pointer"
+                      >
+                        <WhatsAppIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
                     </div>
                   </div>
+                </div>
 
-                  {/* Right Column: Google Maps Interactive Embed */}
-                  <div className="lg:col-span-7 h-52 sm:h-56 w-full rounded-xl overflow-hidden border border-white/15 shadow-2xl relative bg-slate-900">
+                {/* Official Address Info Row */}
+                <div className="space-y-3.5 pt-3 border-t border-slate-200/90">
+                  {/* ALAMAT */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-full bg-white border border-slate-200 shadow-2xs flex items-center justify-center shrink-0 mt-0.5 text-[#0B3B60]">
+                      <MapPin className="w-4 h-4 text-[#D4A359]" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+                        Alamat
+                      </div>
+                      <div className="text-xs sm:text-[13px] text-slate-700 leading-snug">
+                        Jl. Jenderal Ahmad Yani No.78, Taman Baru, Kec. Banyuwangi, Jawa Timur 68416
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Lokasi Kami (Google Map Card) & Jam Layanan */}
+              <div className="lg:col-span-5 space-y-5">
+                {/* Jam Operasional Card */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center shrink-0 text-emerald-600">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-800">
+                        Jam Layanan Loket Museum
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        Senin – Jumat: <strong className="text-emerald-700 font-semibold">07:30 – 16:00 WIB</strong> (Sabtu & Minggu Tutup)
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100/70 text-emerald-800 shrink-0 border border-emerald-200">
+                    Buka Senin – Jumat
+                  </span>
+                </div>
+
+                {/* Lokasi Kami Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-800 tracking-wide">
+                      Lokasi Museum Blambangan
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={handleCopyAddress}
+                      className="text-[11px] text-[#0B3B60] hover:text-[#D4A359] hover:underline flex items-center gap-1 cursor-pointer font-semibold transition-colors"
+                    >
+                      {copiedAddress ? <span>✓ Alamat Tersalin</span> : <span>Salin Alamat</span>}
+                    </button>
+                  </div>
+
+                  <div className="h-44 sm:h-48 w-full rounded-2xl overflow-hidden border border-slate-200 relative bg-slate-100 shadow-sm group">
+                    {/* Floating Maps Pill */}
+                    <a
+                      href="https://maps.google.com/?q=Museum+Blambangan+Banyuwangi"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute top-2.5 left-2.5 z-10 px-3 py-1 rounded-xl bg-white/95 hover:bg-white text-[#0B3B60] text-xs font-extrabold shadow-md flex items-center gap-1 transition-all cursor-pointer hover:scale-105 border border-slate-200/80"
+                      title="Buka Peta di Google Maps"
+                    >
+                      <span>Maps</span>
+                      <ExternalLink className="w-3 h-3 text-[#0B3B60]" />
+                    </a>
+
                     <iframe
                       title="Lokasi Museum Blambangan di Google Maps"
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3948.835497910901!2d114.3644146!3d-8.2192737!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd15ab670868f03%3A0xc34b3e5f49e49c71!2sMuseum%20Blambangan!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
@@ -1621,31 +1402,27 @@ onClick={() => {
                       allowFullScreen
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
-                      className="w-full h-full filter saturate-[1.1] contrast-[1.05]"
+                      className="w-full h-full filter saturate-[1.05]"
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Bar: Clean Copyright & Tagline */}
-            <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-400 text-center sm:text-left font-normal">
+            {/* Bottom Bar: Copyright & Subtle Portal Petugas Link */}
+            <div className="pt-6 border-t border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 text-center sm:text-left font-normal">
               <span>
-                © {new Date().getFullYear()} Museum Blambangan. Pengelolaan resmi Dinas Kebudayaan & Pariwisata Kab. Banyuwangi.
+                © {new Date().getFullYear()} Dinas Kebudayaan dan Pariwisata Kabupaten Banyuwangi. Hak Cipta Dilindungi.
               </span>
-              <div className="flex items-center gap-2.5 flex-wrap justify-center sm:justify-end">
-                <span className="text-[#D4A359] font-medium">
-                  Banyuwangi Rebound • The Sunrise of Java
-                </span>
-                <span className="text-white/20 hidden sm:inline">•</span>
+              <div className="flex items-center gap-4">
                 <button
                   type="button"
                   onClick={() => setActiveView('admin-login')}
-                  className="text-slate-500 hover:text-[#D4A359] transition-colors text-[11px] font-medium cursor-pointer flex items-center gap-1"
-                  title="Masuk ke Portal Petugas Loket & Admin"
+                  className="text-slate-500 hover:text-[#0B3B60] transition-colors text-xs font-semibold cursor-pointer flex items-center gap-1.5"
+                  title="Portal Petugas Loket & Admin"
                 >
+                  <Lock className="w-3.5 h-3.5 text-[#D4A359]" />
                   <span>Portal Petugas</span>
-                  <span className="text-[10px]">🔒</span>
                 </button>
               </div>
             </div>

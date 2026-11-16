@@ -1,6 +1,7 @@
 import React from 'react';
 import { useBooking } from '../../context/BookingContext';
 import { AdminLayout } from './AdminLayout';
+import { getVisitorWeeklyChartData, ChartDayPoint } from '../../utils/chartSyncUtils';
 import { 
   ArrowUpRight, 
   ArrowDownRight, 
@@ -16,6 +17,7 @@ import {
 
 export const AdminDashboard: React.FC = () => {
   const { bookings, setActiveView, setSelectedBookingId } = useBooking();
+  const [hoveredPoint, setHoveredPoint] = React.useState<ChartDayPoint | null>(null);
 
   // 4 metrics calculated dynamically from real bookings
   const totalBookings = bookings.length;
@@ -25,6 +27,11 @@ export const AdminDashboard: React.FC = () => {
 
   // Recent 5 bookings
   const recentBookings = bookings.slice(0, 5);
+
+  // Dynamic 7-day visitor chart data synchronized with bookings state
+  const chartData = React.useMemo(() => {
+    return getVisitorWeeklyChartData(bookings);
+  }, [bookings]);
 
   // Dynamic Category Breakdown for Donut Chart
   const categoryStats = React.useMemo(() => {
@@ -68,74 +75,74 @@ export const AdminDashboard: React.FC = () => {
       title="Dashboard Admin" 
       subtitle="Selamat datang di panel admin Museum Blambangan"
     >
-      <div className="space-y-6">
-        {/* Kartu Statistik Ringkasan */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-5 sm:space-y-6">
+        {/* Kartu Statistik Ringkasan - 2 Kolom di HP agar Rapi & Kompak */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Card 1: Total Booking */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold">Total Booking</span>
-              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
-                <Users className="w-4 h-4" />
+          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
+              <span className="text-[11px] sm:text-xs font-semibold">Total Booking</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-slate-900 mb-1.5">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
               {totalBookings}
             </div>
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+12% dari bulan lalu</span>
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-600">
+              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>+12% bulan lalu</span>
             </div>
           </div>
 
           {/* Card 2: Menunggu Verifikasi */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold">Menunggu Verifikasi</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-                <Clock className="w-4 h-4" />
+          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
+              <span className="text-[11px] sm:text-xs font-semibold">Menunggu</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-slate-900 mb-1.5">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
               {pendingCount}
             </div>
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-600">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+5% dari bulan lalu</span>
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-amber-600">
+              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>+5% antrean</span>
             </div>
           </div>
 
           {/* Card 3: Terverifikasi */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold">Terverifikasi</span>
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <CheckCircle2 className="w-4 h-4" />
+          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
+              <span className="text-[11px] sm:text-xs font-semibold">Terverifikasi</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-slate-900 mb-1.5">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
               {verifiedCount}
             </div>
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+15% dari bulan lalu</span>
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-600">
+              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>+15% tiket sah</span>
             </div>
           </div>
 
           {/* Card 4: Ditolak */}
-          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-xs font-semibold">Ditolak</span>
-              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                <XCircle className="w-4 h-4" />
+          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
+              <span className="text-[11px] sm:text-xs font-semibold">Ditolak</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
+                <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-slate-900 mb-1.5">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
               {rejectedCount}
             </div>
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-red-600">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+2% dari bulan lalu</span>
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-red-600">
+              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>+2% ditinjau</span>
             </div>
           </div>
         </div>
@@ -145,26 +152,38 @@ export const AdminDashboard: React.FC = () => {
           {/* Chart 1: Kunjungan 7 Hari Terakhir (Line Chart) */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-100 shadow-xs">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-sm font-bold text-slate-900">
-                Kunjungan 7 Hari Terakhir
-              </h2>
-              <span className="text-xs text-slate-400">Rata-rata 25 kunjungan/hari</span>
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <span>Kunjungan 7 Hari Terakhir</span>
+                  <span className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 font-semibold rounded-full border border-emerald-200/60">
+                    Real-time
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Rata-rata <strong className="text-slate-700">{chartData.averagePerDay}</strong> pengunjung/hari • Total periode: <strong className="text-slate-700">{chartData.totalPeriod}</strong> orang
+                </p>
+              </div>
+              {hoveredPoint && (
+                <div className="text-xs bg-slate-900 text-white px-2.5 py-1 rounded-lg font-medium shadow-sm transition-all animate-in fade-in">
+                  {hoveredPoint.label}: <strong className="text-emerald-400">{hoveredPoint.val}</strong> Pengunjung ({hoveredPoint.bookingsCount} booking)
+                </div>
+              )}
             </div>
 
             {/* SVG Line Chart */}
             <div className="w-full h-48 relative">
               <svg viewBox="0 0 500 160" className="w-full h-full overflow-visible">
                 {/* Horizontal Gridlines */}
-                <line x1="0" y1="20" x2="500" y2="20" stroke="#F1F5F9" strokeDasharray="3,3" />
-                <line x1="0" y1="60" x2="500" y2="60" stroke="#F1F5F9" strokeDasharray="3,3" />
-                <line x1="0" y1="100" x2="500" y2="100" stroke="#F1F5F9" strokeDasharray="3,3" />
-                <line x1="0" y1="140" x2="500" y2="140" stroke="#E2E8F0" />
+                <line x1="20" y1="25" x2="480" y2="25" stroke="#F1F5F9" strokeDasharray="3,3" />
+                <line x1="20" y1="63" x2="480" y2="63" stroke="#F1F5F9" strokeDasharray="3,3" />
+                <line x1="20" y1="101" x2="480" y2="101" stroke="#F1F5F9" strokeDasharray="3,3" />
+                <line x1="20" y1="140" x2="480" y2="140" stroke="#E2E8F0" />
 
-                {/* Y-axis labels */}
-                <text x="-15" y="24" fontSize="9" fill="#94A3B8">40</text>
-                <text x="-15" y="64" fontSize="9" fill="#94A3B8">30</text>
-                <text x="-15" y="104" fontSize="9" fill="#94A3B8">20</text>
-                <text x="-15" y="144" fontSize="9" fill="#94A3B8">10</text>
+                {/* Y-axis dynamic labels */}
+                <text x="2" y="28" fontSize="9" fill="#94A3B8">{chartData.yTicks[0]}</text>
+                <text x="2" y="66" fontSize="9" fill="#94A3B8">{chartData.yTicks[1]}</text>
+                <text x="2" y="104" fontSize="9" fill="#94A3B8">{chartData.yTicks[2]}</text>
+                <text x="2" y="143" fontSize="9" fill="#94A3B8">0</text>
 
                 {/* Area Gradient Fill */}
                 <defs>
@@ -174,7 +193,7 @@ export const AdminDashboard: React.FC = () => {
                   </linearGradient>
                 </defs>
                 <polygon
-                  points="20,130 95,95 170,110 245,75 320,85 395,50 470,30 470,140 20,140"
+                  points={chartData.polygonPoints}
                   fill="url(#chartGrad)"
                 />
 
@@ -185,41 +204,47 @@ export const AdminDashboard: React.FC = () => {
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  points="20,130 95,95 170,110 245,75 320,85 395,50 470,30"
+                  points={chartData.polylinePoints}
                 />
 
                 {/* Data Points */}
-                {[
-                  { x: 20, y: 130, val: 12 },
-                  { x: 95, y: 95, val: 21 },
-                  { x: 170, y: 110, val: 18 },
-                  { x: 245, y: 75, val: 26 },
-                  { x: 320, y: 85, val: 24 },
-                  { x: 395, y: 50, val: 32 },
-                  { x: 470, y: 30, val: 38 },
-                ].map((pt, i) => (
-                  <circle
-                    key={i}
-                    cx={pt.x}
-                    cy={pt.y}
-                    r="4.5"
-                    fill="#FFFFFF"
-                    stroke="#10B981"
-                    strokeWidth="2.5"
-                    className="hover:r-6 cursor-pointer transition-all"
-                  />
+                {chartData.points.map((pt, i) => (
+                  <g key={i}>
+                    {/* Hover target */}
+                    <circle
+                      cx={pt.x}
+                      cy={pt.y}
+                      r="12"
+                      fill="transparent"
+                      className="cursor-pointer"
+                      onMouseEnter={() => setHoveredPoint(pt)}
+                      onMouseLeave={() => setHoveredPoint(null)}
+                    />
+                    <circle
+                      cx={pt.x}
+                      cy={pt.y}
+                      r={hoveredPoint?.fullDate === pt.fullDate ? '6' : '4.5'}
+                      fill="#FFFFFF"
+                      stroke="#10B981"
+                      strokeWidth={hoveredPoint?.fullDate === pt.fullDate ? '3.5' : '2.5'}
+                      className="cursor-pointer transition-all pointer-events-none"
+                    />
+                  </g>
                 ))}
               </svg>
 
               {/* X-axis Days Labels */}
-              <div className="flex justify-between text-[11px] text-slate-400 mt-2 px-1">
-                <span>6 Agu</span>
-                <span>7 Agu</span>
-                <span>8 Agu</span>
-                <span>9 Agu</span>
-                <span>10 Agu</span>
-                <span>11 Agu</span>
-                <span>12 Agu</span>
+              <div className="flex justify-between text-[11px] text-slate-500 font-medium mt-2 px-3">
+                {chartData.points.map((pt, i) => (
+                  <span 
+                    key={i} 
+                    className={`transition-colors cursor-pointer ${hoveredPoint?.fullDate === pt.fullDate ? 'text-emerald-600 font-bold' : ''}`}
+                    onMouseEnter={() => setHoveredPoint(pt)}
+                    onMouseLeave={() => setHoveredPoint(null)}
+                  >
+                    {pt.label}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -328,7 +353,47 @@ export const AdminDashboard: React.FC = () => {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile Card List View for Phones */}
+          <div className="block sm:hidden divide-y divide-slate-100">
+            {recentBookings.map((b) => (
+              <div 
+                key={b.id} 
+                onClick={() => {
+                  setSelectedBookingId(b.id);
+                  setActiveView('admin-order-detail');
+                }}
+                className="p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                <div className="space-y-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-xs text-[#092C48]">{b.id}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      b.status === 'Terverifikasi'
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : b.status === 'Ditolak'
+                        ? 'bg-red-50 text-red-700'
+                        : 'bg-amber-50 text-amber-700'
+                    }`}>
+                      {b.status === 'Menunggu Verifikasi' ? 'Menunggu' : b.status}
+                    </span>
+                  </div>
+                  <div className="font-bold text-xs text-slate-800">{b.nama}</div>
+                  <div className="text-[11px] text-slate-500">
+                    {b.tanggalKunjungan} • {b.jumlahOrang} Orang ({b.kategori})
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-400">
+                  <span className="font-bold text-xs text-slate-900">
+                    Rp{b.totalPembayaran.toLocaleString('id-ID')}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tablet & Desktop Table View */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-slate-200 text-slate-500 font-bold text-[11px] uppercase tracking-wider">
@@ -370,7 +435,7 @@ export const AdminDashboard: React.FC = () => {
                           setSelectedBookingId(b.id);
                           setActiveView('admin-order-detail');
                         }}
-                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-[#092C48] transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-[#092C48] transition-colors cursor-pointer"
                         title="Lihat Detail Pesanan"
                       >
                         <Eye className="w-4 h-4" />

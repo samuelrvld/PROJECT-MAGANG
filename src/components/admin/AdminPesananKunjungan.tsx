@@ -468,6 +468,17 @@ export const AdminPesananKunjungan: React.FC = () => {
                           setSelectedBookingId(b.id);
                           setActiveView('admin-order-detail');
                         }}
+                        className="w-7 h-7 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
+                        title="Ubah Tanggal Kunjungan / Reschedule"
+                      >
+                        <Calendar className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBookingId(b.id);
+                          setActiveView('admin-order-detail');
+                        }}
                         className="w-7 h-7 rounded-lg bg-slate-50 hover:bg-[#092C48] text-slate-600 hover:text-white border border-slate-200 transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
                         title="Lihat Detail Pesanan"
                       >

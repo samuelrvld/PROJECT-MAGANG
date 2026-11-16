@@ -18,10 +18,10 @@ import {
   QrCode,
   Compass,
   UserCheck,
-  Lock
+  Lock,
+  Landmark
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
-import { GajahOlingMotif } from '../common/GajahOlingMotif';
 import { hasPermission } from '../../utils/rbac';
 
 interface AdminLayoutProps {
@@ -48,11 +48,19 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
 
   const [rbacDeniedMsg, setRbacDeniedMsg] = React.useState<string | null>(null);
 
-  const handleMenuClick = (item: { id: AppView; label: string }) => {
+  const handleMenuClick = (item: { id: AppView; label: string; externalUrl?: string }) => {
     const isAllowed = hasPermission(currentAdminUser?.role, item.id);
     if (!isAllowed) {
       setRbacDeniedMsg(`Akses Dibatasi: Modul "${item.label}" khusus untuk peran yang berwenang (Role Anda saat ini: ${adminRole}).`);
       setTimeout(() => setRbacDeniedMsg(null), 4000);
+      return;
+    }
+    if (item.externalUrl) {
+      const win = window.open(item.externalUrl, '_blank', 'noopener,noreferrer');
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        window.location.href = item.externalUrl;
+      }
+      setMobileMenuOpen(false);
       return;
     }
     setActiveView(item.id);
@@ -67,6 +75,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       subtitle: string;
       icon: React.ReactNode;
       badge?: number;
+      externalUrl?: string;
     }[];
   }
 
@@ -113,6 +122,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       ]
     },
     {
+      categoryTitle: 'Kuratorial & Museum (Musewangi)',
+      items: [
+        {
+          id: 'admin-koleksi',
+          label: 'Kelola Museum',
+          subtitle: 'Admin & Kuratorial Musewangi',
+          icon: <Landmark className="w-3.5 h-3.5" />,
+          externalUrl: typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://127.0.0.1:8000/login'
+            : 'https://musewangimvp-production.up.railway.app/login'
+        }
+      ]
+    },
+    {
       categoryTitle: 'Sistem & Tim Petugas',
       items: [
         { 
@@ -136,7 +159,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       {/* Mobile Topbar for Phones (< 768px) */}
       <div className="md:hidden bg-[#0F2236] text-white px-4 py-3 border-b border-[#1B3654] sticky top-0 z-40 flex items-center justify-between shadow-sm print:hidden">
         <div className="flex items-center gap-2">
-          <MuseumLogo variant="white" className="h-7" />
+          <MuseumLogo variant="white" className="h-8 sm:h-9 w-auto object-contain" />
           <span className="text-[10px] text-emerald-400 font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30">
             Admin Loket
           </span>
@@ -179,21 +202,21 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
 
           {/* Slide-in Drawer from Left */}
           <aside className="fixed top-0 bottom-0 left-0 w-[300px] max-w-[85vw] bg-gradient-to-b from-[#051829] via-[#092C48] to-[#04121F] text-white z-50 flex flex-col justify-between shadow-2xl p-5 border-r border-[#153E66] animate-in slide-in-from-left duration-250 relative overflow-hidden">
-            {/* Top-Right Gajah Oling Motif */}
-            <div className="absolute -top-4 -right-4 w-32 h-32 opacity-20 pointer-events-none select-none transform rotate-12">
-              <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
-            </div>
-
-            {/* Bottom-Right Gajah Oling Motif */}
-            <div className="absolute -right-6 -bottom-6 w-44 h-44 opacity-25 pointer-events-none select-none">
-              <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-lg" />
+            {/* Ornamen Latar: Candi Gapura Agung Blambangan */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
+              <img
+                src="/assets/candi-blambangan-motif.jpg"
+                alt="Motif Candi Blambangan"
+                className="absolute -bottom-4 right-0 w-[85%] max-h-[70%] object-contain object-bottom opacity-20 filter contrast-125"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#051829]/95 via-transparent via-50% to-[#04121F]/90" />
             </div>
 
             <div className="space-y-4 relative z-10 flex-1 overflow-y-auto">
               {/* Header inside drawer */}
               <div className="pb-3.5 border-b border-white/10 space-y-2">
                 <div className="flex items-center justify-between">
-                  <MuseumLogo variant="white" className="h-8" />
+                  <MuseumLogo variant="white" className="h-12 w-auto max-w-[210px] object-contain drop-shadow" />
                   <button
                     type="button"
                     onClick={() => setMobileMenuOpen(false)}
@@ -248,6 +271,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
                             {!isPermitted ? (
                               <span className="p-1 rounded bg-white/5 text-slate-400" title="Akses Dibatasi">
                                 <Lock className="w-3 h-3 text-slate-400" />
+                              </span>
+                            ) : item.externalUrl ? (
+                              <span className="p-1 rounded bg-white/5 text-[#D4A359]/80" title="Buka Portal Admin Musewangi">
+                                <ExternalLink className="w-3.5 h-3.5" />
                               </span>
                             ) : item.badge !== undefined ? (
                               <span className="bg-[#D4A359] text-[#092C48] text-[10px] font-black px-2 py-0.5 rounded-full shadow-2xs">
@@ -305,24 +332,26 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       )}
 
       {/* Sidebar Desktop Admin */}
-      <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden z-40 select-none print:hidden">
-        {/* Ornamen Gajah Oling Atas */}
-        <div className="absolute -top-6 -right-6 w-36 h-36 opacity-[0.09] pointer-events-none select-none transform rotate-12">
-          <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow" />
-        </div>
-
-        {/* Ornamen Gajah Oling Bawah */}
-        <div className="absolute -bottom-8 -right-8 w-48 h-48 opacity-[0.07] pointer-events-none select-none transform -rotate-12">
-          <GajahOlingMotif variant="gold" className="w-full h-full object-contain filter drop-shadow-lg" />
+      <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden z-40 select-none print:hidden relative">
+        {/* Ornamen Latar: Candi Gapura Agung Blambangan */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
+          <img
+            src="/assets/candi-blambangan-motif.jpg"
+            alt="Motif Candi Blambangan"
+            className="absolute -bottom-4 right-0 w-[85%] lg:w-[90%] max-h-[75%] object-contain object-bottom opacity-20 filter contrast-125"
+          />
+          {/* Subtle vignette gradient so all navigation texts stay 100% crisp and readable */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#081827]/95 via-transparent via-50% to-[#061422]/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#081827]/85 via-transparent to-[#081827]/60" />
         </div>
 
         <div className="space-y-3 relative z-10">
           {/* Logo Museum */}
-          <div className="pt-1 pb-3 border-b border-white/10 relative">
-            <div className="flex items-center justify-between">
-              <MuseumLogo variant="white" className="h-9 sm:h-10 w-auto" />
+          <div className="pt-2 pb-3 border-b border-white/10 relative">
+            <div className="flex items-center justify-start">
+              <MuseumLogo variant="white" className="h-12 lg:h-14 w-auto max-w-[240px] object-contain drop-shadow-md" />
             </div>
-            <div className="mt-2 flex items-center justify-between">
+            <div className="mt-2.5 flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[10.5px] text-[#E3C693] font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#D4A359] animate-pulse" />
                 <span>Panel Petugas & Admin</span>
@@ -378,6 +407,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
                         {!isPermitted ? (
                           <span className="p-1 rounded bg-white/5 text-slate-400 flex items-center gap-1 text-[9.5px]" title="Akses Dibatasi Peran">
                             <Lock className="w-3 h-3 text-slate-400" />
+                          </span>
+                        ) : item.externalUrl ? (
+                          <span className="p-1 rounded bg-white/5 text-[#D4A359]/80 group-hover:text-[#D4A359] group-hover:translate-x-0.5 transition-all flex items-center gap-1" title="Buka Portal Admin Musewangi">
+                            <ExternalLink className="w-3.5 h-3.5" />
                           </span>
                         ) : item.badge !== undefined ? (
                           <span className="bg-[#D4A359] text-[#092C48] text-[10px] font-black px-2 py-0.5 rounded-full shadow-2xs">

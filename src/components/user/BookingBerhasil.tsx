@@ -63,7 +63,7 @@ export const BookingBerhasil: React.FC = () => {
               </div>
 
               <div>
-                <h1 className="font-serif text-xl font-bold text-slate-900 leading-tight">
+                <h1 className="font-sans text-xl font-extrabold text-slate-900 leading-tight">
                   Booking Berhasil!
                 </h1>
                 <p className="text-[11px] text-slate-500 max-w-[260px] mx-auto mt-1 leading-relaxed">

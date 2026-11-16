@@ -155,19 +155,10 @@ export const normalizeDateStr = (dateStr: string): string => {
   return trimmed;
 };
 
-// Check if selected date is Saturday or Sunday (Museum is open Monday - Friday 07:30 - 16:00 WIB)
-export const isWeekendClosed = (targetDateStr: string): boolean => {
-  if (!targetDateStr) return false;
-  const normalized = normalizeDateStr(targetDateStr);
-  try {
-    const [y, m, d] = normalized.split('-').map(Number);
-    if (!y || !m || !d) return false;
-    const dateObj = new Date(y, m - 1, d);
-    const day = dateObj.getDay();
-    return day === 0 || day === 6; // 0 = Sunday, 6 = Saturday
-  } catch (_) {
-    return false;
-  }
+// Check if selected date is closed (Museum Blambangan buka setiap hari: Senin – Minggu 07:30 – 16:00 WIB)
+export const isWeekendClosed = (_targetDateStr: string): boolean => {
+  // Museum buka setiap hari Senin s.d. Minggu
+  return false;
 };
 
 // Legacy compatibility

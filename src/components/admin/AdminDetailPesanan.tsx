@@ -32,7 +32,8 @@ export const AdminDetailPesanan: React.FC = () => {
     verifyBooking, 
     cancelVerification,
     rejectBooking,
-    deleteBooking
+    deleteBooking,
+    updateBooking
   } = useBooking();
 
   const booking = bookings.find((b) => b.id === selectedBookingId) || bookings[0];
@@ -43,6 +44,10 @@ export const AdminDetailPesanan: React.FC = () => {
   const [modalRejectOpen, setModalRejectOpen] = useState(false);
   const [modalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [modalSuccessOpen, setModalSuccessOpen] = useState(false);
+  const [modalRescheduleOpen, setModalRescheduleOpen] = useState(false);
+  const [newDateInput, setNewDateInput] = useState('');
+  const [newSesiInput, setNewSesiInput] = useState('');
+  const [rescheduleToast, setRescheduleToast] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('Nominal pembayaran tidak sesuai dengan total booking.');
 
@@ -181,12 +186,35 @@ export const AdminDetailPesanan: React.FC = () => {
               </h2>
 
               <div className="space-y-3 text-xs sm:text-sm">
+                {/* Success alert when date updated */}
+                {rescheduleToast && (
+                  <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <span>Tanggal kunjungan berhasil diperbarui!</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center py-1 border-b border-slate-50">
                   <span className="text-slate-500 flex items-center gap-2">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     Tanggal Kunjungan
                   </span>
-                  <span className="font-semibold text-slate-800">{booking.tanggalKunjungan}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-800">{booking.tanggalKunjungan}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewDateInput(booking.tanggalKunjungan || '');
+                        setNewSesiInput(booking.sesi || 'Sesi 1 (07:30 - 10:00 WIB)');
+                        setModalRescheduleOpen(true);
+                      }}
+                      className="px-2 py-0.5 text-[11px] font-bold rounded-lg bg-[#092C48] hover:bg-[#071F33] text-white flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Ubah Tanggal Kunjungan"
+                    >
+                      <RotateCcw className="w-3 h-3 text-[#D4A359]" />
+                      <span>Ubah</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex justify-between items-center py-1 border-b border-slate-50">
@@ -642,6 +670,114 @@ export const AdminDetailPesanan: React.FC = () => {
                 Ya, Batalkan Verifikasi
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Ubah Tanggal Kunjungan (Admin Reschedule) */}
+      {modalRescheduleOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-in zoom-in-95 duration-150 text-left">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#092C48] text-[#D4A359] flex items-center justify-center">
+                  <Calendar className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Ubah Tanggal Kunjungan</h3>
+                  <p className="text-[11px] text-slate-500">Reschedule tiket {booking.id} ({booking.nama})</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalRescheduleOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newDateInput.trim()) return;
+                updateBooking(booking.id, {
+                  tanggalKunjungan: newDateInput.trim(),
+                  sesi: newSesiInput.trim()
+                });
+                setModalRescheduleOpen(false);
+                setRescheduleToast(true);
+                setTimeout(() => setRescheduleToast(false), 3500);
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Tanggal Kunjungan Baru
+                </label>
+                <input
+                  type="text"
+                  value={newDateInput}
+                  onChange={(e) => setNewDateInput(e.target.value)}
+                  placeholder="Contoh: 18 Agustus 2025"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#092C48]"
+                  required
+                />
+                {/* Date Picker Input Helper */}
+                <div className="mt-2 flex items-center gap-2">
+                  <input
+                    type="date"
+                    onChange={(e) => {
+                      if (!e.target.value) return;
+                      const [y, m, d] = e.target.value.split('-');
+                      const months = [
+                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                      ];
+                      const formatted = `${parseInt(d, 10)} ${months[parseInt(m, 10) - 1]} ${y}`;
+                      setNewDateInput(formatted);
+                    }}
+                    className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 text-slate-700 cursor-pointer"
+                  />
+                  <span className="text-[11px] text-slate-400">← Pilih dari kalender</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Pilihan Sesi Kunjungan
+                </label>
+                <select
+                  value={newSesiInput}
+                  onChange={(e) => setNewSesiInput(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#092C48] bg-white cursor-pointer"
+                >
+                  <option value="Sesi 1 (07:30 - 10:00 WIB)">Sesi 1: 07:30 - 10:00 WIB (Pagi)</option>
+                  <option value="Sesi 2 (10:00 - 12:00 WIB)">Sesi 2: 10:00 - 12:00 WIB (Siang)</option>
+                  <option value="Sesi 3 (13:00 - 16:00 WIB)">Sesi 3: 13:00 - 16:00 WIB (Sore)</option>
+                </select>
+              </div>
+
+              <div className="p-3 rounded-xl bg-blue-50 border border-blue-200/80 text-[11px] text-blue-900 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <span>Perubahan tanggal dan sesi akan langsung disinkronkan ke e-tiket pengunjung dan database sistem.</span>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setModalRescheduleOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-[#092C48] hover:bg-[#071F33] text-white shadow-xs cursor-pointer"
+                >
+                  Simpan Perubahan Tanggal
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

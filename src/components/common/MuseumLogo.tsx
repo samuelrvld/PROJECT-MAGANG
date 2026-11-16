@@ -19,7 +19,7 @@ export const MuseumLogo: React.FC<MuseumLogoProps> = ({
     <img
       src={logoSrc}
       alt={alt}
-      className={`w-auto object-contain select-none shrink-0 inline-block ${className}`}
+      className={`w-auto aspect-[950/227] object-contain select-none shrink-0 inline-block ${className}`}
       crossOrigin="anonymous"
     />
   );

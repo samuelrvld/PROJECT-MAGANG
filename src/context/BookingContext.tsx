@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Booking, AdminNotification, ActivityLog, CategoryType, WalkInBookingInput, AdminUser } from '../types';
+import type { Booking, AdminNotification, ActivityLog, CategoryType, WalkInBookingInput, AdminUser, KoleksiItem } from '../types';
 import { INITIAL_BOOKINGS, INITIAL_NOTIFICATIONS, INITIAL_ACTIVITIES, INITIAL_ADMINS } from '../data/mockData';
+import { INITIAL_KOLEKSI } from '../data/koleksiData';
 import { 
   type SessionConfig, 
   type IshomaConfig, 
@@ -25,6 +26,7 @@ export type AppView =
   | 'user-ticket'
   | 'user-mobile-preview'
   | 'user-web-portal'
+  | 'user-koleksi'
   | 'admin-login'
   | 'admin-dashboard'
   | 'admin-orders'
@@ -35,11 +37,16 @@ export type AppView =
   | 'admin-settings'
   | 'admin-visitors'
   | 'admin-scan'
-  | 'admin-users';
+  | 'admin-users'
+  | 'admin-koleksi';
 
 export interface BookingFormData {
   nama: string;
   jumlahOrang: number;
+  jumlahDewasa?: number;
+  jumlahMahasiswa?: number;
+  jumlahMancanegara?: number;
+  rincianPengunjung?: string;
   telepon: string;
   email: string;
   alamat: string;
@@ -66,6 +73,7 @@ interface BookingContextType {
   cancelVerification: (id: string, reason?: string) => void;
   rejectBooking: (id: string, reason: string) => void;
   deleteBooking: (id: string) => void;
+  updateBooking: (id: string, updated: Partial<Booking>) => boolean;
   checkInBooking: (queryOrId: string, autoVerifyPending?: boolean) => { success: boolean; message: string; booking?: Booking };
   quickVerifyAndCheckIn: (id: string) => { success: boolean; message: string; booking?: Booking };
   undoCheckIn: (id: string) => void;
@@ -94,15 +102,23 @@ interface BookingContextType {
   updateIshoma: (newIshoma: IshomaConfig) => void;
   resetSchedule: () => void;
   isCloudSyncConnected: boolean;
+  koleksi: KoleksiItem[];
+  addKoleksi: (item: Omit<KoleksiItem, 'id'>) => KoleksiItem;
+  updateKoleksi: (id: string, updated: Partial<KoleksiItem>) => void;
+  deleteKoleksi: (id: string) => void;
 }
 
 const DEFAULT_FORM_DATA: BookingFormData = {
   nama: '',
   jumlahOrang: 1,
+  jumlahDewasa: 1,
+  jumlahMahasiswa: 0,
+  jumlahMancanegara: 0,
+  rincianPengunjung: '1 Dewasa',
   telepon: '',
   email: '',
   alamat: '',
-  kategori: '' as CategoryType,
+  kategori: 'Umum',
   tanggalKunjungan: '',
   sesi: '',
 };
@@ -124,6 +140,7 @@ const viewFromHash = (): AppView => {
     if (hash === 'admin/pengunjung') return 'admin-visitors';
     if (hash === 'admin/scan' || hash === 'admin/validasi' || hash === 'admin/gate') return 'admin-scan';
     if (hash === 'admin/users' || hash === 'admin/petugas' || hash === 'admin/tim' || hash === 'admin-users') return 'admin-users';
+    if (hash === 'admin/koleksi' || hash === 'admin/musewangi' || hash === 'admin-koleksi') return 'admin-koleksi';
     return 'admin-dashboard';
   }
   if (hash === 'booking' || hash === 'booking/form') return 'user-form';
@@ -134,6 +151,7 @@ const viewFromHash = (): AppView => {
   if (hash === 'tiket') return 'user-ticket';
   if (hash === 'mobile') return 'user-mobile-preview';
   if (hash === 'portal' || hash === 'tiket-saya') return 'user-web-portal';
+  if (hash === 'koleksi' || hash === 'koleksi-museum' || hash === 'musewangi' || hash === 'katalog') return 'user-koleksi';
   return 'user-landing';
 };
 
@@ -148,6 +166,7 @@ const hashFromView = (view: AppView): string => {
     case 'user-ticket': return '#/tiket';
     case 'user-mobile-preview': return '#/mobile';
     case 'user-web-portal': return '#/tiket-saya';
+    case 'user-koleksi': return '#/koleksi';
     case 'admin-login': return '#/admin/login';
     case 'admin-dashboard': return '#/admin';
     case 'admin-orders': return '#/admin/pesanan';
@@ -159,6 +178,7 @@ const hashFromView = (view: AppView): string => {
     case 'admin-visitors': return '#/admin/pengunjung';
     case 'admin-scan': return '#/admin/scan';
     case 'admin-users': return '#/admin/petugas';
+    case 'admin-koleksi': return '#/admin/koleksi';
     default: return '#/';
   }
 };
@@ -412,6 +432,38 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (_) {}
   }, [currentAdminUser]);
 
+  // ─── KOLEKSI ARTEFAK KURATORIAL MUSEWANGI ───
+  const [koleksi, setKoleksi] = useState<KoleksiItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('mb_koleksi_items');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (_) {}
+    return INITIAL_KOLEKSI;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('mb_koleksi_items', JSON.stringify(koleksi));
+    } catch (_) {}
+  }, [koleksi]);
+
+  const addKoleksi = (item: Omit<KoleksiItem, 'id'>): KoleksiItem => {
+    const newItem: KoleksiItem = { ...item, id: `kol-${Date.now()}` };
+    setKoleksi((prev) => [newItem, ...prev]);
+    return newItem;
+  };
+
+  const updateKoleksi = (id: string, updated: Partial<KoleksiItem>) => {
+    setKoleksi((prev) => prev.map((k) => (k.id === id ? { ...k, ...updated } : k)));
+  };
+
+  const deleteKoleksi = (id: string) => {
+    setKoleksi((prev) => prev.filter((k) => k.id !== id));
+  };
+
   const addAdmin = (newAdminData: Omit<AdminUser, 'id' | 'createdAt'>): AdminUser => {
     const newAdmin: AdminUser = {
       ...newAdminData,
@@ -587,6 +639,14 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       cleanId === '362358302019' || 
       cleanId === '362358302025' || 
       cleanId === '362358302156' ||
+      cleanId === '220110001' ||
+      cleanId === '220110002' ||
+      cleanId === '220110003' ||
+      cleanId === '220110004' ||
+      cleanId === 'bimbingan 1' ||
+      cleanId === 'satria kharisma h.' ||
+      cleanId === 'rizki nazeera a.' ||
+      cleanId === 'salsabila rosi q.' ||
       cleanId === 'fitria_pratiwi' ||
       cleanId === 'syifa_nayla' ||
       cleanId === 'rofi_nazar' ||
@@ -981,8 +1041,37 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const randomSeq = Math.floor(1000 + Math.random() * 9000);
     const dateFormatted = formData.tanggalKunjungan.replace(/-/g, '');
     const bookingId = `MB-${dateFormatted || '20250815'}-${randomSeq}`;
-    const pricePerPerson = getPricePerPerson(formData.kategori);
-    const total = pricePerPerson * formData.jumlahOrang;
+    
+    // Perhitungan Multi-Kategori (Dewasa & Mahasiswa / Mancanegara)
+    const jmlDewasa = formData.jumlahDewasa !== undefined ? formData.jumlahDewasa : (formData.kategori === 'Pelajar/Mahasiswa' || formData.kategori === 'Pelajar' ? 0 : (formData.jumlahOrang || 1));
+    const jmlMahasiswa = formData.jumlahMahasiswa !== undefined ? formData.jumlahMahasiswa : (formData.kategori === 'Pelajar/Mahasiswa' || formData.kategori === 'Pelajar' ? (formData.jumlahOrang || 1) : 0);
+    const jmlMancanegara = formData.jumlahMancanegara || 0;
+    const totalPengunjung = Math.max(1, (jmlDewasa + jmlMahasiswa + jmlMancanegara) || (formData.jumlahOrang || 1));
+
+    let total = (jmlDewasa * 7500) + (jmlMahasiswa * 5000) + (jmlMancanegara * 20000);
+    if (total === 0) {
+      total = getPricePerPerson(formData.kategori) * totalPengunjung;
+    }
+    const pricePerPerson = Math.round(total / totalPengunjung);
+
+    let calculatedKategori: CategoryType = formData.kategori || 'Umum';
+    if (jmlDewasa > 0 && jmlMahasiswa > 0) {
+      calculatedKategori = 'Campuran (Dewasa & Mahasiswa)';
+    } else if (jmlMancanegara > 0 && (jmlDewasa > 0 || jmlMahasiswa > 0)) {
+      calculatedKategori = 'Campuran (Dewasa & Mahasiswa)';
+    } else if (jmlMancanegara > 0) {
+      calculatedKategori = 'Mancanegara';
+    } else if (jmlMahasiswa > 0) {
+      calculatedKategori = 'Pelajar/Mahasiswa';
+    } else {
+      calculatedKategori = 'Umum';
+    }
+
+    const rincianParts: string[] = [];
+    if (jmlDewasa > 0) rincianParts.push(`${jmlDewasa} Dewasa`);
+    if (jmlMahasiswa > 0) rincianParts.push(`${jmlMahasiswa} Mahasiswa`);
+    if (jmlMancanegara > 0) rincianParts.push(`${jmlMancanegara} Mancanegara`);
+    const rincianPengunjung = rincianParts.length > 0 ? rincianParts.join(', ') : `${totalPengunjung} Orang (${calculatedKategori})`;
 
     const formatDateIndo = (dateStr: string) => {
       if (!dateStr) return '15 Agustus 2025';
@@ -1009,11 +1098,15 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const newBooking: Booking = {
       id: bookingId,
       nama: formData.nama,
-      jumlahOrang: formData.jumlahOrang || 1,
+      jumlahOrang: totalPengunjung,
+      jumlahDewasa: jmlDewasa,
+      jumlahMahasiswa: jmlMahasiswa,
+      jumlahMancanegara: jmlMancanegara,
+      rincianPengunjung,
       telepon: formData.telepon,
       email: formData.email,
       alamat: formData.alamat,
-      kategori: formData.kategori,
+      kategori: calculatedKategori,
       hargaPerOrang: pricePerPerson,
       tanggalKunjungan: formattedDate,
       sesi: formData.sesi,
@@ -1067,8 +1160,30 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const today = new Date();
     const dateFormatted = today.toISOString().split('T')[0].replace(/-/g, '');
     const bookingId = `MB-LOKET-${dateFormatted}-${randomSeq}`;
-    const pricePerPerson = getPricePerPerson(input.kategori);
-    const total = pricePerPerson * (input.jumlahOrang || 1);
+
+    const jmlDewasa = input.jumlahDewasa !== undefined ? input.jumlahDewasa : (input.kategori === 'Pelajar/Mahasiswa' || input.kategori === 'Pelajar' ? 0 : (input.jumlahOrang || 1));
+    const jmlMahasiswa = input.jumlahMahasiswa !== undefined ? input.jumlahMahasiswa : (input.kategori === 'Pelajar/Mahasiswa' || input.kategori === 'Pelajar' ? (input.jumlahOrang || 1) : 0);
+    const jmlMancanegara = input.jumlahMancanegara || 0;
+    const totalPengunjung = Math.max(1, (jmlDewasa + jmlMahasiswa + jmlMancanegara) || (input.jumlahOrang || 1));
+
+    let total = (jmlDewasa * 7500) + (jmlMahasiswa * 5000) + (jmlMancanegara * 20000);
+    if (total === 0) {
+      total = getPricePerPerson(input.kategori) * totalPengunjung;
+    }
+    const pricePerPerson = Math.round(total / totalPengunjung);
+
+    let calculatedKategori: CategoryType = input.kategori;
+    if (jmlDewasa > 0 && jmlMahasiswa > 0) {
+      calculatedKategori = 'Campuran (Dewasa & Mahasiswa)';
+    } else if (jmlMancanegara > 0 && (jmlDewasa > 0 || jmlMahasiswa > 0)) {
+      calculatedKategori = 'Campuran (Dewasa & Mahasiswa)';
+    }
+
+    const rincianParts: string[] = [];
+    if (jmlDewasa > 0) rincianParts.push(`${jmlDewasa} Dewasa`);
+    if (jmlMahasiswa > 0) rincianParts.push(`${jmlMahasiswa} Mahasiswa`);
+    if (jmlMancanegara > 0) rincianParts.push(`${jmlMancanegara} Mancanegara`);
+    const rincianPengunjung = rincianParts.length > 0 ? rincianParts.join(', ') : `${totalPengunjung} Orang (${calculatedKategori})`;
 
     const todayStr = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(today);
     const nowTimeStr = today.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
@@ -1077,11 +1192,15 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const newBooking: Booking = {
       id: bookingId,
       nama: input.nama.trim(),
-      jumlahOrang: input.jumlahOrang || 1,
+      jumlahOrang: totalPengunjung,
+      jumlahDewasa: jmlDewasa,
+      jumlahMahasiswa: jmlMahasiswa,
+      jumlahMancanegara: jmlMancanegara,
+      rincianPengunjung,
       telepon: input.telepon?.trim() || '-',
       email: input.email?.trim() || '-',
       alamat: input.alamat?.trim() || 'Pembelian Langsung di Loket Museum',
-      kategori: input.kategori,
+      kategori: calculatedKategori,
       hargaPerOrang: pricePerPerson,
       tanggalKunjungan: input.tanggalKunjungan || todayStr,
       sesi: input.sesi,
@@ -1313,6 +1432,54 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } catch (_) {}
       return updated;
     });
+  };
+
+  const updateBooking = (id: string, updated: Partial<Booking>): boolean => {
+    let foundBooking: Booking | null = null;
+    setBookings((prev) => {
+      const next = prev.map((b) => {
+        if (b.id === id) {
+          foundBooking = { ...b, ...updated };
+          return foundBooking;
+        }
+        return b;
+      });
+      safeSaveBookingsToStorage(next);
+      return next;
+    });
+
+    if (currentBooking && currentBooking.id === id) {
+      setCurrentBooking((prev) => (prev ? { ...prev, ...updated } : null));
+    }
+
+    if (foundBooking) {
+      const b = foundBooking as Booking;
+      const newAct: ActivityLog = {
+        id: `act-${Date.now()}`,
+        user: currentAdminUser?.nama || 'Petugas Admin',
+        action: `Mengubah data/tanggal kunjungan tiket ${b.id} (${b.nama}) ke ${b.tanggalKunjungan} ${b.sesi ? `(${b.sesi})` : ''}`,
+        target: b.id,
+        timestamp: 'Baru saja',
+      };
+      setActivities((prev) => [newAct, ...prev]);
+
+      // Broadcast update
+      broadcastSyncEvent({ type: 'NEW_BOOKING', booking: b });
+
+      // Supabase sync
+      try {
+        const payload: Record<string, any> = {};
+        if (updated.tanggalKunjungan !== undefined) payload.tanggal_kunjungan = updated.tanggalKunjungan;
+        if (updated.sesi !== undefined) payload.sesi = updated.sesi;
+        if (updated.nama !== undefined) payload.nama = updated.nama;
+        if (updated.telepon !== undefined) payload.telepon = updated.telepon;
+        if (updated.email !== undefined) payload.email = updated.email;
+        if (updated.status !== undefined) payload.status = updated.status;
+        supabase.from('bookings').update(payload).eq('id', id).then();
+      } catch (_) {}
+      return true;
+    }
+    return false;
   };
 
   const quickVerifyAndCheckIn = (id: string): { success: boolean; message: string; booking?: Booking } => {
@@ -1593,6 +1760,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         cancelVerification,
         rejectBooking,
         deleteBooking,
+        updateBooking,
         checkInBooking,
         quickVerifyAndCheckIn,
         undoCheckIn,
@@ -1621,6 +1789,10 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateIshoma,
         resetSchedule,
         isCloudSyncConnected,
+        koleksi,
+        addKoleksi,
+        updateKoleksi,
+        deleteKoleksi,
       }}
     >
       {children}

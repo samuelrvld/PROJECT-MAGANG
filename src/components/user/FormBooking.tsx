@@ -15,7 +15,10 @@ import {
   Plus, 
   Minus, 
   Clock,
-  AlertCircle
+  AlertCircle,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { 
@@ -40,81 +43,47 @@ const isValidIndonesianPhone = (phone: string): boolean => {
 export const FormBooking: React.FC = () => {
   const { setActiveView, formData, setFormData, bookings, sessionsConfig, ishomaConfig } = useBooking();
 
-  const categories: { type: CategoryType; label: string; subLabel: string; price: string; icon: React.ReactNode }[] = [
-    {
-      type: 'Pelajar/Mahasiswa',
-      label: 'Pelajar / Mahasiswa',
-      subLabel: 'Individu (1–9 org)',
-      price: 'Rp 5.000 / org',
-      icon: <GraduationCap className="w-4 h-4 text-emerald-600" />
-    },
-    {
-      type: 'Umum',
-      label: 'Pengunjung Umum',
-      subLabel: 'Domestik & Keluarga',
-      price: 'Rp 7.500 / org',
-      icon: <User className="w-4 h-4 text-blue-600" />
-    },
-    {
-      type: 'Mancanegara',
-      label: 'Wisatawan Mancanegara',
-      subLabel: 'Foreign Tourist',
-      price: 'Rp 20.000 / org',
-      icon: <Globe className="w-4 h-4 text-purple-600" />
-    },
-    {
-      type: 'Pelajar Rombongan',
-      label: 'Pelajar Rombongan',
-      subLabel: 'Studi Tour (Min. 10)',
-      price: 'Rp 5.000 / org',
-      icon: <Users className="w-4 h-4 text-teal-600" />
-    },
-  ];
+  // Multi-Category Counts & Validity
+  const jmlDewasa = formData.jumlahDewasa !== undefined ? formData.jumlahDewasa : (formData.kategori === 'Pelajar/Mahasiswa' || formData.kategori === 'Pelajar' ? 0 : (formData.jumlahOrang || 1));
+  const jmlMahasiswa = formData.jumlahMahasiswa !== undefined ? formData.jumlahMahasiswa : (formData.kategori === 'Pelajar/Mahasiswa' || formData.kategori === 'Pelajar' ? (formData.jumlahOrang || 1) : 0);
+  const jmlManca = formData.jumlahMancanegara || 0;
+  const totalPengunjung = jmlDewasa + jmlMahasiswa + jmlManca;
+  const estimatedTotal = (jmlDewasa * 7500) + (jmlMahasiswa * 5000) + (jmlManca * 20000);
 
   // Individual Field Validity
   const isNamaValid = Boolean(formData.nama && formData.nama.trim().length >= 3);
   const isTeleponValid = isValidIndonesianPhone(formData.telepon);
   const isEmailValid = Boolean(formData.email && formData.email.includes('@') && formData.email.includes('.'));
-  const isKategoriValid = Boolean(formData.kategori);
-  const isJumlahValid = Number(formData.jumlahOrang) >= 1;
+  const isJumlahValid = totalPengunjung >= 1;
   const isDateClosedWeekend = isWeekendClosed(formData.tanggalKunjungan);
   const isTanggalValid = Boolean(formData.tanggalKunjungan) && !isDateClosedWeekend;
   const isSesiValid = Boolean(formData.sesi);
 
-  // Grouped Progress Tracker (6 Core Fields)
-  const coreFields = [
-    isNamaValid,
-    isTeleponValid,
-    isEmailValid,
-    isKategoriValid,
-    isTanggalValid,
-    isSesiValid,
-  ];
-  const completedFieldsCount = coreFields.filter(Boolean).length;
-  const progressPercent = Math.round((completedFieldsCount / coreFields.length) * 100);
-  const allStepsDone = completedFieldsCount === coreFields.length && isJumlahValid;
+  // Core Steps Completion Check
+  const allStepsDone = isNamaValid && isTeleponValid && isEmailValid && isJumlahValid && isTanggalValid && isSesiValid;
 
   // Dynamic Quick Dates: Generates upcoming open weekdays (Monday-Friday)
   const quickDates = useMemo(() => {
-    const list: { label: string; date: string; disabled: boolean }[] = [];
+    const list: { label: string; date: string; dayName: string; dayDate: string; disabled: boolean }[] = [];
     const now = new Date();
     
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
       const d = new Date();
       d.setDate(now.getDate() + i);
       const dateStr = d.toISOString().split('T')[0];
       const isWeekend = isWeekendClosed(dateStr);
       const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(d);
-      const dayDate = d.getDate();
-      const monthName = new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(d);
+      const dayDate = `${d.getDate()} ${new Intl.DateTimeFormat('id-ID', { month: 'short' }).format(d)}`;
       
-      let label = `${dayName}, ${dayDate} ${monthName}`;
-      if (i === 0) label = `Hari Ini (${dayName})`;
-      else if (i === 1) label = `Besok (${dayName})`;
+      let label = `${dayName}, ${dayDate}`;
+      if (i === 0) label = `Hari Ini`;
+      else if (i === 1) label = `Besok`;
 
-      if (list.length < 3 && !isWeekend) {
+      if (list.length < 4 && !isWeekend) {
         list.push({
           label,
+          dayName,
+          dayDate,
           date: dateStr,
           disabled: false,
         });
@@ -123,38 +92,37 @@ export const FormBooking: React.FC = () => {
     return list;
   }, []);
 
-  const getCategoryPrice = (kategori: string) => {
-    switch (kategori) {
-      case 'Pelajar/Mahasiswa': return 5000;
-      case 'Umum': return 7500;
-      case 'Mancanegara': return 20000;
-      case 'Pelajar Rombongan': return 5000;
-      default: return 7500;
-    }
-  };
+  const updateCounts = (dewasa: number, mahasiswa: number, manca: number = 0) => {
+    const d = Math.max(0, dewasa);
+    const m = Math.max(0, mahasiswa);
+    const w = Math.max(0, manca);
+    const total = d + m + w;
+    let kat: CategoryType = 'Umum';
+    if (d > 0 && m > 0) kat = 'Campuran (Dewasa & Mahasiswa)';
+    else if (w > 0) kat = 'Mancanegara';
+    else if (m > 0) kat = 'Pelajar/Mahasiswa';
+    else kat = 'Umum';
 
-  const estimatedTotal = (formData.jumlahOrang || 1) * getCategoryPrice(formData.kategori || 'Umum');
+    const rincianParts: string[] = [];
+    if (d > 0) rincianParts.push(`${d} Dewasa`);
+    if (m > 0) rincianParts.push(`${m} Mahasiswa`);
+    if (w > 0) rincianParts.push(`${w} Mancanegara`);
+
+    setFormData(prev => ({
+      ...prev,
+      jumlahDewasa: d,
+      jumlahMahasiswa: m,
+      jumlahMancanegara: w,
+      jumlahOrang: total,
+      kategori: kat,
+      rincianPengunjung: rincianParts.join(', ') || '1 Dewasa'
+    }));
+  };
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isNamaValid) {
-      alert('Mohon isi Nama Lengkap pemesan terlebih dahulu (minimal 3 huruf).');
-      return;
-    }
-    if (!isTeleponValid) {
-      alert('Mohon isi Nomor WhatsApp / HP yang valid (10–13 digit nomor Indonesia, contoh: 081234567890).');
-      return;
-    }
-    if (!isEmailValid) {
-      alert('Mohon isi alamat Email pemesan yang valid (contoh: nama@email.com).');
-      return;
-    }
-    if (!isKategoriValid) {
-      alert('Mohon pilih Kategori Kunjungan tiket Anda.');
-      return;
-    }
-    if (!isJumlahValid) {
-      alert('Mohon tentukan Jumlah Pengunjung minimal 1 orang.');
+    if (totalPengunjung < 1) {
+      alert('Mohon tentukan minimal 1 orang pengunjung (Dewasa atau Mahasiswa).');
       return;
     }
     if (!formData.tanggalKunjungan) {
@@ -169,345 +137,111 @@ export const FormBooking: React.FC = () => {
       alert('Mohon pilih Sesi Kunjungan (Pagi, Siang, atau Sore).');
       return;
     }
+    if (!isNamaValid) {
+      alert('Mohon isi Nama Lengkap pemesan terlebih dahulu (minimal 3 huruf).');
+      return;
+    }
+    if (!isTeleponValid) {
+      alert('Mohon isi Nomor WhatsApp / HP yang valid (10–13 digit nomor Indonesia, contoh: 081234567890).');
+      return;
+    }
+    if (!isEmailValid) {
+      alert('Mohon isi alamat Email pemesan yang valid (contoh: nama@email.com).');
+      return;
+    }
     setActiveView('user-summary');
   };
 
   return (
-    <div className="min-h-screen bg-white sm:bg-[#EEF2F1] flex justify-center items-start sm:py-6 sm:px-4">
-      {/* Responsive Frame: Compact & 100% full width on mobile, spacious card on desktop */}
-      <div className="w-full max-w-full sm:max-w-xl md:max-w-2xl min-h-screen sm:min-h-[820px] bg-white text-slate-800 flex flex-col justify-between sm:rounded-[36px] sm:shadow-2xl border-0 sm:border sm:border-slate-200 overflow-hidden">
+    <div className="min-h-screen bg-[#F0F3F7] sm:bg-[#EEF2F1] flex justify-center items-start sm:py-6 sm:px-4 font-sans text-slate-800">
+      {/* Dashboard-Themed Container */}
+      <div className="w-full max-w-full sm:max-w-2xl min-h-screen sm:min-h-[860px] bg-[#F8FAFC] flex flex-col justify-between sm:rounded-3xl sm:shadow-2xl border-0 sm:border sm:border-slate-300 overflow-hidden">
         
-        {/* Header Formulir: Clean flow header without duplicate step numbers */}
-        <header className="bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30 relative shrink-0">
-          <div className="flex items-center gap-1.5 z-10 w-24 justify-start">
-            <button
-              onClick={() => setActiveView('user-landing')}
-              className="p-1 -ml-1 text-slate-700 hover:text-black transition-colors cursor-pointer"
-              title="Kembali ke Beranda"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <span className="hidden sm:inline text-xs font-semibold text-slate-600">
-              Beranda
-            </span>
-          </div>
-
-          {/* Perfectly Centered Logo */}
-          <div className="absolute inset-x-0 flex items-center justify-center pointer-events-none">
-            <MuseumLogo variant="dark" className="h-7 sm:h-8 pointer-events-auto" />
-          </div>
-
-          <div className="flex items-center z-10 w-28 justify-end">
-            <span className="text-xs font-bold text-[#092C48] bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-              Formulir Tiket
-            </span>
-          </div>
-        </header>
-
-        {/* Unified Form Body wrapping Scrollable Sections and Docked Footer */}
-        <form onSubmit={handleNext} className="flex-1 flex flex-col justify-between overflow-hidden">
-          
-          {/* Scrollable Form Content */}
-          <main className="flex-1 px-4 sm:px-6 py-4 overflow-y-auto space-y-4 text-left">
-            <div className="flex items-start justify-between">
+        {/* ================= HEADER: MUSEUM DASHBOARD NAVY PALETTE ================= */}
+        <header className="bg-gradient-to-r from-[#081827] via-[#092C48] to-[#123E63] text-white px-4 py-3.5 sticky top-0 z-30 shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveView('user-landing')}
+                className="p-1.5 -ml-1.5 text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                title="Kembali ke Beranda"
+              >
+                <ChevronLeft className="w-5 h-5 text-white stroke-[2.5]" />
+              </button>
               <div>
-                <h1 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+                <h1 className="text-sm sm:text-base font-extrabold tracking-tight text-white leading-tight">
                   Pemesanan Tiket Museum
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                  Lengkapi data pemesan dan jadwal rencana kunjungan Anda di bawah ini.
+                <p className="text-[10px] sm:text-[11px] text-[#E5C287] font-medium leading-none mt-0.5">
+                  Museum Blambangan Banyuwangi
                 </p>
               </div>
             </div>
 
-            {/* Indikator Kelengkapan Formulir */}
-            <div className="bg-slate-50/80 border border-slate-200/90 rounded-2xl p-3.5 space-y-2 shadow-2xs">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-700 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#092C48]" />
-                  <span>Kelengkapan Data Formulir</span>
-                </span>
-                <span className="font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-md border border-slate-200 text-[11px]">
-                  {progressPercent}% Terisi
-                </span>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-slate-200/80 h-1.5 rounded-full overflow-hidden">
-                <div
-                  className="bg-[#092C48] h-full transition-all duration-300 rounded-full"
-                  style={{ width: `${progressPercent}%` }}
+            <div className="flex items-center gap-2.5">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-[#081827] border-2 border-[#D4A359] p-1 flex items-center justify-center shrink-0 shadow-md">
+                <img
+                  src="/assets/museum-blambangan-emblem.png"
+                  alt="Museum Blambangan"
+                  className="w-full h-full object-contain rounded-full drop-shadow-xs"
                 />
               </div>
             </div>
+          </div>
 
-            {/* ================= BAGIAN 1: DATA PEMESAN & KONTAK ================= */}
-            <div className="border border-slate-200/90 rounded-2xl p-4 sm:p-5 bg-white shadow-2xs space-y-3.5">
-              <div className="border-b border-slate-100 pb-2.5">
-                <h2 className="text-sm font-extrabold text-[#092C48] flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-[#092C48] text-white flex items-center justify-center text-xs font-black">
-                    1
-                  </span>
-                  <span>Data Pemesan & Kontak</span>
-                </h2>
-                <p className="text-[11px] text-slate-500 mt-0.5 ml-8">
-                  E-tiket resmi dan invoice akan dikirimkan ke WhatsApp & Email pemesan.
-                </p>
+          {/* STEPPER BAR (Selaras & Serasi dengan Palette Emas & Navy Museum Blambangan) */}
+          <div className="mt-3 pt-2.5 border-t border-white/15">
+            <div className="flex items-center justify-between sm:justify-start gap-1.5 sm:gap-6 text-xs">
+              {/* Step 1: Active Pill */}
+              <div className="flex items-center gap-2 py-1.5 px-3 rounded-lg bg-[#D4A359]/15 text-white font-bold border border-[#D4A359]/60 shadow-xs">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#E5BE7E] to-[#D4A359] text-[#081827] text-[11px] flex items-center justify-center font-black shrink-0 shadow-xs">
+                  1
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-white tracking-tight truncate">Jadwal & Tiket</span>
               </div>
 
-              <div className="space-y-3">
-                {/* 1.1 Nama Pengunjung */}
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">
-                    Nama Lengkap Pemesan <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      required
-                      value={formData.nama}
-                      onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-                      placeholder="Masukkan nama lengkap pemesan"
-                      className="w-full pl-10 pr-9 h-11 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
-                    />
-                    {isNamaValid && (
-                      <Check className="w-4 h-4 text-emerald-600 absolute right-3 top-1/2 -translate-y-1/2" />
-                    )}
-                  </div>
+              {/* Step 2: Inactive */}
+              <div className="flex items-center gap-2 py-1.5 px-2 text-slate-300 font-medium opacity-85">
+                <div className="w-5 h-5 rounded-full bg-white/10 border border-white/15 text-slate-200 text-[11px] flex items-center justify-center font-bold shrink-0">
+                  2
                 </div>
+                <span className="text-xs sm:text-sm text-slate-300 tracking-tight truncate">Data Pemesan</span>
+              </div>
 
-                {/* 1.2 Nomor WhatsApp / HP */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-bold text-slate-700">
-                      Nomor WhatsApp / HP Aktif <span className="text-rose-500">*</span>
-                    </label>
-                    <span className="text-[10.5px] text-slate-400">
-                      Pola nomor Indonesia (10–13 digit)
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="tel"
-                      required
-                      value={formData.telepon}
-                      onChange={(e) => setFormData({ ...formData, telepon: e.target.value })}
-                      placeholder="Contoh: 081234567890"
-                      className="w-full pl-10 pr-9 h-11 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
-                    />
-                    {isTeleponValid && (
-                      <Check className="w-4 h-4 text-emerald-600 absolute right-3 top-1/2 -translate-y-1/2" />
-                    )}
-                  </div>
-                  {formData.telepon && !isTeleponValid && (
-                    <p className="text-[11px] text-amber-700 mt-1 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3 shrink-0" />
-                      <span>Nomor harus diawali 08/628 dan terdiri dari 10–13 digit angka.</span>
-                    </p>
-                  )}
+              {/* Step 3: Inactive */}
+              <div className="flex items-center gap-2 py-1.5 px-2 text-slate-300 font-medium opacity-85">
+                <div className="w-5 h-5 rounded-full bg-white/10 border border-white/15 text-slate-200 text-[11px] flex items-center justify-center font-bold shrink-0">
+                  3
                 </div>
-
-                {/* 1.3 Alamat Email */}
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">
-                    Alamat Email <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="contoh: nama@email.com"
-                      className="w-full pl-10 pr-9 h-11 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
-                    />
-                    {isEmailValid && (
-                      <Check className="w-4 h-4 text-emerald-600 absolute right-3 top-1/2 -translate-y-1/2" />
-                    )}
-                  </div>
-                </div>
-
-                {/* 1.4 Kota / Kabupaten Asal (Opsional, menggantikan alamat panjang) */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-bold text-slate-700">
-                      Kota / Kabupaten Asal
-                    </label>
-                    <span className="text-[10px] text-slate-400 font-semibold bg-slate-100 px-1.5 py-0.5 rounded">
-                      Opsional
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={formData.alamat}
-                      onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
-                      placeholder="Contoh: Banyuwangi / Surabaya / Denpasar"
-                      className="w-full pl-10 pr-3.5 h-11 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
-                    />
-                  </div>
-                </div>
+                <span className="text-xs sm:text-sm text-slate-300 tracking-tight truncate">Pembayaran</span>
               </div>
             </div>
+          </div>
+        </header>
 
-            {/* ================= BAGIAN 2: RENCANA KUNJUNGAN & TIKET ================= */}
-            <div className="border border-slate-200/90 rounded-2xl p-4 sm:p-5 bg-white shadow-2xs space-y-4">
-              <div className="border-b border-slate-100 pb-2.5">
-                <h2 className="text-sm font-extrabold text-[#092C48] flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-[#092C48] text-white flex items-center justify-center text-xs font-black">
-                    2
-                  </span>
-                  <span>Rencana Kunjungan & Sesi</span>
-                </h2>
-                <p className="text-[11px] text-slate-500 mt-0.5 ml-8">
-                  Pilih kategori tiket, jumlah pengunjung, tanggal kedatangan, dan sesi kunjungan.
-                </p>
+        {/* ================= FORM BODY ================= */}
+        <form onSubmit={handleNext} className="flex-1 flex flex-col justify-between overflow-hidden">
+          <main className="flex-1 px-3 sm:px-5 py-4 overflow-y-auto space-y-3.5 text-left">
+            
+            {/* BAGIAN 1: TANGGAL KUNJUNGAN (DIPERTAHANKAN SESUAI PERMINTAAN USER) */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <label className="text-xs sm:text-sm font-bold text-[#092C48] flex items-center gap-1.5">
+                  <CalendarIcon className="w-4 h-4 text-[#092C48]" />
+                  <span>Tanggal Kunjungan</span>
+                  <span className="text-rose-500">*</span>
+                </label>
+                <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                  Senin – Jumat (07:30 – 16:00 WIB)
+                </span>
               </div>
 
-              {/* 2.1 Kategori Kunjungan */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Kategori Tiket Pengunjung <span className="text-rose-500">*</span>
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {categories.map((cat) => {
-                    const isSelected = formData.kategori === cat.type;
-                    return (
-                      <button
-                        key={cat.type}
-                        type="button"
-                        onClick={() => {
-                          if (cat.type === 'Pelajar Rombongan' && (!formData.jumlahOrang || formData.jumlahOrang < 10)) {
-                            setFormData({ ...formData, kategori: cat.type, jumlahOrang: 15 });
-                          } else {
-                            setFormData({ ...formData, kategori: cat.type });
-                          }
-                        }}
-                        className={`rounded-2xl p-3 border text-left transition-all relative cursor-pointer ${
-                          isSelected
-                            ? 'border-[#092C48] bg-[#F7F9FC] ring-2 ring-[#092C48]/20 shadow-xs'
-                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
-                        }`}
-                      >
-                        {isSelected && (
-                          <div className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-[#092C48] text-white flex items-center justify-center shadow-2xs">
-                            <Check className="w-2.5 h-2.5 stroke-[3]" />
-                          </div>
-                        )}
-                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center mb-1.5">
-                          {cat.icon}
-                        </div>
-                        <div className="text-xs font-bold text-slate-900 leading-tight">
-                          {cat.label}
-                        </div>
-                        <div className="text-[10px] text-slate-500 mt-0.5 leading-none">
-                          {cat.subLabel}
-                        </div>
-                        <div className="text-xs font-black text-[#092C48] mt-1.5">
-                          {cat.price}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* 2.2 Jumlah Pengunjung */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Jumlah Pengunjung <span className="text-rose-500">*</span>
-                </label>
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Users className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="number"
-                      min={1}
-                      max={500}
-                      required
-                      value={formData.jumlahOrang === 0 ? '' : formData.jumlahOrang}
-                      onChange={(e) => {
-                        const val = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-                        setFormData({ 
-                          ...formData, 
-                          jumlahOrang: isNaN(val) ? 1 : Math.max(0, val) 
-                        });
-                      }}
-                      onBlur={() => {
-                        if (!formData.jumlahOrang || formData.jumlahOrang < 1) {
-                          setFormData({ ...formData, jumlahOrang: 1 });
-                        }
-                      }}
-                      placeholder="Contoh: 2, 10, 25..."
-                      className="w-full pl-10 pr-14 h-11 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
-                    />
-                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
-                      Orang
-                    </span>
-                  </div>
-
-                  {/* +/- buttons */}
-                  <div className="h-11 flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shrink-0 shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={() => setFormData({
-                        ...formData,
-                        jumlahOrang: Math.max(1, (formData.jumlahOrang || 1) - 1)
-                      })}
-                      className="w-9 h-full flex items-center justify-center text-slate-700 hover:bg-slate-200 font-bold transition-colors cursor-pointer select-none active:scale-95"
-                      title="Kurangi 1 orang"
-                    >
-                      <Minus className="w-3.5 h-3.5 stroke-[2.5]" />
-                    </button>
-                    <div className="w-[1px] h-5 bg-slate-200" />
-                    <button
-                      type="button"
-                      onClick={() => setFormData({
-                        ...formData,
-                        jumlahOrang: (formData.jumlahOrang || 0) + 1
-                      })}
-                      className="w-9 h-full flex items-center justify-center text-slate-700 hover:bg-slate-200 font-bold transition-colors cursor-pointer select-none active:scale-95"
-                      title="Tambah 1 orang"
-                    >
-                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Quick preset chips */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5">
-                  <span className="text-[11px] text-slate-400 font-medium shrink-0">Cepat:</span>
-                  {[1, 2, 5, 10, 15, 20, 30].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, jumlahOrang: num })}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
-                        formData.jumlahOrang === num
-                          ? 'bg-[#092C48] text-white border-[#092C48] shadow-2xs'
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                      }`}
-                    >
-                      {num}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 2.3 Tanggal Kunjungan */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Tanggal Kunjungan <span className="text-rose-500">*</span>
-                </label>
-
-                {/* Quick Date Chips */}
-                <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
-                  <span className="text-[11px] font-semibold text-slate-500 mr-0.5">Hari Kerja:</span>
-                  {quickDates.map((qd) => (
+              {/* Quick Date Tabs */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {quickDates.map((qd) => {
+                  const isSelected = formData.tanggalKunjungan === qd.date;
+                  return (
                     <button
                       key={qd.date}
                       type="button"
@@ -515,20 +249,28 @@ export const FormBooking: React.FC = () => {
                         setFormData(prev => ({
                           ...prev,
                           tanggalKunjungan: qd.date,
-                          sesi: '' // Reset session when date changes
+                          sesi: '' // reset session on date change
                         }));
                       }}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                        formData.tanggalKunjungan === qd.date
-                          ? 'bg-[#092C48] text-white border-[#092C48] shadow-xs'
-                          : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                      className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                        isSelected
+                          ? 'border-[#092C48] bg-[#092C48] text-white font-bold shadow-xs'
+                          : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700'
                       }`}
                     >
-                      {qd.label}
+                      <span className={`block text-[10px] uppercase font-bold ${isSelected ? 'text-[#D4A359]' : 'text-slate-400'}`}>
+                        {qd.dayName}
+                      </span>
+                      <span className="block text-xs sm:text-sm font-extrabold mt-0.5">
+                        {qd.dayDate}
+                      </span>
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
+              </div>
 
+              {/* Native Date Picker */}
+              <div className="pt-0.5">
                 <div className="relative">
                   <input
                     type="date"
@@ -543,26 +285,26 @@ export const FormBooking: React.FC = () => {
                         sesi: ''
                       }));
                     }}
-                    className={`w-full px-3.5 h-11 bg-white border rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 cursor-pointer transition-all ${
-                      isDateClosedWeekend 
-                        ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-500/15' 
-                        : 'border-slate-200 focus:border-[#092C48] focus:ring-[#092C48]/15'
+                    className={`w-full px-3.5 h-10 bg-white border rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none transition-all cursor-pointer ${
+                      isDateClosedWeekend
+                        ? 'border-amber-400 ring-2 ring-amber-300/30'
+                        : 'border-slate-200 focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15'
                     }`}
                   />
                   {isTanggalValid && (
-                    <Check className="w-4 h-4 text-emerald-600 absolute right-10 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <Check className="w-4 h-4 text-emerald-600 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   )}
                 </div>
 
-                {/* Weekend Closed Warning with Auto-Fix Helper */}
+                {/* Weekend Closed Alert */}
                 {isDateClosedWeekend && (
-                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2 text-left text-amber-900 animate-in fade-in">
-                    <div className="flex items-start gap-2 text-xs">
-                      <span className="text-amber-600 font-bold shrink-0 text-base">⚠️</span>
+                  <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-left text-amber-900 space-y-1.5 animate-in fade-in">
+                    <div className="flex items-start gap-1.5 text-xs">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="font-bold">Museum Blambangan Tutup pada Hari Sabtu & Minggu.</strong>
-                        <p className="mt-0.5 text-slate-600 text-[11.5px] leading-relaxed">
-                          Jam operasional loket resmi: <strong>Senin s.d. Jumat pukul 07:30 – 16:00 WIB</strong> (Istirahat {ishomaConfig?.label || '12:30 – 13:30 WIB'}).
+                        <strong className="font-bold">Layanan Loket Museum Blambangan</strong>
+                        <p className="text-[11px] text-slate-600 mt-0.5">
+                          Layanan loket beroperasi hari <strong>Senin s.d. Jumat pukul 07:30 – 16:00 WIB</strong> (Sabtu & Minggu Libur).
                         </p>
                       </div>
                     </div>
@@ -572,151 +314,468 @@ export const FormBooking: React.FC = () => {
                         const nextWeekday = getNextWeekdayDateStr();
                         setFormData(prev => ({ ...prev, tanggalKunjungan: nextWeekday, sesi: '' }));
                       }}
-                      className="px-3 py-1.5 bg-[#092C48] hover:bg-[#071f33] text-white text-xs font-bold rounded-lg shadow-2xs transition-colors cursor-pointer"
+                      className="px-2.5 py-1 bg-[#092C48] hover:bg-[#071f33] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
                     >
                       Gunakan Hari Kerja Terdekat (Senin)
                     </button>
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* 2.4 Sesi Kunjungan */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Pilih Sesi Kunjungan <span className="text-rose-500">*</span>
-                </label>
-
-                <div className="grid grid-cols-3 gap-2">
-                  {sessionsConfig.map((sesi) => {
-                    const fullSesiString = `${sesi.label} (${sesi.time})`;
-                    const currentSelectedId = extractSessionId(formData.sesi);
-                    const isSelected = currentSelectedId === sesi.id;
-                    const isPassed = isSessionTimePassed(sesi, formData.tanggalKunjungan);
-                    const quotaStats = getSessionQuotaStats(sesi.id, formData.tanggalKunjungan, bookings);
-                    const isQuotaFull = quotaStats.isFull;
-                    const isNotEnough = formData.jumlahOrang > quotaStats.remaining;
-                    const isDisabled = isPassed || isQuotaFull || isNotEnough || isDateClosedWeekend;
-
-                    return (
-                      <button
-                        key={sesi.id}
-                        type="button"
-                        disabled={isDisabled}
-                        onClick={() => {
-                          if (isDisabled) return;
-                          const targetDate = formData.tanggalKunjungan || getNextWeekdayDateStr();
-
-                          if (isSelected) {
-                            setFormData(prev => ({ ...prev, sesi: '' }));
-                          } else {
-                            setFormData(prev => ({ 
-                              ...prev, 
-                              tanggalKunjungan: targetDate, 
-                              sesi: fullSesiString 
-                            }));
-                          }
-                        }}
-                        className={`p-2.5 sm:p-3 rounded-2xl border text-center transition-all flex flex-col justify-between items-center relative min-h-[105px] ${
-                          isDisabled
-                            ? 'border-slate-200 bg-slate-100/90 text-slate-400 cursor-not-allowed opacity-75'
-                            : isSelected
-                            ? 'border-[#092C48] bg-[#092C48] text-white font-bold shadow-md cursor-pointer ring-2 ring-[#092C48]/35'
-                            : 'border-slate-200 bg-white text-slate-700 hover:border-[#092C48] hover:bg-slate-50 cursor-pointer shadow-2xs'
-                        }`}
-                      >
-                        <div className="w-full">
-                          <div className="flex items-center justify-between">
-                            <span className={`text-xs sm:text-sm font-bold truncate ${isSelected ? 'text-white' : 'text-slate-900'}`}>
-                              {sesi.label}
-                            </span>
-                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold shrink-0 ${
-                              isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
-                            }`}>
-                              {sesi.subLabel}
-                            </span>
-                          </div>
-                          <div className={`text-xs mt-1 text-left leading-tight truncate font-semibold ${isSelected ? 'text-slate-100' : 'text-slate-700'}`}>
-                            {sesi.time.replace(' WIB', '')}
-                          </div>
-                        </div>
-
-                        <div className="mt-2 w-full flex justify-center">
-                          {isPassed ? (
-                            <span className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
-                              ✕ Lewat Jam
-                            </span>
-                          ) : isQuotaFull ? (
-                            <span className="text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
-                              ⛔ Penuh
-                            </span>
-                          ) : isNotEnough ? (
-                            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                              ⚠️ Sisa {quotaStats.remaining}
-                            </span>
-                          ) : isSelected ? (
-                            <span className="text-[10.5px] font-bold px-2.5 py-0.5 rounded-full border bg-white/25 text-white border-white/40 flex items-center gap-1">
-                              ✓ Terpilih
-                            </span>
-                          ) : (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200">
-                              ✓ Sisa {quotaStats.remaining}
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
+            {/* BAGIAN 2: PILIH SESI KUNJUNGAN (MODEL NORMAL SEPERTI DI DASHBOARD & PORTAL) */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-[#092C48] flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-[#092C48]" />
+                    <span>Pilih Sesi Kunjungan</span>
+                    <span className="text-rose-500">*</span>
+                  </h2>
+                  <p className="text-[10.5px] text-slate-500 mt-0.5">
+                    Pilih salah satu jadwal kunjungan museum di bawah ini
+                  </p>
                 </div>
-
-                {/* Sesi Confirmation Bar */}
-                {extractSessionId(formData.sesi) && (
-                  <div className="mt-2.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs animate-in fade-in">
-                    <div className="flex items-center gap-2 text-emerald-950 font-medium truncate mr-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
-                      <span className="truncate">Sesi terpilih: <strong className="font-bold">{formData.sesi}</strong></span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, sesi: '' }))}
-                      className="text-xs font-semibold text-slate-600 hover:text-rose-700 bg-white border border-slate-200 hover:border-rose-300 px-2.5 py-1 rounded-lg transition-colors cursor-pointer shrink-0"
-                    >
-                      Ganti Sesi
-                    </button>
-                  </div>
+                {ishomaConfig && (
+                  <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                    ISHOMA: {ishomaConfig.label}
+                  </span>
                 )}
               </div>
+
+              {/* Normal 3-Card Grid for Sessions */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {sessionsConfig.map((sesi) => {
+                  const fullSesiString = `${sesi.label} (${sesi.time})`;
+                  const currentSelectedId = extractSessionId(formData.sesi);
+                  const isSelected = currentSelectedId === sesi.id;
+                  const isPassed = isSessionTimePassed(sesi, formData.tanggalKunjungan);
+                  const quotaStats = getSessionQuotaStats(sesi.id, formData.tanggalKunjungan, bookings);
+                  const isQuotaFull = quotaStats.isFull;
+                  const isNotEnough = totalPengunjung > quotaStats.remaining;
+                  const isDisabled = isPassed || isQuotaFull || isNotEnough || isDateClosedWeekend;
+
+                  return (
+                    <button
+                      key={sesi.id}
+                      type="button"
+                      disabled={isDisabled}
+                      onClick={() => {
+                        if (isDisabled) return;
+                        const targetDate = formData.tanggalKunjungan || getNextWeekdayDateStr();
+                        if (isSelected) {
+                          setFormData(prev => ({ ...prev, sesi: '' }));
+                        } else {
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            tanggalKunjungan: targetDate, 
+                            sesi: fullSesiString 
+                          }));
+                        }
+                      }}
+                      className={`p-3 rounded-2xl border text-center transition-all flex flex-col justify-between items-center min-h-[110px] cursor-pointer relative ${
+                        isDisabled
+                          ? 'border-slate-200 bg-slate-100/80 text-slate-400 cursor-not-allowed opacity-75'
+                          : isSelected
+                          ? 'border-[#092C48] bg-[#092C48] text-white shadow-md ring-2 ring-[#092C48]/30 font-bold'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-[#092C48] hover:bg-slate-50 shadow-2xs'
+                      }`}
+                    >
+                      <div className="w-full text-left">
+                        <div className="flex items-center justify-between">
+                          <span className={`text-xs sm:text-sm font-extrabold ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                            {sesi.label}
+                          </span>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                            isSelected ? 'bg-white/20 text-[#D4A359]' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {sesi.subLabel}
+                          </span>
+                        </div>
+                        <div className={`text-xs mt-1 font-semibold ${isSelected ? 'text-slate-200' : 'text-slate-600'}`}>
+                          {sesi.time}
+                        </div>
+                      </div>
+
+                      <div className="mt-2.5 w-full flex justify-center">
+                        {isPassed ? (
+                          <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                            ✕ Lewat Jam
+                          </span>
+                        ) : isQuotaFull ? (
+                          <span className="text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                            ⛔ Penuh
+                          </span>
+                        ) : isNotEnough ? (
+                          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                            ⚠️ Sisa {quotaStats.remaining}
+                          </span>
+                        ) : isSelected ? (
+                          <span className="text-[10.5px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-white flex items-center gap-1">
+                            <Check className="w-3 h-3 stroke-[3]" />
+                            <span>Terpilih</span>
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            ✓ Sisa {quotaStats.remaining} Kuota
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Sesi Confirmation Bar */}
+              {extractSessionId(formData.sesi) && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs animate-in fade-in">
+                  <div className="flex items-center gap-2 text-emerald-950 font-medium truncate mr-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+                    <span className="truncate">Sesi terpilih: <strong className="font-bold">{formData.sesi}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, sesi: '' }))}
+                    className="text-xs font-semibold text-slate-600 hover:text-rose-700 bg-white border border-slate-200 hover:border-rose-300 px-2 py-0.5 rounded-lg transition-colors cursor-pointer shrink-0"
+                  >
+                    Ganti Sesi
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* BAGIAN 3: KATEGORI & JUMLAH PENGUNJUNG (MULTI-ROLE: DEWASA + MAHASISWA SEKALIGUS) */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-[#092C48] flex items-center gap-1.5">
+                    <Users className="w-4 h-4 text-[#092C48]" />
+                    <span>Kategori & Jumlah Tiket</span>
+                    <span className="text-rose-500">*</span>
+                  </h2>
+                  <p className="text-[10.5px] text-slate-500 mt-0.5">
+                    Bisa memilih Mahasiswa dan Dewasa sekaligus dalam satu pemesanan
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {/* 1. Dewasa / Umum */}
+                <div className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                  jmlDewasa > 0 
+                    ? 'border-[#092C48] bg-[#F7F9FC] shadow-2xs ring-1 ring-[#092C48]/20' 
+                    : 'border-slate-200 bg-white'
+                }`}>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#092C48] text-white flex items-center justify-center shrink-0 font-bold">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 text-left">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs sm:text-sm font-bold text-slate-900">
+                          Dewasa / Umum
+                        </span>
+                        <span className="text-[10px] font-extrabold text-[#092C48] bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
+                          Rp 7.500
+                        </span>
+                      </div>
+                      <span className="text-[10.5px] text-slate-500 block truncate">
+                        Masyarakat umum & wisatawan domestik dewasa
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shrink-0 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => updateCounts(jmlDewasa - 1, jmlMahasiswa, jmlManca)}
+                      disabled={jmlDewasa <= 0}
+                      className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed select-none active:scale-95"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="w-8 text-center text-xs font-bold text-slate-900">
+                      {jmlDewasa}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateCounts(jmlDewasa + 1, jmlMahasiswa, jmlManca)}
+                      className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-100 font-bold transition-colors cursor-pointer select-none active:scale-95"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Pelajar / Mahasiswa */}
+                <div className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                  jmlMahasiswa > 0 
+                    ? 'border-[#092C48] bg-[#F7F9FC] shadow-2xs ring-1 ring-[#092C48]/20' 
+                    : 'border-slate-200 bg-white'
+                }`}>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 font-bold">
+                      <GraduationCap className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 text-left">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs sm:text-sm font-bold text-slate-900">
+                          Pelajar / Mahasiswa
+                        </span>
+                        <span className="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                          Rp 5.000
+                        </span>
+                      </div>
+                      <span className="text-[10.5px] text-slate-500 block truncate">
+                        Pelajar SD–SMA & Mahasiswa ber-KTM aktif
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shrink-0 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => updateCounts(jmlDewasa, jmlMahasiswa - 1, jmlManca)}
+                      disabled={jmlMahasiswa <= 0}
+                      className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed select-none active:scale-95"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="w-8 text-center text-xs font-bold text-slate-900">
+                      {jmlMahasiswa}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateCounts(jmlDewasa, jmlMahasiswa + 1, jmlManca)}
+                      className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-100 font-bold transition-colors cursor-pointer select-none active:scale-95"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Wisatawan Mancanegara */}
+                <div className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                  jmlManca > 0 
+                    ? 'border-[#092C48] bg-[#F7F9FC] shadow-2xs ring-1 ring-[#092C48]/20' 
+                    : 'border-slate-200 bg-white'
+                }`}>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 font-bold">
+                      <Globe className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 text-left">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs sm:text-sm font-bold text-slate-900">
+                          Wisatawan Mancanegara
+                        </span>
+                        <span className="text-[10px] font-extrabold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-200">
+                          Rp 20.000
+                        </span>
+                      </div>
+                      <span className="text-[10.5px] text-slate-500 block truncate">
+                        Foreign / International visitors
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shrink-0 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => updateCounts(jmlDewasa, jmlMahasiswa, jmlManca - 1)}
+                      disabled={jmlManca <= 0}
+                      className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-100 font-bold transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed select-none active:scale-95"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="w-8 text-center text-xs font-bold text-slate-900">
+                      {jmlManca}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateCounts(jmlDewasa, jmlMahasiswa, jmlManca + 1)}
+                      className="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-slate-100 font-bold transition-colors cursor-pointer select-none active:scale-95"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subtotal Pengunjung */}
+              <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-semibold text-slate-500">Total Pengunjung: </span>
+                  <span className="font-extrabold text-[#092C48]">{totalPengunjung} Orang</span>
+                  {totalPengunjung > 0 && (
+                    <span className="block text-[10.5px] text-slate-500">
+                      ({formData.rincianPengunjung})
+                    </span>
+                  )}
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-400 block font-semibold">Subtotal:</span>
+                  <span className="text-sm font-extrabold text-[#092C48]">
+                    Rp {estimatedTotal.toLocaleString('id-ID')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* BAGIAN 4: DETAIL PEMESAN & KONTAK (DIPERTAHANKAN SESUAI PERMINTAAN USER) */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-[#092C48] flex items-center gap-1.5">
+                    <User className="w-4 h-4 text-[#092C48]" />
+                    <span>Detail Pemesan & Kontak</span>
+                    <span className="text-rose-500">*</span>
+                  </h2>
+                  <p className="text-[10.5px] text-slate-500 mt-0.5">
+                    E-tiket barcode resmi akan dikirimkan ke kontak di bawah ini
+                  </p>
+                </div>
+                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                  Wajib Diisi
+                </span>
+              </div>
+
+              <div className="space-y-3 pt-1">
+                {/* 1. Nama Lengkap */}
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">
+                    Nama Lengkap Pemesan <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      required
+                      value={formData.nama}
+                      onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
+                      placeholder="Masukkan nama lengkap sesuai identitas"
+                      className="w-full pl-9 pr-8 h-10 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
+                    />
+                    {isNamaValid && (
+                      <Check className="w-4 h-4 text-emerald-600 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. Nomor WhatsApp / HP */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-bold text-slate-700">
+                      Nomor WhatsApp / HP Aktif <span className="text-rose-500">*</span>
+                    </label>
+                    <span className="text-[10px] text-slate-400">
+                      Pola nomor Indonesia (10–13 digit)
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="tel"
+                      required
+                      value={formData.telepon}
+                      onChange={(e) => setFormData({ ...formData, telepon: e.target.value })}
+                      placeholder="Contoh: 081234567890"
+                      className="w-full pl-9 pr-8 h-10 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
+                    />
+                    {isTeleponValid && (
+                      <Check className="w-4 h-4 text-emerald-600 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                    )}
+                  </div>
+                  {formData.telepon && !isTeleponValid && (
+                    <p className="text-[10.5px] text-amber-700 mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3 shrink-0" />
+                      <span>Nomor harus berformat Indonesia aktif (10–13 digit angka).</span>
+                    </p>
+                  )}
+                </div>
+
+                {/* 3. Alamat Email */}
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">
+                    Alamat Email <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="nama@email.com"
+                      className="w-full pl-9 pr-8 h-10 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
+                    />
+                    {isEmailValid && (
+                      <Check className="w-4 h-4 text-emerald-600 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                    )}
+                  </div>
+                </div>
+
+                {/* 4. Kota Asal */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-bold text-slate-700">
+                      Kota / Kabupaten Asal
+                    </label>
+                    <span className="text-[10px] text-slate-400 font-semibold bg-slate-100 px-1.5 py-0.2 rounded">
+                      Opsional
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={formData.alamat}
+                      onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
+                      placeholder="Contoh: Banyuwangi / Surabaya / Denpasar"
+                      className="w-full pl-9 pr-3 h-10 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:border-[#092C48] focus:ring-2 focus:ring-[#092C48]/15 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Jaminan Layanan Resmi */}
+            <div className="p-3 bg-slate-100/80 border border-slate-200 rounded-xl flex items-center gap-2.5 text-xs text-slate-700">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <p className="text-[11px] leading-relaxed">
+                Pemesanan resmi dikelola oleh <strong>Dinas Kebudayaan & Pariwisata Kabupaten Banyuwangi</strong>.
+              </p>
             </div>
           </main>
 
-          {/* Docked Action Footer: Clean Total & Confirmation Button (No redundant step box) */}
-          <footer className="bg-white border-t border-slate-200 px-4 sm:px-6 py-3.5 pb-6 sm:pb-3.5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] shrink-0 z-20">
+          {/* ================= FIXED BOTTOM ACTION BAR ================= */}
+          <footer className="bg-white border-t border-slate-200 px-4 py-3 sm:px-6 sm:py-3.5 shadow-lg shrink-0 z-20">
             <div className="flex items-center justify-between gap-3">
-              {/* Left: Total Estimated Cost */}
+              {/* Left: Total Fare */}
               <div className="text-left min-w-0">
-                <span className="text-[11px] text-slate-500 block leading-none">
-                  Total Estimasi ({formData.jumlahOrang} orang):
+                <span className="text-[10px] sm:text-[11px] text-slate-500 block leading-tight font-medium">
+                  Total Retribusi ({totalPengunjung} org):
                 </span>
-                <span className="text-base sm:text-lg font-black text-[#092C48] tracking-tight">
+                <span className="text-base sm:text-xl font-extrabold text-[#092C48] tracking-tight block leading-tight">
                   Rp {estimatedTotal.toLocaleString('id-ID')}
+                </span>
+                <span className="text-[9.5px] text-slate-400 block font-normal">
+                  Bebas biaya admin
                 </span>
               </div>
 
-              {/* Right: Proceed Button */}
+              {/* Right: Proceed Button with Museum Palette */}
               <button
                 type="submit"
                 disabled={!allStepsDone}
-                className={`inline-flex items-center justify-center gap-2 font-bold text-xs sm:text-sm px-6 py-3 rounded-xl transition-all select-none shrink-0 ${
+                className={`inline-flex items-center justify-center gap-2 font-bold text-xs sm:text-sm px-6 py-2.5 sm:py-3 rounded-xl transition-all select-none shrink-0 cursor-pointer ${
                   allStepsDone
-                    ? 'bg-[#092C48] hover:bg-[#071f33] text-white shadow-lg shadow-[#092C48]/25 active:scale-95 cursor-pointer group'
-                    : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-90'
+                    ? 'bg-[#092C48] hover:bg-[#071f33] text-white shadow-md active:scale-95'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-80'
                 }`}
               >
                 <span>Lanjut ke Ringkasan</span>
-                <span className={`text-base font-bold transition-transform ${
-                  allStepsDone ? 'text-[#DAB36E] group-hover:translate-x-1' : 'text-slate-400'
-                }`}>
-                  →
-                </span>
+                <ArrowRight className="w-4 h-4 text-[#D4A359]" />
               </button>
             </div>
           </footer>

@@ -195,10 +195,10 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };
 
-  // Dedicated Isolated Print Ticket Function: Prints ONLY the ticket in an isolated iframe with zero web chrome
+  // Dedicated Isolated Print Ticket Function: Prints the official invoice document in an isolated iframe
   const handleDirectPrint = () => {
     try {
-      const ticketElement = document.getElementById('visual-ticket');
+      const ticketElement = document.getElementById('master-pdf-ticket') || document.getElementById('visual-ticket');
       if (!ticketElement) {
         window.print();
         return;
@@ -215,13 +215,16 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
         return;
       }
 
-      // Clone visual ticket element
+      // Clone official invoice element
       const clonedTicket = ticketElement.cloneNode(true) as HTMLElement;
-      clonedTicket.style.maxWidth = '460px';
+      clonedTicket.style.position = 'static';
+      clonedTicket.style.left = '0';
+      clonedTicket.style.top = '0';
+      clonedTicket.style.width = '100%';
+      clonedTicket.style.maxWidth = '720px';
       clonedTicket.style.margin = '0 auto';
       clonedTicket.style.boxShadow = 'none';
-      clonedTicket.style.border = '1.5px solid #081827';
-      clonedTicket.style.borderRadius = '16px';
+      clonedTicket.style.border = 'none';
       clonedTicket.style.pageBreakInside = 'avoid';
       clonedTicket.style.breakInside = 'avoid';
 
@@ -238,12 +241,12 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>E-Tiket Resmi Museum Blambangan - ${booking.id}</title>
+            <title>Invoice Resmi E-Tiket Museum Blambangan - ${booking.id}</title>
             ${stylesHtml}
             <style>
               @page {
                 size: A4 portrait;
-                margin: 8mm 10mm;
+                margin: 6mm 8mm;
               }
               *, *::before, *::after {
                 -webkit-print-color-adjust: exact !important;
@@ -256,7 +259,7 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
                 padding: 0 !important;
                 background: #FFFFFF !important;
                 color: #0F172A !important;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+                font-family: Arial, Helvetica, system-ui, sans-serif !important;
                 width: 100% !important;
                 height: auto !important;
                 min-height: 0 !important;
@@ -265,7 +268,7 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
                 display: flex;
                 justify-content: center;
                 align-items: flex-start;
-                padding: 10px 0;
+                padding: 4px 0;
                 width: 100%;
               }
               img, svg, canvas {
@@ -305,6 +308,8 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
     }
   };
 
+  const [ticketViewMode, setTicketViewMode] = useState<'card' | 'invoice'>('card');
+
   // Category Color Badge
   const getCategoryBadgeClass = (category: string) => {
     if (category.toLowerCase().includes('pelajar rombongan')) {
@@ -321,7 +326,34 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
 
   return (
     <div className="w-full max-w-lg mx-auto flex flex-col items-center">
-      {/* Visual Ticket Container (Capturable with html2canvas & Isolated for Print) */}
+      {/* Format Selector: E-Tiket Digital vs Invoice Cetak */}
+      <div className="flex items-center gap-1.5 p-1 bg-slate-200/80 rounded-xl mb-3 print:hidden text-xs font-bold self-center">
+        <button
+          type="button"
+          onClick={() => setTicketViewMode('card')}
+          className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+            ticketViewMode === 'card'
+              ? 'bg-[#081827] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          🎫 Tampilan E-Tiket
+        </button>
+        <button
+          type="button"
+          onClick={() => setTicketViewMode('invoice')}
+          className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+            ticketViewMode === 'invoice'
+              ? 'bg-[#081827] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          📄 Tampilan Invoice Resmi
+        </button>
+      </div>
+
+      {/* VIEW MODE 1: Boarding Pass Digital Card */}
+      {ticketViewMode === 'card' && (
       <div
         ref={ticketRef}
         id="visual-ticket"
@@ -332,25 +364,8 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
           className="relative bg-gradient-to-br from-[#081827] via-[#0E2C4A] to-[#07192A] text-white p-5 sm:p-6 overflow-hidden border-b-2 border-[#D4A359]/40"
           style={{ backgroundColor: '#081827', color: '#FFFFFF' }}
         >
-          {/* Ornamen Siluet Penari Gandrung */}
-          <div className="absolute -right-6 -top-4 w-52 h-56 sm:w-60 sm:h-64 opacity-35 pointer-events-none">
-            <img
-              src="/assets/penari-gandrung-gold.png"
-              alt="Penari Gandrung"
-              className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(212,163,89,0.3)]"
-              crossOrigin="anonymous"
-            />
-          </div>
-
-          {/* Ornamen Siluet Penari Seblang */}
-          <div className="absolute -left-3 -bottom-2 w-36 h-44 sm:w-40 sm:h-48 opacity-40 pointer-events-none scale-x-[-1]">
-            <img
-              src="/assets/penari-seblang-bold-gold.png"
-              alt="Penari Seblang"
-              className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(212,163,89,0.35)]"
-              crossOrigin="anonymous"
-            />
-          </div>
+          {/* Subtle Security Guilloche Pattern */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#D4A359_1px,transparent_1px)] [background-size:16px_16px]" />
 
           {/* Top Bar: Regional Heritage Agency & Museum Crest */}
           <div className="relative z-10 flex items-center justify-between pb-3.5 border-b border-white/15">
@@ -579,6 +594,110 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
           <span>GATE SCAN VERIFIED</span>
         </div>
       </div>
+      )}
+
+      {/* VIEW MODE 2: Official Invoice Paper View */}
+      {ticketViewMode === 'invoice' && (
+        <div className="w-full bg-white rounded-3xl shadow-xl border border-slate-200 p-5 sm:p-7 text-slate-800 text-left space-y-4 animate-in fade-in duration-150">
+          {/* Kop Surat Pemerintah */}
+          <div className="flex items-center justify-between pb-3.5 border-b-2 border-slate-900">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-[#081827] border-2 border-[#D4A359] p-0.5 flex items-center justify-center shrink-0">
+                <img
+                  src="/assets/museum-blambangan-emblem.png"
+                  alt="Emblem"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+              <div className="leading-tight">
+                <div className="text-[10px] font-extrabold tracking-wider text-slate-500 uppercase">
+                  Pemerintah Kabupaten Banyuwangi
+                </div>
+                <div className="text-xs font-extrabold text-slate-900 uppercase">
+                  Dinas Kebudayaan dan Pariwisata
+                </div>
+                <div className="text-sm sm:text-base font-black text-[#081827] tracking-wide">
+                  MUSEUM BLAMBANGAN
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  Jl. Jenderal Ahmad Yani No. 78, Banyuwangi 68416 • Telp: +62 852-8725-8502
+                </div>
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <span className="inline-block bg-[#081827] text-[#F5DEB3] px-2.5 py-1 rounded-md text-[10px] font-extrabold border border-[#D4A359]">
+                INVOICE RESMI
+              </span>
+              <div className="text-[10px] text-slate-400 font-mono mt-1">SAH & TERVERIFIKASI</div>
+            </div>
+          </div>
+
+          {/* Invoice Info Bar */}
+          <div className="bg-[#081827] text-white p-3.5 rounded-xl flex items-center justify-between">
+            <div>
+              <span className="text-[9px] uppercase font-bold text-[#D4A359] tracking-wider block">
+                Tanda Bukti Retribusi
+              </span>
+              <span className="text-xs sm:text-sm font-extrabold text-white">
+                INVOICE PEMBAYARAN TIKET WISATA
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-[9px] uppercase font-medium text-slate-400 block">No. Transaksi</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-[#F3E2C4]">
+                {booking.nomorTransaksi || booking.id}
+              </span>
+            </div>
+          </div>
+
+          {/* 2-Column Info: QR Code + Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="sm:col-span-4 flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-slate-200">
+              <QRCodeCanvas
+                value={`VERIFIED_TICKET:${booking.id}:${booking.nama}:${booking.tanggalKunjungan}:${booking.sesi}`}
+                size={130}
+                level="H"
+                includeMargin={false}
+              />
+              <span className="text-[9.5px] font-mono font-bold text-slate-600 mt-2">
+                {booking.id}
+              </span>
+            </div>
+
+            <div className="sm:col-span-8 space-y-2 text-xs">
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-500">Nama Pemesan:</span>
+                <span className="font-bold text-slate-900 capitalize">{booking.nama}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-500">Tanggal Kunjungan:</span>
+                <span className="font-bold text-slate-900">{booking.tanggalKunjungan}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-500">Sesi Waktu:</span>
+                <span className="font-bold text-slate-900">{booking.sesi}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-500">Kategori & Jumlah:</span>
+                <span className="font-bold text-slate-900">{booking.jumlahOrang} Orang ({booking.kategori})</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="text-slate-500">Metode Bayar:</span>
+                <span className="font-bold text-emerald-700">{booking.metodePembayaran || 'QRIS'}</span>
+              </div>
+              <div className="flex justify-between pt-1 text-sm font-extrabold text-[#081827]">
+                <span>Total Retribusi:</span>
+                <span className="text-base text-[#081827]">Rp {booking.totalPembayaran.toLocaleString('id-ID')}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-[10px] text-slate-500 border-t border-slate-200 pt-2 flex items-center justify-between">
+            <span>Diterbitkan resmi oleh Dinas Kebudayaan & Pariwisata Kab. Banyuwangi</span>
+            <span className="font-bold text-emerald-700">STATUS: LUNAS & SAH</span>
+          </div>
+        </div>
+      )}
 
       {/* ================= TICKET ACTIONS TOOLBAR (Harmonious Button Hierarchy) ================= */}
       {showActions && (
@@ -687,7 +806,7 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
                 Dinas Kebudayaan dan Pariwisata
               </div>
               <div style={{ fontSize: '17px', fontWeight: '900', color: '#081827', letterSpacing: '0.04em' }}>
-                UPTD MUSEUM BLAMBANGAN
+                MUSEUM BLAMBANGAN
               </div>
               <div style={{ fontSize: '10px', color: '#64748B', marginTop: '2px' }}>
                 Jl. Jenderal A. Yani No. 78, Taman Baru, Banyuwangi, Jawa Timur 68416 • Telp: +62 852-8725-8502
@@ -707,25 +826,6 @@ export const ModernTicketPass: React.FC<ModernTicketPassProps> = ({
 
         {/* Header E-Tiket PDF */}
         <div style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px', padding: '12px 18px', backgroundColor: '#081827', borderRadius: '12px', color: '#FFFFFF' }}>
-          {/* Ornamen Gandrung PDF */}
-          <div style={{ position: 'absolute', right: '-12px', top: '-12px', width: '130px', height: '130px', opacity: 0.3, pointerEvents: 'none' }}>
-            <img
-              src="/assets/penari-gandrung-gold.png"
-              alt="Gandrung"
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              crossOrigin="anonymous"
-            />
-          </div>
-          {/* Ornamen Seblang PDF */}
-          <div style={{ position: 'absolute', left: '-8px', bottom: '-8px', width: '95px', height: '115px', opacity: 0.38, pointerEvents: 'none', transform: 'scaleX(-1)' }}>
-            <img
-              src="/assets/penari-seblang-bold-gold.png"
-              alt="Seblang"
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              crossOrigin="anonymous"
-            />
-          </div>
-
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#D4A359', fontWeight: '700', letterSpacing: '0.08em' }}>
               Surat Karcis Masuk Wisata Budaya

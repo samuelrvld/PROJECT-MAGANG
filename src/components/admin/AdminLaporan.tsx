@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useBooking } from '../../context/BookingContext';
 import { AdminLayout } from './AdminLayout';
+import { getVisitorWeeklyChartData, getRevenueWeeklyChartData, ChartDayPoint } from '../../utils/chartSyncUtils';
 import { 
   Calendar, 
   Download, 
@@ -31,6 +32,12 @@ export const AdminLaporan: React.FC = () => {
   const { bookings } = useBooking();
   const [activeTab, setActiveTab] = useState<ReportTab>('kunjungan');
   const [dateRange, setDateRange] = useState('01/08/2025 - 31/08/2025');
+  const [hoveredVisPoint, setHoveredVisPoint] = useState<ChartDayPoint | null>(null);
+  const [hoveredRevPoint, setHoveredRevPoint] = useState<ChartDayPoint | null>(null);
+
+  // Dynamic Charts calculated from real bookings state
+  const visitationChartData = React.useMemo(() => getVisitorWeeklyChartData(bookings, 500, 150, 25, 135, 20), [bookings]);
+  const revenueChartData = React.useMemo(() => getRevenueWeeklyChartData(bookings, 500, 150, 25, 135, 20), [bookings]);
 
   // Filters for Laporan Kunjungan
   const [filterKategoriKunjungan, setFilterKategoriKunjungan] = useState('Semua');
@@ -244,9 +251,9 @@ export const AdminLaporan: React.FC = () => {
             <div className="flex-1 text-center px-4">
               <h2 className="text-xs font-bold uppercase tracking-widest text-slate-700">Pemerintah Kabupaten Banyuwangi</h2>
               <h1 className="text-sm font-black uppercase text-slate-900">Dinas Kebudayaan dan Pariwisata</h1>
-              <h3 className="text-base font-black uppercase text-[#081827]">UPTD Museum Blambangan</h3>
+              <h3 className="text-base font-black uppercase text-[#081827]">Museum Blambangan</h3>
               <p className="text-[10px] text-slate-600 mt-0.5">
-                Jl. Jenderal Ahmad Yani No. 78, Taman Baru, Kec. Banyuwangi, Jawa Timur 68416 • Telp: (0333) 421555
+                Jl. Jenderal Ahmad Yani No. 78, Taman Baru, Kec. Banyuwangi, Jawa Timur 68416 • Telp: (0333) 424172 / +62 852-8725-8502 • Email: kebudayaanbwi@gmail.com
               </p>
             </div>
             <div className="w-14" />
@@ -395,28 +402,42 @@ export const AdminLaporan: React.FC = () => {
               {/* Attendance Chart Card */}
               <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <h3 className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-[#D4A359]" />
-                    <span>Tren Kunjungan Wisatawan per Periode</span>
-                  </h3>
-                  <span className="text-[11px] text-slate-400 font-medium">Statistik Mingguan</span>
+                  <div>
+                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-[#D4A359]" />
+                      <span>Tren Kunjungan Wisatawan Harian</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-blue-50 text-blue-700 font-bold rounded-full normal-case">
+                        Real-time Data
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Rata-rata: <strong className="text-slate-700">{visitationChartData.averagePerDay}</strong> pengunjung/hari • Total: <strong className="text-slate-700">{visitationChartData.totalPeriod}</strong> orang
+                    </p>
+                  </div>
+                  {hoveredVisPoint ? (
+                    <span className="text-xs font-bold text-[#081827] bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg">
+                      {hoveredVisPoint.label}: {hoveredVisPoint.val} Wisatawan
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-slate-400 font-medium">7 Hari Terakhir</span>
+                  )}
                 </div>
 
                 <div className="w-full h-44 relative pt-2">
                   <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible">
-                    <line x1="0" y1="20" x2="500" y2="20" stroke="#F1F5F9" strokeDasharray="3,3" />
-                    <line x1="0" y1="60" x2="500" y2="60" stroke="#F1F5F9" strokeDasharray="3,3" />
-                    <line x1="0" y1="100" x2="500" y2="100" stroke="#F1F5F9" strokeDasharray="3,3" />
-                    <line x1="0" y1="140" x2="500" y2="140" stroke="#E2E8F0" />
+                    <line x1="20" y1="20" x2="480" y2="20" stroke="#F1F5F9" strokeDasharray="3,3" />
+                    <line x1="20" y1="58" x2="480" y2="58" stroke="#F1F5F9" strokeDasharray="3,3" />
+                    <line x1="20" y1="96" x2="480" y2="96" stroke="#F1F5F9" strokeDasharray="3,3" />
+                    <line x1="20" y1="135" x2="480" y2="135" stroke="#E2E8F0" />
 
                     <defs>
                       <linearGradient id="visGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#081827" stopOpacity="0.3" />
+                        <stop offset="0%" stopColor="#081827" stopOpacity="0.25" />
                         <stop offset="100%" stopColor="#081827" stopOpacity="0.0" />
                       </linearGradient>
                     </defs>
                     <polygon
-                      points="20,110 90,75 170,90 250,35 330,60 410,25 480,45 480,140 20,140"
+                      points={visitationChartData.polygonPoints}
                       fill="url(#visGrad)"
                     />
                     <polyline
@@ -425,33 +446,42 @@ export const AdminLaporan: React.FC = () => {
                       strokeWidth="3"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      points="20,110 90,75 170,90 250,35 330,60 410,25 480,45"
+                      points={visitationChartData.polylinePoints}
                     />
-                    {[
-                      { x: 20, y: 110 },
-                      { x: 90, y: 75 },
-                      { x: 170, y: 90 },
-                      { x: 250, y: 35 },
-                      { x: 330, y: 60 },
-                      { x: 410, y: 25 },
-                      { x: 480, y: 45 },
-                    ].map((pt, i) => (
-                      <circle
-                        key={i}
-                        cx={pt.x}
-                        cy={pt.y}
-                        r="4.5"
-                        fill="#FFFFFF"
-                        stroke="#D4A359"
-                        strokeWidth="2.5"
-                      />
+                    {visitationChartData.points.map((pt, i) => (
+                      <g key={i}>
+                        <circle
+                          cx={pt.x}
+                          cy={pt.y}
+                          r="12"
+                          fill="transparent"
+                          className="cursor-pointer"
+                          onMouseEnter={() => setHoveredVisPoint(pt)}
+                          onMouseLeave={() => setHoveredVisPoint(null)}
+                        />
+                        <circle
+                          cx={pt.x}
+                          cy={pt.y}
+                          r={hoveredVisPoint?.fullDate === pt.fullDate ? '6' : '4.5'}
+                          fill="#FFFFFF"
+                          stroke="#D4A359"
+                          strokeWidth={hoveredVisPoint?.fullDate === pt.fullDate ? '3.5' : '2.5'}
+                          className="pointer-events-none transition-all"
+                        />
+                      </g>
                     ))}
                   </svg>
-                  <div className="flex justify-between text-[11px] text-slate-400 mt-2 px-1">
-                    <span>Minggu 1</span>
-                    <span>Minggu 2</span>
-                    <span>Minggu 3</span>
-                    <span>Minggu 4</span>
+                  <div className="flex justify-between text-[11px] text-slate-500 font-medium mt-2 px-2">
+                    {visitationChartData.points.map((pt, i) => (
+                      <span 
+                        key={i}
+                        className={`cursor-pointer transition-colors ${hoveredVisPoint?.fullDate === pt.fullDate ? 'text-[#D4A359] font-bold' : ''}`}
+                        onMouseEnter={() => setHoveredVisPoint(pt)}
+                        onMouseLeave={() => setHoveredVisPoint(null)}
+                      >
+                        {pt.label}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -717,19 +747,33 @@ export const AdminLaporan: React.FC = () => {
               {/* Cash Flow Graph Card */}
               <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                  <h3 className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-[#D4A359]" />
-                    <span>Tren Penerimaan Retribusi Harian (Arus Kas)</span>
-                  </h3>
-                  <span className="text-[11px] text-slate-400 font-medium">Real-Time Sync</span>
+                  <div>
+                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-emerald-600" />
+                      <span>Tren Penerimaan Retribusi Harian (Arus Kas)</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded-full normal-case">
+                        Sinkron PAD
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Rata-rata: <strong className="text-slate-700">Rp {revenueChartData.averagePerDay.toLocaleString('id-ID')}</strong>/hari • Total periode: <strong className="text-slate-700">Rp {revenueChartData.totalPeriod.toLocaleString('id-ID')}</strong>
+                    </p>
+                  </div>
+                  {hoveredRevPoint ? (
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-lg">
+                      {hoveredRevPoint.label}: Rp {hoveredRevPoint.val.toLocaleString('id-ID')} ({hoveredRevPoint.bookingsCount} trx)
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-slate-400 font-medium">7 Hari Terakhir</span>
+                  )}
                 </div>
 
                 <div className="w-full h-44 relative pt-2">
                   <svg viewBox="0 0 500 150" className="w-full h-full overflow-visible">
-                    <line x1="0" y1="20" x2="500" y2="20" stroke="#F1F5F9" strokeDasharray="3,3" />
-                    <line x1="0" y1="60" x2="500" y2="60" stroke="#F1F5F9" strokeDasharray="3,3" />
-                    <line x1="0" y1="100" x2="500" y2="100" stroke="#F1F5F9" strokeDasharray="3,3" />
-                    <line x1="0" y1="140" x2="500" y2="140" stroke="#E2E8F0" />
+                    <line x1="20" y1="20" x2="480" y2="20" stroke="#F1F5F9" strokeDasharray="3,3" />
+                    <line x1="20" y1="58" x2="480" y2="58" stroke="#F1F5F9" strokeDasharray="3,3" />
+                    <line x1="20" y1="96" x2="480" y2="96" stroke="#F1F5F9" strokeDasharray="3,3" />
+                    <line x1="20" y1="135" x2="480" y2="135" stroke="#E2E8F0" />
 
                     <defs>
                       <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
@@ -738,7 +782,7 @@ export const AdminLaporan: React.FC = () => {
                       </linearGradient>
                     </defs>
                     <polygon
-                      points="20,125 90,85 170,95 250,45 330,70 410,30 480,20 480,140 20,140"
+                      points={revenueChartData.polygonPoints}
                       fill="url(#revGrad)"
                     />
                     <polyline
@@ -747,33 +791,42 @@ export const AdminLaporan: React.FC = () => {
                       strokeWidth="3"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      points="20,125 90,85 170,95 250,45 330,70 410,30 480,20"
+                      points={revenueChartData.polylinePoints}
                     />
-                    {[
-                      { x: 20, y: 125 },
-                      { x: 90, y: 85 },
-                      { x: 170, y: 95 },
-                      { x: 250, y: 45 },
-                      { x: 330, y: 70 },
-                      { x: 410, y: 30 },
-                      { x: 480, y: 20 },
-                    ].map((pt, i) => (
-                      <circle
-                        key={i}
-                        cx={pt.x}
-                        cy={pt.y}
-                        r="4.5"
-                        fill="#FFFFFF"
-                        stroke="#10B981"
-                        strokeWidth="2.5"
-                      />
+                    {revenueChartData.points.map((pt, i) => (
+                      <g key={i}>
+                        <circle
+                          cx={pt.x}
+                          cy={pt.y}
+                          r="12"
+                          fill="transparent"
+                          className="cursor-pointer"
+                          onMouseEnter={() => setHoveredRevPoint(pt)}
+                          onMouseLeave={() => setHoveredRevPoint(null)}
+                        />
+                        <circle
+                          cx={pt.x}
+                          cy={pt.y}
+                          r={hoveredRevPoint?.fullDate === pt.fullDate ? '6' : '4.5'}
+                          fill="#FFFFFF"
+                          stroke="#10B981"
+                          strokeWidth={hoveredRevPoint?.fullDate === pt.fullDate ? '3.5' : '2.5'}
+                          className="pointer-events-none transition-all"
+                        />
+                      </g>
                     ))}
                   </svg>
-                  <div className="flex justify-between text-[11px] text-slate-400 mt-2 px-1">
-                    <span>Minggu 1</span>
-                    <span>Minggu 2</span>
-                    <span>Minggu 3</span>
-                    <span>Minggu 4</span>
+                  <div className="flex justify-between text-[11px] text-slate-500 font-medium mt-2 px-2">
+                    {revenueChartData.points.map((pt, i) => (
+                      <span 
+                        key={i}
+                        className={`cursor-pointer transition-colors ${hoveredRevPoint?.fullDate === pt.fullDate ? 'text-emerald-700 font-bold' : ''}`}
+                        onMouseEnter={() => setHoveredRevPoint(pt)}
+                        onMouseLeave={() => setHoveredRevPoint(null)}
+                      >
+                        {pt.label}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -961,7 +1014,7 @@ export const AdminLaporan: React.FC = () => {
           <div className="text-center space-y-16">
             <div>
               <p className="font-semibold text-slate-600">Mengetahui,</p>
-              <p className="font-bold text-slate-900">Kepala UPTD Museum Blambangan</p>
+              <p className="font-bold text-slate-900">Kepala Museum Blambangan</p>
             </div>
             <div>
               <p className="font-bold underline text-slate-900">Drs. H. ACHMAD TAUFIQ, M.Si</p>

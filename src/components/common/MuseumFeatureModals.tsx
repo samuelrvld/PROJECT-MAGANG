@@ -17,7 +17,8 @@ import {
   Users,
   Plus,
   Trash2,
-  ArrowRight
+  ArrowRight,
+  Mail
 } from 'lucide-react';
 import { useBooking } from '../../context/BookingContext';
 import { GajahOlingMotif } from './GajahOlingMotif';
@@ -202,12 +203,18 @@ export const MuseumFeatureModals: React.FC<MuseumFeatureModalsProps> = ({
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-slate-500">
+                    <span className="font-medium">Sabtu – Minggu:</span>
+                    <span className="font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                      Tutup (Hari Libur)
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-slate-500">
                     <span>Istirahat (ISHOMA):</span>
                     <span className="font-semibold text-slate-700">{ishomaConfig.label}</span>
                   </div>
-                  <div className="flex justify-between items-center text-red-600 font-medium pt-1 border-t border-slate-200/70">
-                    <span>Sabtu & Minggu:</span>
-                    <span className="font-bold">Tutup (Libur Akhir Pekan)</span>
+                  <div className="flex justify-between items-center text-emerald-700 font-medium pt-1 border-t border-slate-200/70">
+                    <span>Status Operasional:</span>
+                    <span className="font-bold">Buka Hari Kerja (Senin – Jumat)</span>
                   </div>
                 </div>
               </div>
@@ -281,7 +288,15 @@ export const MuseumFeatureModals: React.FC<MuseumFeatureModalsProps> = ({
                   <PhoneCall className="w-4 h-4 text-emerald-600 shrink-0" />
                   <div className="text-[10px]">
                     <span className="font-bold text-slate-900 block text-[11px]">WhatsApp & Telepon:</span>
-                    +62 852-8725-8502 / (0333) 421-555
+                    (0333) 424172 / +62 852-8725-8502
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 pt-2 border-t border-slate-200">
+                  <Mail className="w-4 h-4 text-sky-600 shrink-0" />
+                  <div className="text-[10px]">
+                    <span className="font-bold text-slate-900 block text-[11px]">Email Resmi:</span>
+                    kebudayaanbwi@gmail.com
                   </div>
                 </div>
 
