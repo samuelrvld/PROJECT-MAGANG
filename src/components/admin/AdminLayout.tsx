@@ -304,7 +304,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       )}
 
       {/* Sidebar Desktop Admin */}
-      <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden z-40 select-none print:hidden relative">
+      <aside className="hidden md:flex w-72 lg:w-80 h-screen fixed top-0 bottom-0 left-0 z-40 bg-gradient-to-b from-[#081827] via-[#102B48] to-[#061422] text-white flex-col justify-between shrink-0 p-3.5 lg:p-4 border-r border-[#1C4268]/60 shadow-2xl overflow-y-auto overflow-x-hidden select-none print:hidden">
         {/* Ornamen Latar: Candi Gapura Agung Blambangan */}
         <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
           <img
@@ -473,7 +473,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       <div className="md:ml-72 lg:ml-80 flex-1 flex flex-col min-h-screen min-w-0 w-auto print:ml-0 print:min-h-0 print:p-0 print:overflow-visible bg-[#F8FAFC]">
         {/* Header Atas */}
         <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-20 print:hidden shadow-2xs">
-          <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="w-full px-5 sm:px-8 lg:px-10 py-3.5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-base sm:text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 {title}
@@ -533,7 +533,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
         </header>
 
         {/* Content Body */}
-        <main className="flex-1 w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6 pb-24 md:pb-8">
+        <main className="flex-1 w-full px-5 sm:px-8 lg:px-10 py-6 space-y-6 pb-24 md:pb-8">
           {rbacDeniedMsg && (
             <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm font-semibold flex items-center justify-between shadow-xs animate-in slide-in-from-top-2 duration-150">
               <div className="flex items-center gap-2.5">
