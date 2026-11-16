@@ -188,6 +188,17 @@ export const AdminKoleksiMuseum: React.FC = () => {
                 <option value="Perlu Konservasi">Perlu Konservasi</option>
               </select>
 
+              <a
+                href="https://musewangi.rf.gd/login"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#D4A359] to-[#B38038] hover:from-[#C39247] hover:to-[#A3702B] text-[#081827] text-xs font-black rounded-xl shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                title="Buka Panel Admin Musewangi di Tab Baru"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Admin Musewangi</span>
+              </a>
+
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(true)}

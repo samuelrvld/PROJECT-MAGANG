@@ -129,9 +129,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
           label: 'Kelola Museum',
           subtitle: 'Admin & Kuratorial Musewangi',
           icon: <Landmark className="w-3.5 h-3.5" />,
-          externalUrl: typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-            ? 'http://127.0.0.1:8000/login'
-            : 'https://musewangimvp-production.up.railway.app/login'
+          externalUrl: 'https://musewangi.rf.gd/login'
         }
       ]
     },
