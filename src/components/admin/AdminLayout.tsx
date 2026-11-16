@@ -129,7 +129,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
           label: 'Kelola Museum',
           subtitle: 'Admin & Kuratorial Musewangi',
           icon: <Landmark className="w-3.5 h-3.5" />,
-          externalUrl: 'https://musewangi.rf.gd/login'
+          externalUrl: 'http://musewangi.rf.gd/login'
         }
       ]
     },
