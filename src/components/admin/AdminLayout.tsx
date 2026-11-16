@@ -470,67 +470,70 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
       </aside>
 
       {/* Main Content Area */}
-      <div className="md:ml-72 lg:ml-80 flex-1 flex flex-col min-h-screen overflow-x-hidden w-full print:ml-0 print:min-h-0 print:p-0 print:overflow-visible">
+      <div className="md:ml-72 lg:ml-80 flex-1 flex flex-col min-h-screen min-w-0 w-auto print:ml-0 print:min-h-0 print:p-0 print:overflow-visible bg-[#F8FAFC]">
         {/* Header Atas */}
-        <header className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 sticky top-0 z-20 print:hidden">
-          <div>
-            <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="text-xs text-slate-500 mt-0.5">
-                {subtitle}
-              </p>
-            )}
-          </div>
-
-          <div className="hidden sm:flex items-center gap-3">
-            {/* Real-time Cloud Sync Status (HP <-> Laptop) */}
-            <div 
-              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors ${
-                isCloudSyncConnected 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                  : 'bg-amber-50 text-amber-700 border-amber-200'
-              }`}
-              title="Koneksi Real-time Cloud Sync aktif (HP dan Laptop otomatis sinkron)"
-            >
-              <span className={`w-2 h-2 rounded-full ${isCloudSyncConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-              <span className="text-[11px] font-bold">
-                {isCloudSyncConnected ? 'Cloud Sync: Terhubung' : 'Sync: Siap'}
-              </span>
-            </div>
-
-            {/* Date Display */}
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              <span className="capitalize">
-                {new Intl.DateTimeFormat('id-ID', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric'
-                }).format(new Date())}
-              </span>
-            </div>
-
-            {/* Notification Bell */}
-            <button
-              onClick={() => setActiveView('admin-notifications')}
-              className="relative p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
-              title="Notifikasi & Riwayat"
-            >
-              <Bell className="w-4 h-4" />
-              {unreadNotifs > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">
-                  {unreadNotifs}
-                </span>
+        <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-20 print:hidden shadow-2xs">
+          <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 className="text-base sm:text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                {title}
+              </h1>
+              {subtitle && (
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {subtitle}
+                </p>
               )}
-            </button>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-2.5">
+              {/* Real-time Cloud Sync Status (HP <-> Laptop) */}
+              <div 
+                className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors shadow-2xs ${
+                  isCloudSyncConnected 
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                    : 'bg-amber-50 text-amber-700 border-amber-200'
+                }`}
+                title="Koneksi Real-time Cloud Sync aktif (HP dan Laptop otomatis sinkron)"
+              >
+                <span className={`w-2 h-2 rounded-full ${isCloudSyncConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                <span className="text-[11px] font-bold">
+                  {isCloudSyncConnected ? 'Cloud Sync: Terhubung' : 'Sync: Siap'}
+                </span>
+              </div>
+
+              {/* Date Display */}
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 shadow-2xs px-3.5 py-1.5 rounded-xl">
+                <Calendar className="w-3.5 h-3.5 text-[#D4A359]" />
+                <span className="capitalize">
+                  {new Intl.DateTimeFormat('id-ID', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  }).format(new Date())}
+                </span>
+              </div>
+
+              {/* Notification Bell */}
+              <button
+                type="button"
+                onClick={() => setActiveView('admin-notifications')}
+                className="relative p-2 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                title="Notifikasi & Riwayat"
+              >
+                <Bell className="w-4 h-4" />
+                {unreadNotifs > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">
+                    {unreadNotifs}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </header>
 
         {/* Content Body */}
-        <main className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4 pb-24 md:pb-6">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6 pb-24 md:pb-8">
           {rbacDeniedMsg && (
             <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm font-semibold flex items-center justify-between shadow-xs animate-in slide-in-from-top-2 duration-150">
               <div className="flex items-center gap-2.5">

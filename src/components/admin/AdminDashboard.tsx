@@ -75,104 +75,109 @@ export const AdminDashboard: React.FC = () => {
       title="Dashboard Admin" 
       subtitle="Selamat datang di panel admin Museum Blambangan"
     >
-      <div className="space-y-5 sm:space-y-6">
-        {/* Kartu Statistik Ringkasan - 2 Kolom di HP agar Rapi & Kompak */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="space-y-6">
+        {/* 4 Kartu Ringkasan Metrik Utama */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
           {/* Card 1: Total Booking */}
-          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
-              <span className="text-[11px] sm:text-xs font-semibold">Total Booking</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
-                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all group relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#092C48] to-[#1C4D78]" />
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Total Booking</span>
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#092C48]/10 text-[#092C48] flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Users className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
-              {totalBookings}
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
+              {totalBookings.toLocaleString('id-ID')}
             </div>
-            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-600">
-              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>+12% bulan lalu</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 bg-emerald-50 w-fit px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+              <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>+12% tren bulan ini</span>
             </div>
           </div>
 
           {/* Card 2: Menunggu Verifikasi */}
-          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
-              <span className="text-[11px] sm:text-xs font-semibold">Menunggu</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all group relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 to-amber-400" />
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Menunggu</span>
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Clock className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
-              {pendingCount}
+            <div className="text-2xl sm:text-3xl font-extrabold text-amber-600 tracking-tight mb-2">
+              {pendingCount.toLocaleString('id-ID')}
             </div>
-            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-amber-600">
-              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>+5% antrean</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-700 bg-amber-50 w-fit px-2.5 py-0.5 rounded-full border border-amber-200/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span>{pendingCount > 0 ? `${pendingCount} antrean tiket` : 'Semua terverifikasi'}</span>
             </div>
           </div>
 
           {/* Card 3: Terverifikasi */}
-          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
-              <span className="text-[11px] sm:text-xs font-semibold">Terverifikasi</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all group relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400" />
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Terverifikasi</span>
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <CheckCircle2 className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
-              {verifiedCount}
+            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-600 tracking-tight mb-2">
+              {verifiedCount.toLocaleString('id-ID')}
             </div>
-            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-600">
-              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>+15% tiket sah</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 w-fit px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+              <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Tiket sah aktif</span>
             </div>
           </div>
 
           {/* Card 4: Ditolak */}
-          <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between text-slate-500 mb-1.5 sm:mb-2">
-              <span className="text-[11px] sm:text-xs font-semibold">Ditolak</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600">
-                <XCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-rose-300 transition-all group relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 to-rose-400" />
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Ditolak</span>
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <XCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </div>
             </div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900 mb-1">
-              {rejectedCount}
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-700 tracking-tight mb-2">
+              {rejectedCount.toLocaleString('id-ID')}
             </div>
-            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-red-600">
-              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>+2% ditinjau</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-700 bg-rose-50 w-fit px-2.5 py-0.5 rounded-full border border-rose-200/60">
+              <span>{rejectedCount > 0 ? `${rejectedCount} ditolak / batal` : 'Nihil penolakan'}</span>
             </div>
           </div>
         </div>
 
-        {/* Grafik Kunjungan dan Statistik */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Grafik Kunjungan dan Statistik Kategori */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
           {/* Chart 1: Kunjungan 7 Hari Terakhir (Line Chart) */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between mb-6">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
               <div>
-                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
                   <span>Kunjungan 7 Hari Terakhir</span>
-                  <span className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 font-semibold rounded-full border border-emerald-200/60">
+                  <span className="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded-full border border-emerald-200/60">
                     Real-time
                   </span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Rata-rata <strong className="text-slate-700">{chartData.averagePerDay}</strong> pengunjung/hari • Total periode: <strong className="text-slate-700">{chartData.totalPeriod}</strong> orang
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Rata-rata <strong className="text-slate-800">{chartData.averagePerDay}</strong> pengunjung/hari • Total periode: <strong className="text-slate-800">{chartData.totalPeriod}</strong> orang
                 </p>
               </div>
               {hoveredPoint && (
-                <div className="text-xs bg-slate-900 text-white px-2.5 py-1 rounded-lg font-medium shadow-sm transition-all animate-in fade-in">
-                  {hoveredPoint.label}: <strong className="text-emerald-400">{hoveredPoint.val}</strong> Pengunjung ({hoveredPoint.bookingsCount} booking)
+                <div className="text-xs bg-slate-900 text-white px-3 py-1.5 rounded-xl font-medium shadow-md transition-all animate-in fade-in flex items-center gap-1.5">
+                  <span>{hoveredPoint.label}:</span>
+                  <strong className="text-emerald-400 font-bold">{hoveredPoint.val}</strong>
+                  <span>Orang ({hoveredPoint.bookingsCount} booking)</span>
                 </div>
               )}
             </div>
 
             {/* SVG Line Chart */}
-            <div className="w-full h-48 relative">
-              <svg viewBox="0 0 500 160" className="w-full h-full overflow-visible">
+            <div className="w-full h-56 sm:h-64 relative">
+              <svg viewBox="0 0 500 160" preserveAspectRatio="none" className="w-full h-full overflow-visible">
                 {/* Horizontal Gridlines */}
                 <line x1="20" y1="25" x2="480" y2="25" stroke="#F1F5F9" strokeDasharray="3,3" />
                 <line x1="20" y1="63" x2="480" y2="63" stroke="#F1F5F9" strokeDasharray="3,3" />
@@ -180,15 +185,15 @@ export const AdminDashboard: React.FC = () => {
                 <line x1="20" y1="140" x2="480" y2="140" stroke="#E2E8F0" />
 
                 {/* Y-axis dynamic labels */}
-                <text x="2" y="28" fontSize="9" fill="#94A3B8">{chartData.yTicks[0]}</text>
-                <text x="2" y="66" fontSize="9" fill="#94A3B8">{chartData.yTicks[1]}</text>
-                <text x="2" y="104" fontSize="9" fill="#94A3B8">{chartData.yTicks[2]}</text>
-                <text x="2" y="143" fontSize="9" fill="#94A3B8">0</text>
+                <text x="2" y="28" fontSize="9" fill="#94A3B8" fontWeight="600">{chartData.yTicks[0]}</text>
+                <text x="2" y="66" fontSize="9" fill="#94A3B8" fontWeight="600">{chartData.yTicks[1]}</text>
+                <text x="2" y="104" fontSize="9" fill="#94A3B8" fontWeight="600">{chartData.yTicks[2]}</text>
+                <text x="2" y="143" fontSize="9" fill="#94A3B8" fontWeight="600">0</text>
 
                 {/* Area Gradient Fill */}
                 <defs>
                   <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.25" />
+                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.30" />
                     <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
@@ -201,7 +206,7 @@ export const AdminDashboard: React.FC = () => {
                 <polyline
                   fill="none"
                   stroke="#10B981"
-                  strokeWidth="3"
+                  strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   points={chartData.polylinePoints}
@@ -214,7 +219,7 @@ export const AdminDashboard: React.FC = () => {
                     <circle
                       cx={pt.x}
                       cy={pt.y}
-                      r="12"
+                      r="14"
                       fill="transparent"
                       className="cursor-pointer"
                       onMouseEnter={() => setHoveredPoint(pt)}
@@ -223,22 +228,26 @@ export const AdminDashboard: React.FC = () => {
                     <circle
                       cx={pt.x}
                       cy={pt.y}
-                      r={hoveredPoint?.fullDate === pt.fullDate ? '6' : '4.5'}
+                      r={hoveredPoint?.fullDate === pt.fullDate ? '6.5' : '5'}
                       fill="#FFFFFF"
                       stroke="#10B981"
-                      strokeWidth={hoveredPoint?.fullDate === pt.fullDate ? '3.5' : '2.5'}
-                      className="cursor-pointer transition-all pointer-events-none"
+                      strokeWidth={hoveredPoint?.fullDate === pt.fullDate ? '4' : '3'}
+                      className="cursor-pointer transition-all pointer-events-none drop-shadow-sm"
                     />
                   </g>
                 ))}
               </svg>
 
               {/* X-axis Days Labels */}
-              <div className="flex justify-between text-[11px] text-slate-500 font-medium mt-2 px-3">
+              <div className="flex justify-between text-[11px] text-slate-500 font-medium mt-3 px-2">
                 {chartData.points.map((pt, i) => (
                   <span 
                     key={i} 
-                    className={`transition-colors cursor-pointer ${hoveredPoint?.fullDate === pt.fullDate ? 'text-emerald-600 font-bold' : ''}`}
+                    className={`transition-colors cursor-pointer py-0.5 px-1 rounded-md ${
+                      hoveredPoint?.fullDate === pt.fullDate 
+                        ? 'text-emerald-700 font-bold bg-emerald-50' 
+                        : 'hover:text-slate-800'
+                    }`}
                     onMouseEnter={() => setHoveredPoint(pt)}
                     onMouseLeave={() => setHoveredPoint(null)}
                   >
@@ -249,14 +258,17 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Grafik Donat Kategori Pengunjung */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs flex flex-col justify-between">
-            <h2 className="text-sm font-bold text-slate-900 mb-2">
-              Kategori Pengunjung
-            </h2>
+          {/* Chart 2: Donut Kategori Pengunjung */}
+          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 mb-1">
+                Kategori Pengunjung
+              </h2>
+              <p className="text-xs text-slate-500">Komposisi wisatawan berdasarkan tipe tiket</p>
+            </div>
 
             {/* Donut Chart Visual */}
-            <div className="relative w-36 h-36 mx-auto flex items-center justify-center my-2">
+            <div className="relative w-40 h-40 mx-auto flex items-center justify-center my-3">
               <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                 {/* Segment 1: Umum (#092C48) */}
                 <circle
@@ -296,59 +308,62 @@ export const AdminDashboard: React.FC = () => {
                 />
               </svg>
               <div className="absolute flex flex-col items-center">
-                <span className="text-xs font-black text-slate-800">{categoryStats.total}</span>
-                <span className="text-[9px] text-slate-400 font-medium">Orang</span>
+                <span className="text-xl font-extrabold text-slate-900 leading-none">{categoryStats.total}</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Orang</span>
               </div>
             </div>
 
             {/* Legend for 4 categories */}
-            <div className="space-y-1.5 mt-2 text-xs">
-              <div className="flex items-center justify-between">
+            <div className="space-y-2 mt-2 text-xs">
+              <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#092C48]" />
-                  <span className="text-slate-600">Umum</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#092C48] shrink-0" />
+                  <span className="font-semibold text-slate-700">Umum</span>
                 </div>
-                <span className="font-bold text-slate-800">{categoryStats.umum.pct}% ({categoryStats.umum.count})</span>
+                <span className="font-bold text-slate-900">{categoryStats.umum.pct}% ({categoryStats.umum.count})</span>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
-                  <span className="text-slate-600">Pelajar / Mhs</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] shrink-0" />
+                  <span className="font-semibold text-slate-700">Pelajar / Mhs</span>
                 </div>
-                <span className="font-bold text-slate-800">{categoryStats.pelajar.pct}% ({categoryStats.pelajar.count})</span>
+                <span className="font-bold text-slate-900">{categoryStats.pelajar.pct}% ({categoryStats.pelajar.count})</span>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#D4A359]" />
-                  <span className="text-slate-600">Mancanegara</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#D4A359] shrink-0" />
+                  <span className="font-semibold text-slate-700">Mancanegara</span>
                 </div>
-                <span className="font-bold text-slate-800">{categoryStats.manca.pct}% ({categoryStats.manca.count})</span>
+                <span className="font-bold text-slate-900">{categoryStats.manca.pct}% ({categoryStats.manca.count})</span>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
-                  <span className="text-slate-600">Rombongan</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6] shrink-0" />
+                  <span className="font-semibold text-slate-700">Rombongan</span>
                 </div>
-                <span className="font-bold text-slate-800">{categoryStats.rombongan.pct}% ({categoryStats.rombongan.count})</span>
+                <span className="font-bold text-slate-900">{categoryStats.rombongan.pct}% ({categoryStats.rombongan.count})</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Tabel Booking Terbaru */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-slate-900">
-              Booking Terbaru
-            </h2>
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+          <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-slate-900">
+                Booking Terbaru
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">5 Transaksi pemesanan tiket terakhir yang masuk ke loket</p>
+            </div>
             <button
               onClick={() => setActiveView('admin-orders')}
-              className="text-xs font-semibold text-[#092C48] hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-[#092C48] hover:text-[#D4A359] hover:underline flex items-center gap-1 transition-colors w-fit"
             >
-              <span>Lihat Semua</span>
+              <span>Lihat Semua Pesanan</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -362,27 +377,27 @@ export const AdminDashboard: React.FC = () => {
                   setSelectedBookingId(b.id);
                   setActiveView('admin-order-detail');
                 }}
-                className="p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
+                className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="space-y-1 text-left">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-xs text-[#092C48]">{b.id}</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    <span className="font-mono font-bold text-xs text-[#092C48] bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60">{b.id}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                       b.status === 'Terverifikasi'
-                        ? 'bg-emerald-50 text-emerald-700'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         : b.status === 'Ditolak'
-                        ? 'bg-red-50 text-red-700'
-                        : 'bg-amber-50 text-amber-700'
+                        ? 'bg-rose-50 text-rose-700 border-rose-200'
+                        : 'bg-amber-50 text-amber-700 border-amber-200'
                     }`}>
                       {b.status === 'Menunggu Verifikasi' ? 'Menunggu' : b.status}
                     </span>
                   </div>
-                  <div className="font-bold text-xs text-slate-800">{b.nama}</div>
+                  <div className="font-bold text-xs text-slate-900">{b.nama}</div>
                   <div className="text-[11px] text-slate-500">
                     {b.tanggalKunjungan} • {b.jumlahOrang} Orang ({b.kategori})
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-400">
+                <div className="flex items-center gap-2 text-slate-400">
                   <span className="font-bold text-xs text-slate-900">
                     Rp{b.totalPembayaran.toLocaleString('id-ID')}
                   </span>
@@ -396,49 +411,65 @@ export const AdminDashboard: React.FC = () => {
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-500 font-bold text-[11px] uppercase tracking-wider">
-                  <th className="py-2.5 px-3">No.</th>
-                  <th className="py-2.5 px-3">No. Booking</th>
-                  <th className="py-2.5 px-3">Nama</th>
-                  <th className="py-2.5 px-3">Tanggal</th>
-                  <th className="py-2.5 px-3">Sesi</th>
-                  <th className="py-2.5 px-3">Kategori</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3 text-center">Aksi</th>
+                <tr className="bg-slate-50/90 border-b border-slate-200/80 text-slate-500 font-bold text-[11px] uppercase tracking-wider">
+                  <th className="py-3 px-4 w-12 text-center">No.</th>
+                  <th className="py-3 px-4">No. Booking</th>
+                  <th className="py-3 px-4">Nama Pemesan</th>
+                  <th className="py-3 px-4">Tanggal Kunjungan</th>
+                  <th className="py-3 px-4">Sesi</th>
+                  <th className="py-3 px-4">Kategori</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {recentBookings.map((b, idx) => (
-                  <tr key={b.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-3 text-slate-400 font-semibold">{idx + 1}</td>
-                    <td className="py-3 px-3 font-mono font-bold text-[#092C48]">{b.id}</td>
-                    <td className="py-3 px-3 font-semibold text-slate-800">{b.nama}</td>
-                    <td className="py-3 px-3 text-slate-600">{b.tanggalKunjungan}</td>
-                    <td className="py-3 px-3 text-slate-600">{b.sesi ? b.sesi.split('(')[0].trim() : '-'}</td>
-                    <td className="py-3 px-3 text-slate-600">{b.kategori}</td>
-                    <td className="py-3 px-3">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                          b.status === 'Terverifikasi'
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : b.status === 'Ditolak'
-                            ? 'bg-red-50 text-red-700'
-                            : 'bg-amber-50 text-amber-700'
-                        }`}
-                      >
-                        {b.status === 'Menunggu Verifikasi' ? 'Menunggu' : b.status}
+                  <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3.5 px-4 text-center text-slate-400 font-semibold">{idx + 1}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="font-mono font-bold text-[#092C48] bg-slate-100 px-2 py-0.5 rounded border border-slate-200/60">
+                        {b.id}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3.5 px-4 font-bold text-slate-900">{b.nama}</td>
+                    <td className="py-3.5 px-4 text-slate-600 font-medium">{b.tanggalKunjungan}</td>
+                    <td className="py-3.5 px-4 text-slate-600 font-medium">{b.sesi ? b.sesi.split('(')[0].trim() : '-'}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="text-slate-700 font-medium bg-slate-100 px-2.5 py-0.5 rounded-full text-[11px]">
+                        {b.kategori}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                          b.status === 'Terverifikasi'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                            : b.status === 'Ditolak'
+                            ? 'bg-rose-50 text-rose-700 border-rose-200/80'
+                            : 'bg-amber-50 text-amber-700 border-amber-200/80'
+                        }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          b.status === 'Terverifikasi'
+                            ? 'bg-emerald-500'
+                            : b.status === 'Ditolak'
+                            ? 'bg-rose-500'
+                            : 'bg-amber-500 animate-pulse'
+                        }`} />
+                        <span>{b.status === 'Menunggu Verifikasi' ? 'Menunggu' : b.status}</span>
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
                       <button
                         onClick={() => {
                           setSelectedBookingId(b.id);
                           setActiveView('admin-order-detail');
                         }}
-                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-[#092C48] transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#092C48] text-slate-700 hover:text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
                         title="Lihat Detail Pesanan"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Detail</span>
                       </button>
                     </td>
                   </tr>
