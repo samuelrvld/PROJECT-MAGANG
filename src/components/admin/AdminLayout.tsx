@@ -18,7 +18,8 @@ import {
   QrCode,
   Compass,
   UserCheck,
-  Lock
+  Lock,
+  Landmark
 } from 'lucide-react';
 import { MuseumLogo } from '../common/MuseumLogo';
 import { hasPermission } from '../../utils/rbac';
@@ -260,6 +261,32 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
                   </div>
                 ))}
               </div>
+              
+            {/* Akses Sistem Inventaris Musewangi */}
+            <div className="pt-2 border-t border-white/10">
+            <p className="px-3 mb-1 text-[9px] font-black tracking-widest text-[#D4A359]/85 uppercase">
+              Sistem Terintegrasi
+            </p>
+              <a
+                href="https://musewangi.rf.gd/admin/dashboard"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-2.5 text-left">
+                  <div className="w-7 h-7 rounded-lg bg-white/5 text-[#D4A359] flex items-center justify-center">
+                    <Landmark className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="block font-bold leading-tight text-xs">
+                      Admin Musewangi
+                    </span>
+                    <span className="text-[9.5px] text-slate-400 block">
+                      Sistem Inventaris Museum
+                    </span>
+                  </div>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-[#D4A359]" />
+              </a>
+            </div>
 
               {/* Pratinjau Portal Web Pengunjung */}
               <div className="pt-2 border-t border-white/10">
@@ -393,6 +420,32 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title, subti
                 </nav>
               </div>
             ))}
+          </div>
+
+          {/* Quick Shortcut: Admin Musewangi */}
+          <div className="pt-2 border-t border-white/10">
+          <p className="px-3 mb-1 text-[9px] font-black tracking-widest text-[#D4A359]/85 uppercase">
+            Sistem Terintegrasi
+          </p>
+            <a
+              href="https://musewangi.rf.gd/admin/dashboard"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all cursor-pointer group text-xs border border-white/5"
+            >
+              <div className="flex items-center gap-3 text-left">
+                <div className="w-8 h-8 rounded-xl bg-white/[0.07] border border-white/10 text-[#E5C287] group-hover:bg-[#D4A359]/20 group-hover:text-white flex items-center justify-center shrink-0 transition-all">
+                  <Landmark className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="block font-bold leading-tight">
+                    Admin Musewangi
+                  </span>
+                  <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">
+                    Sistem Inventaris Museum
+                  </span>
+                </div>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-[#D4A359] group-hover:translate-x-0.5 transition-transform" />
+            </a>
           </div>
 
           {/* Quick Shortcut: View User Web Portal */}
